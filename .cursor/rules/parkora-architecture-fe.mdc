@@ -1,0 +1,57 @@
+---
+description: Frontend architecture rules for Parkora Partners Web - enforcing strict typing and organized type definitions
+globs: ["src/**/*.ts", "src/**/*.tsx"]
+---
+
+# Parkora Frontend Architecture Rules
+
+## Naming Conventions
+
+| Element | Convention | Example |
+|---------|------------|---------|
+| Components | PascalCase | `UserProfile`, `LoginButton` |
+| Interfaces | PascalCase + Suffix | `UserProps`, `AuthState`, `ApiResponse` |
+| Constants | SCREAMING_SNAKE_CASE | `MAX_RETRY_COUNT`, `API_BASE_URL` |
+| Files | PascalCase | `UserProfile.tsx`, `AuthService.ts` |
+
+### Components
+
+```tsx
+const UserProfile = () => { ... }
+const LoginButton = () => { ... }
+```
+
+### Interfaces
+
+```tsx
+interface UserProps { ... }
+interface AuthState { ... }
+interface LoginFormData { ... }
+```
+
+### Constants
+
+```tsx
+const MAX_RETRY_COUNT = 3;
+const API_BASE_URL = 'https://api.example.com';
+const DEFAULT_PAGE_SIZE = 10;
+```
+
+### Files
+
+```
+UserProfile.tsx
+AuthService.ts
+LoginButton.tsx
+ApiUtils.ts
+```
+
+## Utils Rules
+
+- **Reuse before creating new utils**  
+  - Before adding a new utility class or method under `util/`, check whether an existing util already provides the same behavior.  
+  - Prefer extending or improving existing shared utilities instead of introducing near-duplicate helpers.
+
+- **No utils for a single consumer**  
+  - Do **not** create a utility class or method if it is only used by a single controller or service; keep that logic local to its owning class.  
+  - Promote code into `util/` only when it has multiple, clear consumers or is expected to be reused across modules.
