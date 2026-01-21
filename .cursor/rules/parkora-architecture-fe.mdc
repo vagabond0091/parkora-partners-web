@@ -21,7 +21,8 @@ globs: ["src/**/*.ts", "src/**/*.tsx"]
 src/
 ├── assets/          # Static assets (images, fonts, icons)
 ├── components/      # Reusable UI components
-├── routes/          # Route definitions and page components
+├── pages/           # Page-level components
+├── routes/          # Route configuration and guards
 ├── services/        # API calls and external service integrations
 ├── stores/          # Zustand state stores
 ├── types/           # All TypeScript type definitions
@@ -36,7 +37,8 @@ src/
 |--------|---------|
 | `assets/` | Static files: images, SVGs, fonts |
 | `components/` | Reusable UI components organized by feature or atomic design |
-| `routes/` | Route configurations and page-level components |
+| `pages/` | Page-level components (one folder per page with its styles) |
+| `routes/` | Router config, route guards, path constants |
 | `services/` | API calls, HTTP client config, external service integrations |
 | `stores/` | Zustand stores for global state management (state only, no API calls) |
 | `types/` | All TypeScript interfaces, types, and enums |
