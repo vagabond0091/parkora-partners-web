@@ -1,8 +1,7 @@
 ---
-description: Global coding standards for Parkora Partners Web - best practices, documentation, and styling rules
-globs: ["src/**/*.ts", "src/**/*.tsx", "src/**/*.css"]
+description: Global coding standards that apply to all files
+alwaysApply: true
 ---
-
 # Global Standards
 
 All code must follow best practices: accurate, readable, clean, and efficient.

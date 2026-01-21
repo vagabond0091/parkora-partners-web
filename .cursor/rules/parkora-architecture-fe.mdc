@@ -1,6 +1,6 @@
 ---
-description: Frontend architecture rules for Parkora Partners Web - enforcing strict typing and organized type definitions
-globs: ["src/**/*.ts", "src/**/*.tsx"]
+description: Core frontend architecture  for Parkora Partners Web 
+globs: src/**
 ---
 
 # Parkora Frontend Architecture Rules
