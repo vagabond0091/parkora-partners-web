@@ -1,0 +1,52 @@
+---
+description: Global coding standards for Parkora Partners Web - best practices, documentation, and styling rules
+globs: ["src/**/*.ts", "src/**/*.tsx", "src/**/*.css"]
+---
+
+# Global Standards
+
+All code must follow best practices: accurate, readable, clean, and efficient.
+
+## Comments
+
+Use TSDoc for documentation. No `====` separators. No non-TSDoc comments.
+
+### TSDoc Format
+
+```tsx
+/**
+ * Brief description of the function/component.
+ * @param paramName - Description of the parameter
+ * @returns Description of the return value
+ * @example
+ * ```tsx
+ * const result = myFunction('input');
+ * ```
+ */
+```
+
+###  Correct
+
+```tsx
+/**
+ * Calculates the total price including tax.
+ * @param price - The base price
+ * @param taxRate - The tax rate as a decimal
+ * @returns The total price with tax applied
+ */
+const calculateTotal = (price: number, taxRate: number): number => {
+  return price * (1 + taxRate);
+};
+```
+
+### Forbidden
+
+```tsx
+// This calculates total          ← Regular comment (not allowed)
+// ==========================     ← Separator (not allowed)
+/* Block comment */               ← Non-TSDoc block comment (not allowed)
+```
+
+## Styling
+
+Never update global styles. Keep all styling local to components.
