@@ -15,6 +15,52 @@ globs: ["src/**/*.ts", "src/**/*.tsx"]
 6. **Colocation**: Keep related code together — styles, tests, types near their component
 7. **Immutability**: Never mutate state directly; always return new references
 
+## Root-Level Structure
+
+```
+src/
+├── assets/          # Static assets (images, fonts, icons)
+├── components/      # Reusable UI components
+├── routes/          # Route definitions and page components
+├── services/        # API calls and external service integrations
+├── stores/          # Zustand state stores
+├── types/           # All TypeScript type definitions
+├── utils/           # Utility/helper functions
+├── App.tsx          # Root application component
+├── App.css          # App-level scoped styles
+├── main.tsx         # Application entry point
+└── index.css        # Base reset styles only
+```
+
+| Folder | Purpose |
+|--------|---------|
+| `assets/` | Static files: images, SVGs, fonts |
+| `components/` | Reusable UI components organized by feature or atomic design |
+| `routes/` | Route configurations and page-level components |
+| `services/` | API calls, HTTP client config, external service integrations |
+| `stores/` | Zustand stores for global state management (state only, no API calls) |
+| `types/` | All TypeScript interfaces, types, and enums |
+| `utils/` | Reusable utility/helper functions |
+
+### Recommended Additions
+
+```
+src/
+├── assets/
+├── components/
+├── constants/       # App-wide constants
+├── hooks/           # Custom React hooks
+├── pages/           # Page/route components
+├── services/        # API calls and external services
+├── stores/          # Zustand stores
+├── types/
+├── utils/           # Utility functions
+├── App.tsx
+├── App.css
+├── main.tsx
+└── index.css
+```
+
 ## Naming Conventions
 
 | Element | Convention | Example |
