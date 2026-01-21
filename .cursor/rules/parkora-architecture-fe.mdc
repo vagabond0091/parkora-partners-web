@@ -4,6 +4,7 @@ globs: ["src/**/*.ts", "src/**/*.tsx"]
 ---
 
 # Parkora Frontend Architecture Rules
+
 ## Core Principles
 1. **Single Responsibility**: Each component, hook, store has one clear purpose
 2. **Composition Over Complexity**: Break down complex logic into smaller piece
