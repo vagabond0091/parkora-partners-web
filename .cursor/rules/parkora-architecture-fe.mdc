@@ -4,6 +4,11 @@ globs: ["src/**/*.ts", "src/**/*.tsx"]
 ---
 
 # Parkora Frontend Architecture Rules
+## Core Principles
+1. **Single Responsibility**: Each component, hook, store has one clear purpose
+2. **Composition Over Complexity**: Break down complex logic into smaller piece
+3. **Type Safety First**: TypeScript interfaces for all props, state, return types
+4. **Predictable State**: Zustand for global state, useState for UI-only concerns
 
 ## Naming Conventions
 
@@ -12,6 +17,7 @@ globs: ["src/**/*.ts", "src/**/*.tsx"]
 | Components | PascalCase | `UserProfile`, `LoginButton` |
 | Interfaces | PascalCase + Suffix | `UserProps`, `AuthState`, `ApiResponse` |
 | Constants | SCREAMING_SNAKE_CASE | `MAX_RETRY_COUNT`, `API_BASE_URL` |
+| Stores | camelCase with `use` prefix + `Store` suffix | `useAuthStore`, `useUserStore` |
 | Files | PascalCase | `UserProfile.tsx`, `AuthService.ts` |
 
 ### Components
@@ -35,6 +41,14 @@ interface LoginFormData { ... }
 const MAX_RETRY_COUNT = 3;
 const API_BASE_URL = 'https://api.example.com';
 const DEFAULT_PAGE_SIZE = 10;
+```
+
+### Stores
+
+```tsx
+const useAuthStore = create<AuthState>(() => ({ ... }));
+const useUserStore = create<UserState>(() => ({ ... }));
+const useCartStore = create<CartState>(() => ({ ... }));
 ```
 
 ### Files
