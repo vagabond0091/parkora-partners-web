@@ -6,10 +6,14 @@ globs: ["src/**/*.ts", "src/**/*.tsx"]
 # Parkora Frontend Architecture Rules
 
 ## Core Principles
+
 1. **Single Responsibility**: Each component, hook, store has one clear purpose
-2. **Composition Over Complexity**: Break down complex logic into smaller piece
-3. **Type Safety First**: TypeScript interfaces for all props, state, return types
+2. **Composition Over Complexity**: Break down complex logic into smaller, reusable pieces
+3. **Type Safety First**: TypeScript interfaces for all props, state, and return types — no `any`
 4. **Predictable State**: Zustand for global state, useState for UI-only concerns
+5. **Separation of Concerns**: UI (components) | Logic (hooks) | Data (services/stores)
+6. **Colocation**: Keep related code together — styles, tests, types near their component
+7. **Immutability**: Never mutate state directly; always return new references
 
 ## Naming Conventions
 
