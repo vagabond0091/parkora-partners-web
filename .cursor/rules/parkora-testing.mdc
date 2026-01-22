@@ -1,0 +1,113 @@
+---
+description: Testing rules for Parkora Partners Web - Jest testing conventions
+globs: src/**/*.test.{ts,tsx}
+---
+
+# Parkora Testing Rules
+
+## What to Test
+
+Only create tests for **services and business logic**. Do NOT test UI components.
+
+| Test | Don't Test |
+|------|------------|
+| Services (`services/`) | Components (`components/`) |
+| Utility functions (`utils/`) | Pages (`pages/`) |
+| Store actions (`stores/`) | Styling/CSS |
+| Custom hooks logic (`hooks/`) | Third-party libraries |
+
+## Arrange-Act-Assert (AAA) Pattern
+
+All tests MUST follow the AAA pattern with clear section comments.
+
+### Structure
+
+```tsx
+describe('ServiceName', () => {
+  describe('methodName', () => {
+    it('should do something when condition', () => {
+      // Arrange
+      const input = 'test';
+      const expected = 'result';
+
+      // Act
+      const result = serviceName.methodName(input);
+
+      // Assert
+      expect(result).toBe(expected);
+    });
+  });
+});
+```
+
+### Correct
+
+```tsx
+describe('AuthService', () => {
+  describe('validateEmail', () => {
+    it('should return true for valid email', () => {
+      // Arrange
+      const email = 'user@example.com';
+
+      // Act
+      const result = AuthService.validateEmail(email);
+
+      // Assert
+      expect(result).toBe(true);
+    });
+
+    it('should return false for invalid email', () => {
+      // Arrange
+      const email = 'invalid-email';
+
+      // Act
+      const result = AuthService.validateEmail(email);
+
+      // Assert
+      expect(result).toBe(false);
+    });
+  });
+});
+```
+
+### Forbidden
+
+```tsx
+it('validates email', () => {
+  expect(AuthService.validateEmail('user@example.com')).toBe(true);
+  expect(AuthService.validateEmail('invalid')).toBe(false);
+});
+```
+
+## Test File Naming
+
+| Source File | Test File |
+|-------------|-----------|
+| `AuthService.ts` | `AuthService.test.ts` |
+| `formatDate.ts` | `formatDate.test.ts` |
+| `useAuthStore.ts` | `useAuthStore.test.ts` |
+
+## Test File Location
+
+Place tests in `__tests__/` folder mirroring the source structure:
+
+```
+src/
+├── services/
+│   └── AuthService.ts
+├── utils/
+│   └── formatDate.ts
+└── __tests__/
+    ├── services/
+    │   └── AuthService.test.ts
+    └── utils/
+        └── formatDate.test.ts
+```
+
+## Rules Summary
+
+1. **Services & logic only** - No component tests
+2. **AAA pattern** - Always use Arrange-Act-Assert with comments
+3. **One assertion focus** - Each test should verify one behavior
+4. **Descriptive names** - `should [action] when [condition]`
+5. **Group by method** - Use nested `describe` blocks
