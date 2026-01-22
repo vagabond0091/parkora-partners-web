@@ -79,6 +79,84 @@ it('validates email', () => {
 });
 ```
 
+## Reusable Test Data
+
+When Arrange data is shared across multiple test cases, extract it to avoid duplication.
+
+### Use `beforeEach` for Shared Setup
+
+```tsx
+describe('UserService', () => {
+  // Arrange (shared)
+  let mockUser: User;
+
+  beforeEach(() => {
+    mockUser = {
+      id: '1',
+      name: 'John Doe',
+      email: 'john@example.com',
+    };
+  });
+
+  it('should return user full name', () => {
+    // Act
+    const result = UserService.getFullName(mockUser);
+
+    // Assert
+    expect(result).toBe('John Doe');
+  });
+
+  it('should validate user email', () => {
+    // Act
+    const result = UserService.hasValidEmail(mockUser);
+
+    // Assert
+    expect(result).toBe(true);
+  });
+});
+```
+
+### Use Test Fixtures for Complex Data
+
+```tsx
+// __tests__/fixtures/userFixtures.ts
+export const mockUsers = {
+  validUser: {
+    id: '1',
+    name: 'John Doe',
+    email: 'john@example.com',
+  },
+  invalidUser: {
+    id: '2',
+    name: '',
+    email: 'invalid-email',
+  },
+} as const;
+
+// __tests__/services/UserService.test.ts
+import { mockUsers } from '../fixtures/userFixtures';
+
+describe('UserService', () => {
+  it('should validate user with valid data', () => {
+    // Arrange
+    const user = mockUsers.validUser;
+
+    // Act
+    const result = UserService.validate(user);
+
+    // Assert
+    expect(result).toBe(true);
+  });
+});
+```
+
+### Rules for Reusable Data
+
+1. **Use `beforeEach`** - For data that resets between tests
+2. **Use fixtures** - For static test data shared across files
+3. **Keep test-specific data inline** - If only used in one test, keep it in Arrange
+4. **No global mutable state** - Always reset in `beforeEach`
+
 ## Test File Naming
 
 | Source File | Test File |
@@ -108,6 +186,7 @@ src/
 
 1. **Services & logic only** - No component tests
 2. **AAA pattern** - Always use Arrange-Act-Assert with comments
-3. **One assertion focus** - Each test should verify one behavior
-4. **Descriptive names** - `should [action] when [condition]`
-5. **Group by method** - Use nested `describe` blocks
+3. **Reusable Arrange data** - Use `beforeEach` or fixtures for shared test data
+4. **One assertion focus** - Each test should verify one behavior
+5. **Descriptive names** - `should [action] when [condition]`
+6. **Group by method** - Use nested `describe` blocks
