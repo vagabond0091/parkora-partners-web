@@ -1,6 +1,6 @@
 ---
 description: Testing rules for Parkora Partners Web - Jest testing conventions
-globs: src/**/*.test.*
+globs: src/__tests__/**/*.test.*
 ---
 
 # Parkora Testing Rules
