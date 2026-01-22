@@ -1,0 +1,85 @@
+---
+description: Styling rules for Parkora Partners Web - Tailwind CSS conventions
+globs: src/**/*.tsx
+---
+
+# Parkora Styling Rules
+
+## Tailwind
+
+1. **No inline styles** - Use Tailwind classes
+2. **No duplicate dark classes** - Skip `dark:` when value matches light mode
+3. **Exact values** - `text-[14px]`, `h-[26px]`
+4. **Transitions** - `transition-colors` for interactive states
+
+### Correct
+
+```tsx
+<button className="bg-blue-500 hover:bg-blue-600 transition-colors text-[14px] h-[42px]">
+  Submit
+</button>
+
+<div className="text-gray-900 dark:text-white">
+  Content
+</div>
+```
+
+### Forbidden
+
+```tsx
+<button style={{ backgroundColor: 'blue' }}>
+  Submit
+</button>
+
+<div className="text-gray-900 dark:text-gray-900">
+  Redundant dark class
+</div>
+```
+
+## Conditional Classes
+
+Use `clsx` or `cn` utility for conditional class handling.
+
+### Correct
+
+```tsx
+import { clsx } from 'clsx';
+
+<button
+  className={clsx(
+    'px-4 py-2 rounded transition-colors',
+    isActive && 'bg-blue-500 text-white',
+    isDisabled && 'opacity-50 cursor-not-allowed',
+    variant === 'outline' && 'border border-gray-300 bg-transparent'
+  )}
+>
+  Click
+</button>
+
+<div className={clsx('text-sm', className)}>
+  Merge with passed className
+</div>
+```
+
+### Forbidden
+
+```tsx
+<button
+  className={`px-4 py-2 ${isActive ? 'bg-blue-500' : ''} ${isDisabled ? 'opacity-50' : ''}`}
+>
+  Messy template literals
+</button>
+
+<button
+  className={'px-4 py-2 ' + (isActive ? 'bg-blue-500' : '')}
+>
+  String concatenation
+</button>
+```
+
+### Rules
+
+1. **Use `clsx`** - For conditional class logic
+2. **No template literals** - Avoid `` `${condition ? 'class' : ''}` `` patterns
+3. **No string concatenation** - Avoid `'class ' + variable`
+4. **Group related classes** - Keep base, state, and variant classes organized
