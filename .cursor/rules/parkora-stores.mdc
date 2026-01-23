@@ -11,6 +11,28 @@ globs: src/stores/**/*.ts
 2. **Single responsibility** - One store per domain/feature
 3. **Split when complex** - Break large stores into slices
 4. **Type safe** - Full TypeScript typing for state and actions
+5. **Types in `types/`** - All store types belong in `types/stores/` folder
+
+## Folder Structure
+
+```
+src/
+├── types/
+│   ├── stores/                    # All store type definitions
+│   │   ├── index.ts               # Re-exports all store types
+│   │   ├── auth.store.types.ts
+│   │   ├── user.store.types.ts
+│   │   └── cart.store.types.ts
+│   └── index.ts
+│
+├── stores/
+│   ├── authStore.ts               # Simple store (single file)
+│   ├── cartStore.ts               # Simple store (single file)
+│   └── userStore/                 # Complex store (sliced)
+│       ├── index.ts               # Main store combining slices
+│       ├── profileSlice.ts
+│       └── preferencesSlice.ts
+```
 
 ## Standard Store Structure
 
@@ -38,14 +60,14 @@ export const useUserStore = create<UserState>((set, get) => ({
 ### Store Type Definition
 
 ```tsx
-// types/stores.types.ts
-interface User {
+// types/stores/user.store.types.ts
+export interface User {
   id: string;
   name: string;
   email: string;
 }
 
-interface UserState {
+export interface UserState {
   // State
   user: User | null;
   isLoading: boolean;
@@ -56,6 +78,13 @@ interface UserState {
   clearUser: () => void;
   isAuthenticated: () => boolean;
 }
+```
+
+```tsx
+// types/stores/index.ts
+export * from './user.store.types';
+export * from './auth.store.types';
+export * from './cart.store.types';
 ```
 
 ## Store Naming Convention
@@ -82,20 +111,48 @@ When a store grows beyond **5-7 state properties** or **10+ actions**, split it 
 ### Slice Pattern
 
 ```
-src/stores/
-├── authStore/
-│   ├── index.ts           # Main store combining slices
-│   ├── authSlice.ts       # Authentication state & actions
-│   ├── sessionSlice.ts    # Session management
-│   └── types.ts           # Store-specific types
+src/
+├── types/
+│   └── stores/
+│       └── auth.store.types.ts    # Types for auth store slices
+│
+└── stores/
+    └── authStore/
+        ├── index.ts               # Main store combining slices
+        ├── authSlice.ts           # Authentication state & actions
+        └── sessionSlice.ts        # Session management
 ```
 
 ### Creating Slices
 
 ```tsx
+// types/stores/auth.store.types.ts
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface AuthSlice {
+  user: User | null;
+  isAuthenticated: boolean;
+  setUser: (user: User) => void;
+  logout: () => void;
+}
+
+export interface SessionSlice {
+  token: string | null;
+  expiresAt: number | null;
+  setToken: (token: string, expiresAt: number) => void;
+  isTokenValid: () => boolean;
+  clearSession: () => void;
+}
+```
+
+```tsx
 // stores/authStore/authSlice.ts
 import type { StateCreator } from 'zustand';
-import type { AuthSlice, SessionSlice } from './types';
+import type { AuthSlice, SessionSlice } from '@/types/stores';
 
 export const createAuthSlice: StateCreator<
   AuthSlice & SessionSlice,
@@ -114,7 +171,7 @@ export const createAuthSlice: StateCreator<
 ```tsx
 // stores/authStore/sessionSlice.ts
 import type { StateCreator } from 'zustand';
-import type { AuthSlice, SessionSlice } from './types';
+import type { AuthSlice, SessionSlice } from '@/types/stores';
 
 export const createSessionSlice: StateCreator<
   AuthSlice & SessionSlice,
@@ -139,36 +196,12 @@ export const createSessionSlice: StateCreator<
 import { create } from 'zustand';
 import { createAuthSlice } from './authSlice';
 import { createSessionSlice } from './sessionSlice';
-import type { AuthSlice, SessionSlice } from './types';
+import type { AuthSlice, SessionSlice } from '@/types/stores';
 
 export const useAuthStore = create<AuthSlice & SessionSlice>()((...args) => ({
   ...createAuthSlice(...args),
   ...createSessionSlice(...args),
 }));
-```
-
-```tsx
-// stores/authStore/types.ts
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
-export interface AuthSlice {
-  user: User | null;
-  isAuthenticated: boolean;
-  setUser: (user: User) => void;
-  logout: () => void;
-}
-
-export interface SessionSlice {
-  token: string | null;
-  expiresAt: number | null;
-  setToken: (token: string, expiresAt: number) => void;
-  isTokenValid: () => boolean;
-  clearSession: () => void;
-}
 ```
 
 ## Store Best Practices
@@ -224,8 +257,8 @@ export const useSettingsStore = create<SettingsState>()(
 ## Rules Summary
 
 1. **State only** - No API calls in stores, use services
-2. **Type everything** - Full TypeScript for state and actions
-3. **Split when complex** - Use slices for large stores
+2. **Types in `types/stores/`** - All store types belong in central types folder
+3. **Split when complex** - Use slices for large stores (> 7 state, > 10 actions)
 4. **Single responsibility** - One domain per store
 5. **Naming convention** - `use[Domain]Store` pattern
 6. **Persist sparingly** - Only for user preferences, not auth tokens
