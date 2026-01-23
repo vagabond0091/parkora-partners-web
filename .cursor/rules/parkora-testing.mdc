@@ -182,11 +182,114 @@ src/
         └── formatDate.test.ts
 ```
 
+## Positive & Negative Testing
+
+Every service/function should have both positive and negative test cases.
+
+| Type | Purpose | Example |
+|------|---------|---------|
+| **Positive** | Valid inputs produce expected results | Valid email returns true |
+| **Negative** | Invalid inputs are handled gracefully | Empty string throws error |
+
+### Structure with Positive & Negative
+
+```tsx
+describe('AuthService', () => {
+  describe('validateEmail', () => {
+    // Positive Tests
+    describe('positive cases', () => {
+      it('should return true for valid email format', () => {
+        // Arrange
+        const email = 'user@example.com';
+
+        // Act
+        const result = AuthService.validateEmail(email);
+
+        // Assert
+        expect(result).toBe(true);
+      });
+
+      it('should return true for email with subdomain', () => {
+        // Arrange
+        const email = 'user@mail.example.com';
+
+        // Act
+        const result = AuthService.validateEmail(email);
+
+        // Assert
+        expect(result).toBe(true);
+      });
+    });
+
+    // Negative Tests
+    describe('negative cases', () => {
+      it('should return false for empty string', () => {
+        // Arrange
+        const email = '';
+
+        // Act
+        const result = AuthService.validateEmail(email);
+
+        // Assert
+        expect(result).toBe(false);
+      });
+
+      it('should return false for email without @ symbol', () => {
+        // Arrange
+        const email = 'userexample.com';
+
+        // Act
+        const result = AuthService.validateEmail(email);
+
+        // Assert
+        expect(result).toBe(false);
+      });
+
+      it('should throw error for null input', () => {
+        // Arrange
+        const email = null;
+
+        // Act & Assert
+        expect(() => AuthService.validateEmail(email)).toThrow('Email is required');
+      });
+    });
+  });
+});
+```
+
+### Positive Test Cases
+
+Test expected behavior with valid inputs:
+
+- Valid data formats
+- Typical use cases
+- Boundary values (min/max valid)
+- Different valid variations
+
+### Negative Test Cases
+
+Test error handling with invalid inputs:
+
+- Empty values (`''`, `[]`, `{}`)
+- Null and undefined
+- Wrong data types
+- Out of range values
+- Malformed data
+- Missing required fields
+
+### Rules for Positive & Negative
+
+1. **Both required** - Every function needs positive AND negative tests
+2. **Group separately** - Use `describe('positive cases')` and `describe('negative cases')`
+3. **Test error messages** - Verify error messages, not just that errors are thrown
+4. **Cover edge cases** - Empty, null, undefined, boundary values
+
 ## Rules Summary
 
 1. **Services & logic only** - No component tests
 2. **AAA pattern** - Always use Arrange-Act-Assert with comments
 3. **Reusable Arrange data** - Use `beforeEach` or fixtures for shared test data
-4. **One assertion focus** - Each test should verify one behavior
-5. **Descriptive names** - `should [action] when [condition]`
-6. **Group by method** - Use nested `describe` blocks
+4. **Positive & Negative tests** - Both required for every function
+5. **One assertion focus** - Each test should verify one behavior
+6. **Descriptive names** - `should [action] when [condition]`
+7. **Group by method** - Use nested `describe` blocks
