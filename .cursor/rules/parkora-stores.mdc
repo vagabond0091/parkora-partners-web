@@ -209,7 +209,7 @@ export const useAuthStore = create<AuthSlice & SessionSlice>()((...args) => ({
 ### Correct
 
 ```tsx
-// ✅ State only - call service from component/hook
+// Correct State only - call service from component/hook
 export const useUserStore = create<UserState>((set) => ({
   user: null,
   setUser: (user) => set({ user }),
@@ -225,7 +225,7 @@ const handleLogin = async () => {
 ### Forbidden
 
 ```tsx
-// ❌ API calls in store
+// Wrong API calls in store
 export const useUserStore = create<UserState>((set) => ({
   user: null,
   login: async (email, password) => {
