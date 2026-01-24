@@ -81,24 +81,8 @@ components/common/Button/
 import { clsx } from 'clsx';
 import type { ButtonProps } from '@/types/components';
 
-const variantStyles = {
-  primary: 'bg-blue-500 text-white hover:bg-blue-600',
-  secondary: 'bg-gray-500 text-white hover:bg-gray-600',
-  outline: 'border border-gray-300 bg-transparent hover:bg-gray-100',
-  ghost: 'bg-transparent hover:bg-gray-100',
-  danger: 'bg-red-500 text-white hover:bg-red-600',
-};
-
-const sizeStyles = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-base',
-  lg: 'px-6 py-3 text-lg',
-};
-
 export const Button = ({
   children,
-  variant = 'primary',
-  size = 'md',
   disabled = false,
   onClick,
   className,
@@ -107,9 +91,8 @@ export const Button = ({
   return (
     <button
       className={clsx(
-        'rounded font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
-        variantStyles[variant],
-        sizeStyles[size],
+        'px-4 py-2 rounded font-medium transition-colors',
+        'focus:outline-none focus:ring-2 focus:ring-offset-2',
         disabled && 'opacity-50 cursor-not-allowed',
         className
       )}
@@ -134,13 +117,8 @@ export { Button } from './Button';
 // types/components/button.types.ts
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-export type ButtonSize = 'sm' | 'md' | 'lg';
-
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
-  variant?: ButtonVariant;
-  size?: ButtonSize;
   isLoading?: boolean;
 }
 ```
@@ -163,16 +141,10 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export const Card = ({
   title,
   children,
-  variant = 'default',
   className,
 }: CardProps) => {
   return (
-    <div className={clsx(
-      'rounded-lg border p-4',
-      variant === 'default' && 'bg-white border-gray-200',
-      variant === 'outlined' && 'bg-transparent border-gray-300',
-      className
-    )}>
+    <div className={clsx('rounded-lg border p-4', className)}>
       <h3 className="text-lg font-semibold">{title}</h3>
       {children}
     </div>
@@ -263,12 +235,11 @@ interface FormProps {
 
 ```tsx
 // Generic, no business logic
-export const Button = ({ children, onClick, variant = 'primary' }: ButtonProps) => (
+export const Button = ({ children, onClick, className }: ButtonProps) => (
   <button
     className={clsx(
       'px-4 py-2 rounded font-medium transition-colors',
-      variant === 'primary' && 'bg-blue-500 text-white hover:bg-blue-600',
-      variant === 'secondary' && 'bg-gray-500 text-white hover:bg-gray-600'
+      className
     )}
     onClick={onClick}
   >
