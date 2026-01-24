@@ -1,0 +1,285 @@
+---
+description: Component rules for Parkora Partners Web - React component conventions
+globs: src/components/**/*.tsx
+---
+
+# Parkora Component Rules
+
+## Core Principles
+
+1. **Single responsibility** - One component, one purpose
+2. **Reusable first** - Extract shared UI into reusable components
+3. **Props over state** - Prefer controlled components
+4. **Composition** - Build complex UI from simple components
+5. **Types in `types/`** - Component prop types in `types/components/`
+
+## Folder Structure
+
+```
+src/
+├── types/
+│   └── components/
+│       ├── index.ts
+│       ├── button.types.ts
+│       ├── input.types.ts
+│       └── modal.types.ts
+│
+├── components/
+│   ├── common/                    # Reusable across entire app
+│   │   ├── Button/
+│   │   │   ├── Button.tsx
+│   │   │   └── Button.module.css
+│   │   ├── Input/
+│   │   ├── Modal/
+│   │   └── index.ts               # Re-exports all common components
+│   │
+│   ├── layout/                    # Layout components
+│   │   ├── Header/
+│   │   ├── Sidebar/
+│   │   └── Footer/
+│   │
+│   └── features/                  # Feature-specific components
+│       ├── auth/
+│       │   ├── LoginForm/
+│       │   └── RegisterForm/
+│       └── dashboard/
+│           ├── StatsCard/
+│           └── RecentActivity/
+```
+
+## Component Categories
+
+| Category | Location | Reusability |
+|----------|----------|-------------|
+| **Common** | `components/common/` | Used 3+ times across app |
+| **Layout** | `components/layout/` | App structure components |
+| **Feature** | `components/features/[domain]/` | Domain-specific, limited reuse |
+
+## When to Extract a Reusable Component
+
+| Signal | Action |
+|--------|--------|
+| Used in 3+ places | Move to `common/` |
+| Generic UI element | Move to `common/` |
+| Has no business logic | Move to `common/` |
+| Used only in one feature | Keep in `features/[domain]/` |
+
+## Standard Component Structure
+
+### File Structure per Component
+
+```
+components/common/Button/
+├── Button.tsx              # Component implementation
+├── Button.module.css       # Scoped styles (if needed)
+└── index.ts                # Re-export
+```
+
+### Component Template
+
+```tsx
+// components/common/Button/Button.tsx
+import { clsx } from 'clsx';
+import type { ButtonProps } from '@/types/components';
+import styles from './Button.module.css';
+
+export const Button = ({
+  children,
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+  onClick,
+  className,
+  ...props
+}: ButtonProps) => {
+  return (
+    <button
+      className={clsx(
+        styles.button,
+        styles[variant],
+        styles[size],
+        disabled && styles.disabled,
+        className
+      )}
+      disabled={disabled}
+      onClick={onClick}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+```
+
+```tsx
+// components/common/Button/index.ts
+export { Button } from './Button';
+```
+
+### Type Definition
+
+```tsx
+// types/components/button.types.ts
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
+
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+export type ButtonSize = 'sm' | 'md' | 'lg';
+
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  isLoading?: boolean;
+}
+```
+
+## Component Naming Convention
+
+| Element | Convention | Example |
+|---------|------------|---------|
+| Component | PascalCase | `UserProfile`, `LoginForm` |
+| File | PascalCase | `UserProfile.tsx` |
+| Folder | PascalCase | `UserProfile/` |
+| Props interface | `[Component]Props` | `UserProfileProps` |
+| CSS module | `[Component].module.css` | `UserProfile.module.css` |
+
+## Props Best Practices
+
+### Correct
+
+```tsx
+// Destructure with defaults
+export const Card = ({
+  title,
+  children,
+  variant = 'default',
+  className,
+}: CardProps) => {
+  return (
+    <div className={clsx(styles.card, styles[variant], className)}>
+      <h3>{title}</h3>
+      {children}
+    </div>
+  );
+};
+```
+
+### Forbidden
+
+```tsx
+// Don't use props object directly
+export const Card = (props: CardProps) => {
+  return (
+    <div className={props.className}>
+      <h3>{props.title}</h3>
+      {props.children}
+    </div>
+  );
+};
+```
+
+## Composition Pattern
+
+### Correct - Compound Components
+
+```tsx
+// components/common/Card/Card.tsx
+export const Card = ({ children, className }: CardProps) => (
+  <div className={clsx(styles.card, className)}>{children}</div>
+);
+
+Card.Header = ({ children }: CardHeaderProps) => (
+  <div className={styles.header}>{children}</div>
+);
+
+Card.Body = ({ children }: CardBodyProps) => (
+  <div className={styles.body}>{children}</div>
+);
+
+Card.Footer = ({ children }: CardFooterProps) => (
+  <div className={styles.footer}>{children}</div>
+);
+
+// Usage
+<Card>
+  <Card.Header>Title</Card.Header>
+  <Card.Body>Content</Card.Body>
+  <Card.Footer>Actions</Card.Footer>
+</Card>
+```
+
+### Correct - Children Composition
+
+```tsx
+// Simple composition with children
+<Modal>
+  <Modal.Title>Confirm Action</Modal.Title>
+  <Modal.Content>Are you sure?</Modal.Content>
+  <Modal.Actions>
+    <Button variant="ghost">Cancel</Button>
+    <Button variant="danger">Delete</Button>
+  </Modal.Actions>
+</Modal>
+```
+
+## Event Handler Naming
+
+| Event | Handler Name |
+|-------|--------------|
+| Click | `onClick`, `onButtonClick` |
+| Change | `onChange`, `onInputChange` |
+| Submit | `onSubmit`, `onFormSubmit` |
+| Custom | `on[Action]` pattern |
+
+```tsx
+interface FormProps {
+  onSubmit: (data: FormData) => void;
+  onCancel: () => void;
+  onChange: (field: string, value: string) => void;
+}
+```
+
+## Reusable vs Feature Components
+
+### Reusable (common/)
+
+```tsx
+// Generic, no business logic
+export const Button = ({ children, onClick, variant }: ButtonProps) => (
+  <button className={styles[variant]} onClick={onClick}>
+    {children}
+  </button>
+);
+```
+
+### Feature-specific (features/)
+
+```tsx
+// Contains business logic, domain-specific
+export const LoginForm = () => {
+  const { login } = useAuthStore();
+  
+  const handleSubmit = async (data: LoginData) => {
+    await AuthService.login(data);
+    login(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Input name="email" label="Email" />
+      <Input name="password" type="password" label="Password" />
+      <Button type="submit">Login</Button>
+    </form>
+  );
+};
+```
+
+## Rules Summary
+
+1. **Folder per component** - Each component has its own folder
+2. **Types in `types/components/`** - All prop types centralized
+3. **Extract at 3+ uses** - Move to `common/` when used 3+ times
+4. **Destructure props** - Always destructure with defaults
+5. **Composition over props** - Use children and compound patterns
+6. **No business logic in common** - Keep reusable components pure
+7. **PascalCase everywhere** - Files, folders, components
