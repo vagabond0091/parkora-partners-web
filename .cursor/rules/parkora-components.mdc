@@ -28,7 +28,7 @@ src/
 │   ├── common/                    # Reusable across entire app
 │   │   ├── Button/
 │   │   │   ├── Button.tsx
-│   │   │   └── Button.module.css
+│   │   │   └── index.ts
 │   │   ├── Input/
 │   │   ├── Modal/
 │   │   └── index.ts               # Re-exports all common components
@@ -71,7 +71,6 @@ src/
 ```
 components/common/Button/
 ├── Button.tsx              # Component implementation
-├── Button.module.css       # Scoped styles (if needed)
 └── index.ts                # Re-export
 ```
 
@@ -81,7 +80,20 @@ components/common/Button/
 // components/common/Button/Button.tsx
 import { clsx } from 'clsx';
 import type { ButtonProps } from '@/types/components';
-import styles from './Button.module.css';
+
+const variantStyles = {
+  primary: 'bg-blue-500 text-white hover:bg-blue-600',
+  secondary: 'bg-gray-500 text-white hover:bg-gray-600',
+  outline: 'border border-gray-300 bg-transparent hover:bg-gray-100',
+  ghost: 'bg-transparent hover:bg-gray-100',
+  danger: 'bg-red-500 text-white hover:bg-red-600',
+};
+
+const sizeStyles = {
+  sm: 'px-3 py-1.5 text-sm',
+  md: 'px-4 py-2 text-base',
+  lg: 'px-6 py-3 text-lg',
+};
 
 export const Button = ({
   children,
@@ -95,10 +107,10 @@ export const Button = ({
   return (
     <button
       className={clsx(
-        styles.button,
-        styles[variant],
-        styles[size],
-        disabled && styles.disabled,
+        'rounded font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
+        variantStyles[variant],
+        sizeStyles[size],
+        disabled && 'opacity-50 cursor-not-allowed',
         className
       )}
       disabled={disabled}
@@ -141,7 +153,6 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 | File | PascalCase | `UserProfile.tsx` |
 | Folder | PascalCase | `UserProfile/` |
 | Props interface | `[Component]Props` | `UserProfileProps` |
-| CSS module | `[Component].module.css` | `UserProfile.module.css` |
 
 ## Props Best Practices
 
@@ -156,8 +167,13 @@ export const Card = ({
   className,
 }: CardProps) => {
   return (
-    <div className={clsx(styles.card, styles[variant], className)}>
-      <h3>{title}</h3>
+    <div className={clsx(
+      'rounded-lg border p-4',
+      variant === 'default' && 'bg-white border-gray-200',
+      variant === 'outlined' && 'bg-transparent border-gray-300',
+      className
+    )}>
+      <h3 className="text-lg font-semibold">{title}</h3>
       {children}
     </div>
   );
@@ -185,19 +201,21 @@ export const Card = (props: CardProps) => {
 ```tsx
 // components/common/Card/Card.tsx
 export const Card = ({ children, className }: CardProps) => (
-  <div className={clsx(styles.card, className)}>{children}</div>
+  <div className={clsx('rounded-lg border border-gray-200 bg-white', className)}>
+    {children}
+  </div>
 );
 
 Card.Header = ({ children }: CardHeaderProps) => (
-  <div className={styles.header}>{children}</div>
+  <div className="border-b border-gray-200 px-4 py-3 font-semibold">{children}</div>
 );
 
 Card.Body = ({ children }: CardBodyProps) => (
-  <div className={styles.body}>{children}</div>
+  <div className="p-4">{children}</div>
 );
 
 Card.Footer = ({ children }: CardFooterProps) => (
-  <div className={styles.footer}>{children}</div>
+  <div className="border-t border-gray-200 px-4 py-3 flex justify-end gap-2">{children}</div>
 );
 
 // Usage
@@ -245,8 +263,15 @@ interface FormProps {
 
 ```tsx
 // Generic, no business logic
-export const Button = ({ children, onClick, variant }: ButtonProps) => (
-  <button className={styles[variant]} onClick={onClick}>
+export const Button = ({ children, onClick, variant = 'primary' }: ButtonProps) => (
+  <button
+    className={clsx(
+      'px-4 py-2 rounded font-medium transition-colors',
+      variant === 'primary' && 'bg-blue-500 text-white hover:bg-blue-600',
+      variant === 'secondary' && 'bg-gray-500 text-white hover:bg-gray-600'
+    )}
+    onClick={onClick}
+  >
     {children}
   </button>
 );
