@@ -64,7 +64,7 @@ export const LoginPage = () => {
       <div className="absolute -right-32 bottom-1/4 w-96 h-96 bg-gradient-to-br from-purple-200/60 to-pink-200/40 rounded-full blur-3xl" />
       
       {/* Login card */}
-      <div className="relative w-full max-w-md mx-4">
+      <div className="relative w-full max-w-md mx-4 my-8">
         <div className="bg-white rounded-3xl shadow-xl shadow-purple-900/5 p-8 md:p-10">
           {/* Logo */}
           <div className="-mb-6">
