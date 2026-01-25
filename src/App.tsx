@@ -1,10 +1,7 @@
-function App() {
+import { LoginPage } from '@/pages/auth/LoginPage/LoginPage';
 
-  return (
-    <>
-      <h1 className='text-3xl font-bold underline text-amber-300'>Hello World</h1>
-    </>
-  )
+function App() {
+  return <LoginPage />;
 }
 
-export default App
+export default App;
