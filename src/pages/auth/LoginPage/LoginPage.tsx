@@ -67,11 +67,11 @@ export const LoginPage = () => {
       <div className="relative w-full max-w-md mx-4">
         <div className="bg-white rounded-3xl shadow-xl shadow-purple-900/5 p-8 md:p-10">
           {/* Logo */}
-          <div className="mb-8">
+          <div className="-mb-6">
             <img 
               src={logo} 
               alt="Parkora" 
-              className="h-20 w-auto"
+              className="h-32 w-auto -ml-6"
             />
           </div>
 
