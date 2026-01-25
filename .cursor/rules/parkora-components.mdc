@@ -19,7 +19,6 @@ globs: src/components/**/*.tsx
 src/
 ├── types/
 │   └── components/
-│       ├── index.ts
 │       ├── button.types.ts
 │       ├── input.types.ts
 │       └── modal.types.ts
@@ -27,11 +26,9 @@ src/
 ├── components/
 │   ├── common/                    # Reusable across entire app
 │   │   ├── Button/
-│   │   │   ├── Button.tsx
-│   │   │   └── index.ts
+│   │   │   └── Button.tsx
 │   │   ├── Input/
-│   │   ├── Modal/
-│   │   └── index.ts               # Re-exports all common components
+│   │   └── Modal/
 │   │
 │   ├── layout/                    # Layout components
 │   │   ├── Header/
@@ -70,8 +67,7 @@ src/
 
 ```
 components/common/Button/
-├── Button.tsx              # Component implementation
-└── index.ts                # Re-export
+└── Button.tsx              # Component implementation
 ```
 
 ### Component Template
@@ -79,7 +75,7 @@ components/common/Button/
 ```tsx
 // components/common/Button/Button.tsx
 import { clsx } from 'clsx';
-import type { ButtonProps } from '@/types/components';
+import type { ButtonProps } from '@/types/components/button.types';
 
 export const Button = ({
   children,
@@ -104,11 +100,6 @@ export const Button = ({
     </button>
   );
 };
-```
-
-```tsx
-// components/common/Button/index.ts
-export { Button } from './Button';
 ```
 
 ### Type Definition
