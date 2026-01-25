@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Input } from '@/components/common/Input/Input';
 import { Button } from '@/components/common/Button/Button';
+import logo from '@/assets/logo/logo.png';
 
 export const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -66,13 +67,12 @@ export const LoginPage = () => {
       <div className="relative w-full max-w-md mx-4">
         <div className="bg-white rounded-3xl shadow-xl shadow-purple-900/5 p-8 md:p-10">
           {/* Logo */}
-          <div className="flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 flex items-center justify-center">
-              <span className="text-white text-xs font-bold">P</span>
-            </div>
-            <span className="text-sm font-semibold bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent">
-              Parkora
-            </span>
+          <div className="mb-8">
+            <img 
+              src={logo} 
+              alt="Parkora" 
+              className="h-20 w-auto"
+            />
           </div>
 
           {/* Header */}
