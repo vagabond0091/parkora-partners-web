@@ -1,9 +1,14 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/common/Input/Input';
 import { Button } from '@/components/common/Button/Button';
+import { useAuthStore } from '@/stores/authStore';
+import { ROUTES } from '@/routes/routePaths';
 import logo from '@/assets/logo/logo.png';
 
 export const LoginPage = () => {
+  const navigate = useNavigate();
+  const setUser = useAuthStore((state) => state.setUser);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -11,7 +16,16 @@ export const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 2000);
+    
+    // Simulate login - replace with actual API call
+    setTimeout(() => {
+      setUser(
+        { id: '1', email: 'user@example.com', name: 'Partner User' },
+        'mock-token'
+      );
+      setIsLoading(false);
+      navigate(ROUTES.DASHBOARD);
+    }, 1000);
   };
 
   const EyeIcon = () => (
