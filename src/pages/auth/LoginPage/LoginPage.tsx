@@ -3,29 +3,34 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/common/Input/Input';
 import { Button } from '@/components/common/Button/Button';
 import { useAuthStore } from '@/stores/authStore';
+import { AuthService } from '@/services/AuthService';
 import { ROUTES } from '@/routes/routePaths';
 import logo from '@/assets/logo/logo.png';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     
-    // Simulate login - replace with actual API call
-    setTimeout(() => {
-      setUser(
-        { id: '1', email: 'user@example.com', name: 'Partner User' },
-        'mock-token'
-      );
-      setIsLoading(false);
+    try {
+      const response = await AuthService.login({ email, password });
+      setUser(response.user, response.token);
       navigate(ROUTES.DASHBOARD);
-    }, 1000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const EyeIcon = () => (
@@ -97,10 +102,18 @@ export const LoginPage = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                {error}
+              </div>
+            )}
+
             <Input
               label="Email Address"
               type="email"
               placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
 
@@ -108,6 +121,8 @@ export const LoginPage = () => {
               label="Password"
               type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               rightIcon={<EyeIcon />}
               required
             />
