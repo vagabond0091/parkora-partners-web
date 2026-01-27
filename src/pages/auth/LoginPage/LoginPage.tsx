@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/common/Input/Input';
 import { Button } from '@/components/common/Button/Button';
 import { useAuthStore } from '@/stores/authStore';
+import { useAppStatusStore } from '@/stores/appStatusStore';
 import { AuthService } from '@/services/AuthService';
 import { ROUTES } from '@/routes/routePaths';
 import logo from '@/assets/logo/logo.png';
@@ -10,17 +11,16 @@ import logo from '@/assets/logo/logo.png';
 export const LoginPage = () => {
   const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
+  const { isLoading, error, setLoading, setError, clearError } = useAppStatusStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
+    setLoading(true);
+    clearError();
     
     try {
       const response = await AuthService.login({ email, password });
@@ -29,7 +29,7 @@ export const LoginPage = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
