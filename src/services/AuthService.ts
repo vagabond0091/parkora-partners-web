@@ -1,18 +1,6 @@
+import type { LoginRequest, LoginResponse } from '@/types/services/auth.types';
+
 const API_URL = 'http://localhost:8080/api/v1';
-
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-interface LoginResponse {
-  token: string;
-  user: {
-    id: string;
-    email: string;
-    name: string;
-  };
-}
 
 export const AuthService = {
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {

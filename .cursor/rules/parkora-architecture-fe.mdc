@@ -113,6 +113,20 @@ LoginButton.tsx
 ApiUtils.ts
 ```
 
+## Services Rules
+
+- **All service types must be in `types/` folder**
+  - Service request/response interfaces must be defined in `src/types/services/`
+  - Organize by service domain: `src/types/services/auth.types.ts`, `src/types/services/user.types.ts`, etc.
+  - Services should only import types, never define them inline
+  - Example structure:
+    ```
+    src/types/services/
+    ├── auth.types.ts      # AuthService types
+    ├── user.types.ts      # UserService types
+    └── parking.types.ts   # ParkingService types
+    ```
+
 ## Utils Rules
 
 - **Reuse before creating new utils**  
