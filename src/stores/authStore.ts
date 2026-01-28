@@ -13,7 +13,15 @@ const getStoredToken = (): string | null => {
 const getStoredUser = (): AuthState['user'] => {
   if (typeof window === 'undefined') return null;
   const stored = localStorage.getItem(USER_KEY);
-  return stored ? JSON.parse(stored) : null;
+  if (!stored || stored === 'undefined' || stored === 'null') return null;
+  
+  try {
+    return JSON.parse(stored);
+  } catch {
+    // If JSON is invalid, clear it and return null
+    localStorage.removeItem(USER_KEY);
+    return null;
+  }
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
