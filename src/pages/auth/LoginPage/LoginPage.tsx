@@ -23,7 +23,7 @@ export const LoginPage = () => {
     clearError();
     
     try {
-      const response = await AuthService.login({ email: username, password });
+      const response = await AuthService.login({ username, password });
       setUser(response.user, response.token);
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
