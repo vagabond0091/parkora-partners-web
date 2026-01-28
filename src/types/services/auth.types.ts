@@ -4,10 +4,21 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  token: string;
-  user: {
-    id: string;
-    email: string;
-    name: string;
-  };
+  data: string; // JWT token
+  errorCode: number;
+  message: string;
+  status: string;
+}
+
+export interface JwtPayload {
+  firstName: string;
+  lastName: string;
+  roles: string[];
+  userId: string;
+  email: string;
+  status: string;
+  sub: string; // username
+  iss: string;
+  iat: number;
+  exp: number;
 }

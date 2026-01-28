@@ -11,7 +11,13 @@ import logo from '@/assets/logo/logo.png';
 export const LoginPage = () => {
   const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
-  const { isLoading, error, setLoading, setError, clearError } = useAppStatusStore();
+  const { isLoading, error, setLoading, setError, clearError } = useAppStatusStore((state) => ({
+    isLoading: state.isLoading,
+    error: state.error,
+    setLoading: state.setLoading,
+    setError: state.setError,
+    clearError: state.clearError,
+  }));
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +30,17 @@ export const LoginPage = () => {
     
     try {
       const response = await AuthService.login({ username, password });
-      setUser(response.user, response.token);
+      const token = response.data;
+      const payload = AuthService.decodeToken(token);
+      
+      // Create user object from JWT payload
+      const user = {
+        id: payload.userId,
+        email: payload.email,
+        name: `${payload.firstName} ${payload.lastName}`,
+      };
+      
+      setUser(user, token);
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
