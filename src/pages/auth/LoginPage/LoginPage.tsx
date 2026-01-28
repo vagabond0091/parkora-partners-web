@@ -11,13 +11,11 @@ import logo from '@/assets/logo/logo.png';
 export const LoginPage = () => {
   const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
-  const { isLoading, error, setLoading, setError, clearError } = useAppStatusStore((state) => ({
-    isLoading: state.isLoading,
-    error: state.error,
-    setLoading: state.setLoading,
-    setError: state.setError,
-    clearError: state.clearError,
-  }));
+  const isLoading = useAppStatusStore((state) => state.isLoading);
+  const error = useAppStatusStore((state) => state.error);
+  const setLoading = useAppStatusStore((state) => state.setLoading);
+  const setError = useAppStatusStore((state) => state.setError);
+  const clearError = useAppStatusStore((state) => state.clearError);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
