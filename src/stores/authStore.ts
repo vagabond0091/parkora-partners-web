@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import type { AuthState } from '@/types/stores/auth.store.types';
 
-const TOKEN_KEY = 'parkora_auth_token';
-const USER_KEY = 'parkora_auth_user';
+const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY || 'parkora_auth_token';
+const USER_KEY = import.meta.env.VITE_USER_KEY || 'parkora_auth_user';
 
 // Load initial state from localStorage
 const getStoredToken = (): string | null => {
