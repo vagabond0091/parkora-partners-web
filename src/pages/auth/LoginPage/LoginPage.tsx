@@ -12,7 +12,7 @@ export const LoginPage = () => {
   const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
   const { isLoading, error, setLoading, setError, clearError } = useAppStatusStore();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -23,7 +23,7 @@ export const LoginPage = () => {
     clearError();
     
     try {
-      const response = await AuthService.login({ email, password });
+      const response = await AuthService.login({ email: username, password });
       setUser(response.user, response.token);
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
@@ -109,11 +109,11 @@ export const LoginPage = () => {
             )}
 
             <Input
-              label="Email Address"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              label="Username"
+              type="text"
+              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
 
