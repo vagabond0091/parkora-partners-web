@@ -36,6 +36,7 @@ export const LoginPage = () => {
         id: payload.userId,
         email: payload.email,
         name: `${payload.firstName} ${payload.lastName}`,
+        roles: payload.roles,
       };
       
       setUser(user, token);
