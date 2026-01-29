@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LoginPage } from '@/pages/auth/LoginPage/LoginPage';
 import { DashboardPage } from '@/pages/dashboard/DashboardPage/DashboardPage';
+import { NotFoundPage } from '@/pages/error/NotFoundPage/NotFoundPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { PublicRoute } from './PublicRoute';
 import { ROUTES } from './routePaths';
@@ -20,8 +21,8 @@ export const AppRoutes = () => {
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
         </Route>
         
-        {/* 404 - Redirect to dashboard (will redirect to login if not authenticated) */}
-        <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+        {/* 404 - Not Found Page */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );
