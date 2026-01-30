@@ -1,13 +1,23 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import { AuthService } from '@/services/AuthService';
 import { ROUTES } from './routePaths';
 
 export const ProtectedRoute = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const user = useAuthStore((state) => state.user);
+  const token = useAuthStore((state) => state.token);
+  const logout = useAuthStore((state) => state.logout);
   const location = useLocation();
 
   if (!isAuthenticated) {
+    return <Navigate to={ROUTES.LOGIN} replace />;
+  }
+
+  // Check if token exists and is expired
+  if (token && AuthService.isTokenExpired(token)) {
+    // Clear expired token and redirect to login
+    logout();
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
 

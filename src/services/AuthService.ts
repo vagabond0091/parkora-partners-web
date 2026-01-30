@@ -35,4 +35,20 @@ export const AuthService = {
   decodeToken: (token: string): JwtPayload => {
     return decodeJwt(token);
   },
+
+  /**
+   * Checks if JWT token is expired
+   * @param token - JWT token string
+   * @returns true if token is expired, false otherwise
+   */
+  isTokenExpired: (token: string): boolean => {
+    try {
+      const payload = decodeJwt(token);
+      const currentTime = Math.floor(Date.now() / 1000); // Convert to seconds
+      return payload.exp < currentTime;
+    } catch {
+      // If token is invalid, consider it expired
+      return true;
+    }
+  },
 };
