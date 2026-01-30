@@ -42,7 +42,21 @@ export const LoginPage = () => {
       setUser(user, token);
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      let errorMessage = 'Login failed';
+      
+      if (err instanceof Error) {
+        const message = err.message;
+        // Try to parse if it's a JSON string
+        try {
+          const parsed = JSON.parse(message);
+          errorMessage = parsed.message || parsed.error || message;
+        } catch {
+          // If not JSON, use the message directly
+          errorMessage = message;
+        }
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -118,7 +132,7 @@ export const LoginPage = () => {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+              <div className="text-red-600 text-sm">
                 {error}
               </div>
             )}

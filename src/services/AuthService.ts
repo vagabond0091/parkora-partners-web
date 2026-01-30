@@ -22,8 +22,22 @@ export const AuthService = {
     });
 
     if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Login failed');
-      throw new Error(errorText);
+      try {
+        const errorData = await response.json().catch(() => null);
+        // Extract message from error response if available
+        const errorMessage = errorData?.message || errorData?.error || 'Login failed';
+        throw new Error(errorMessage);
+      } catch (parseError) {
+        // If JSON parsing fails, try to get text
+        const errorText = await response.text().catch(() => 'Login failed');
+        // Try to parse as JSON if it looks like JSON
+        try {
+          const parsed = JSON.parse(errorText);
+          throw new Error(parsed.message || parsed.error || 'Login failed');
+        } catch {
+          throw new Error(errorText || 'Login failed');
+        }
+      }
     }
 
     return response.json();
