@@ -23,8 +23,8 @@ export const ProtectedRoute = () => {
     );
 
     if (!hasAccess) {
-      // Redirect to login if user doesn't have required role
-      return <Navigate to={ROUTES.LOGIN} replace />;
+      // Redirect to access denied page if user doesn't have required role
+      return <Navigate to={ROUTES.ACCESS_DENIED} replace />;
     }
   }
 

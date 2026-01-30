@@ -3,4 +3,5 @@ export const ROUTES = {
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
   DASHBOARD: '/',
+  ACCESS_DENIED: '/access-denied',
 } as const;
