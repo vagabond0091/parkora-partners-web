@@ -42,20 +42,8 @@ export const LoginPage = () => {
       setUser(user, token);
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
-      let errorMessage = 'Login failed';
-      
-      if (err instanceof Error) {
-        const message = err.message;
-        // Try to parse if it's a JSON string
-        try {
-          const parsed = JSON.parse(message);
-          errorMessage = parsed.message || parsed.error || message;
-        } catch {
-          // If not JSON, use the message directly
-          errorMessage = message;
-        }
-      }
-      
+      // Error message is already extracted from backend response in AuthService
+      const errorMessage = err instanceof Error ? err.message : 'Login failed';
       setError(errorMessage);
     } finally {
       setLoading(false);

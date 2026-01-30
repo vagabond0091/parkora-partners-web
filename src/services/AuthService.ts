@@ -23,17 +23,23 @@ export const AuthService = {
 
     if (!response.ok) {
       try {
-        const errorData = await response.json().catch(() => null);
-        // Extract message from error response if available
-        const errorMessage = errorData?.message || errorData?.error || 'Login failed';
+        // Parse the error response JSON
+        const errorData = await response.json();
+        // Extract message from backend error response structure
+        // Backend returns: { message, code, status, data }
+        const errorMessage = errorData?.message || 'Login failed';
         throw new Error(errorMessage);
-      } catch (parseError) {
-        // If JSON parsing fails, try to get text
+      } catch (error) {
+        // If error is already an Error with message, re-throw it
+        if (error instanceof Error && error.message !== 'Login failed') {
+          throw error;
+        }
+        // Fallback if JSON parsing fails
         const errorText = await response.text().catch(() => 'Login failed');
-        // Try to parse as JSON if it looks like JSON
         try {
+          // Try to parse as JSON string
           const parsed = JSON.parse(errorText);
-          throw new Error(parsed.message || parsed.error || 'Login failed');
+          throw new Error(parsed.message || 'Login failed');
         } catch {
           throw new Error(errorText || 'Login failed');
         }
