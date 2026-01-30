@@ -57,7 +57,7 @@ export const AccessDeniedPage = () => {
           <Button
             type="button"
             onClick={handleGoBack}
-            className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white hover:from-orange-600 hover:via-pink-600 hover:to-purple-700 focus:ring-purple-500 shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 transform hover:scale-105 px-5 py-2.5 text-base font-medium w-[200px]!"
+            className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white hover:from-orange-600 hover:via-pink-600 hover:to-purple-700 focus:ring-purple-500 shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 transform hover:scale-105 px-4! py-2! text-base font-medium w-[200px]!"
             leftIcon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
