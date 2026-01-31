@@ -4,7 +4,9 @@
     "verbatimModuleSyntax": false,
     "esModuleInterop": true,
     "isolatedModules": false,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "target": "ES2022"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "__mocks__/**/*.ts"]
 }
