@@ -58,11 +58,17 @@ export const RegisterPage = () => {
         }
         return '';
       case 'firstName':
+        if (value.trim() && /^\d+$/.test(value.trim())) {
+          return 'First name cannot be all numbers';
+        }
         if (value.length > 100) {
           return 'First name must not exceed 100 characters';
         }
         return '';
       case 'lastName':
+        if (value.trim() && /^\d+$/.test(value.trim())) {
+          return 'Last name cannot be all numbers';
+        }
         if (value.length > 100) {
           return 'Last name must not exceed 100 characters';
         }
