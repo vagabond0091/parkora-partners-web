@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
 import { Input } from '@/components/common/Input/Input';
 import { Button } from '@/components/common/Button/Button';
 import { useAuthStore } from '@/stores/authStore';
@@ -7,6 +8,48 @@ import { useAppStatusStore } from '@/stores/appStatusStore';
 import { AuthService } from '@/services/AuthService';
 import { ROUTES } from '@/routes/routePaths';
 import logo from '@/assets/logo/logo.png';
+
+/**
+ * Zod schema for registration form validation
+ */
+const registerSchema = z.object({
+  username: z.string().optional(),
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .email('Email should be valid')
+    .max(255, 'Email must not exceed 255 characters'),
+  password: z
+    .string()
+    .min(1, 'Password is required')
+    .min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string(),
+  firstName: z
+    .string()
+    .max(100, 'First name must not exceed 100 characters')
+    .refine(
+      (val) => !val.trim() || !/^\d+$/.test(val.trim()),
+      'First name cannot be all numbers'
+    )
+    .optional(),
+  lastName: z
+    .string()
+    .max(100, 'Last name must not exceed 100 characters')
+    .refine(
+      (val) => !val.trim() || !/^\d+$/.test(val.trim()),
+      'Last name cannot be all numbers'
+    )
+    .optional(),
+  phone: z
+    .string()
+    .max(20, 'Phone must not exceed 20 characters')
+    .optional(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
+});
+
+type RegisterFormData = z.infer<typeof registerSchema>;
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
@@ -17,7 +60,7 @@ export const RegisterPage = () => {
   const setError = useAppStatusStore((state) => state.setError);
   const clearError = useAppStatusStore((state) => state.clearError);
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RegisterFormData>({
     username: '',
     email: '',
     password: '',
@@ -31,61 +74,10 @@ export const RegisterPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  const validateField = (name: string, value: string): string => {
-    switch (name) {
-      case 'email':
-        if (!value.trim()) {
-          return 'Email is required';
-        }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          return 'Email should be valid';
-        }
-        if (value.length > 255) {
-          return 'Email must not exceed 255 characters';
-        }
-        return '';
-      case 'password':
-        if (!value) {
-          return 'Password is required';
-        }
-        if (value.length < 6) {
-          return 'Password must be at least 6 characters';
-        }
-        return '';
-      case 'confirmPassword':
-        if (value !== formData.password) {
-          return 'Passwords do not match';
-        }
-        return '';
-      case 'firstName':
-        if (value.trim() && /^\d+$/.test(value.trim())) {
-          return 'First name cannot be all numbers';
-        }
-        if (value.length > 100) {
-          return 'First name must not exceed 100 characters';
-        }
-        return '';
-      case 'lastName':
-        if (value.trim() && /^\d+$/.test(value.trim())) {
-          return 'Last name cannot be all numbers';
-        }
-        if (value.length > 100) {
-          return 'Last name must not exceed 100 characters';
-        }
-        return '';
-      case 'phone':
-        if (value.length > 20) {
-          return 'Phone must not exceed 20 characters';
-        }
-        return '';
-      default:
-        return '';
-    }
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const updatedData = { ...formData, [name]: value };
+    setFormData(updatedData);
     
     // Clear error for this field when user starts typing
     if (fieldErrors[name]) {
@@ -96,40 +88,50 @@ export const RegisterPage = () => {
       });
     }
     
-    // Validate on change
-    const error = validateField(name, value);
-    if (error) {
-      setFieldErrors((prev) => ({ ...prev, [name]: error }));
-    }
-  };
-
-  const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
-    
-    Object.keys(formData).forEach((key) => {
-      if (key !== 'confirmPassword') {
-        const error = validateField(key, formData[key as keyof typeof formData]);
-        if (error) {
-          errors[key] = error;
+    // Validate on change - for password/confirmPassword, validate whole form
+    // For other fields, validate just that field
+    try {
+      if (name === 'confirmPassword' || name === 'password') {
+        registerSchema.parse(updatedData);
+      } else if (name === 'email') {
+        registerSchema.shape.email.parse(value);
+      } else if (name === 'firstName') {
+        registerSchema.shape.firstName.parse(value);
+      } else if (name === 'lastName') {
+        registerSchema.shape.lastName.parse(value);
+      } else if (name === 'phone') {
+        registerSchema.shape.phone.parse(value);
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldError = error.issues.find((issue) => issue.path[0] === name);
+        if (fieldError) {
+          setFieldErrors((prev) => ({ ...prev, [name]: fieldError.message }));
         }
       }
-    });
-    
-    // Validate confirm password
-    if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
     }
-    
-    setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
+    setFieldErrors({});
     
-    if (!validateForm()) {
-      return;
+    // Validate form using Zod
+    try {
+      registerSchema.parse(formData);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errors: Record<string, string> = {};
+        error.issues.forEach((issue) => {
+          const fieldName = issue.path[0] as string;
+          if (fieldName) {
+            errors[fieldName] = issue.message;
+          }
+        });
+        setFieldErrors(errors);
+        return;
+      }
     }
     
     setLoading(true);
