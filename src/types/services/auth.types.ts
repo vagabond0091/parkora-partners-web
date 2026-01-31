@@ -10,6 +10,22 @@ export interface LoginResponse {
   status: string;
 }
 
+export interface RegisterRequest {
+  username?: string;
+  email: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+}
+
+export interface RegisterResponse {
+  data: any;
+  errorCode: number;
+  message: string;
+  status: string;
+}
+
 export interface JwtPayload {
   firstName: string;
   lastName: string;

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LoginPage } from '@/pages/auth/LoginPage/LoginPage';
+import { RegisterPage } from '@/pages/auth/RegisterPage/RegisterPage';
 import { DashboardPage } from '@/pages/dashboard/DashboardPage/DashboardPage';
 import { NotFoundPage } from '@/pages/error/NotFoundPage/NotFoundPage';
 import { AccessDeniedPage } from '@/pages/error/AccessDeniedPage/AccessDeniedPage';
@@ -14,7 +15,7 @@ export const AppRoutes = () => {
         {/* Public Routes - Redirect to dashboard if already authenticated */}
         <Route element={<PublicRoute />}>
           <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-          <Route path={ROUTES.REGISTER} element={<LoginPage />} />
+          <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
         </Route>
 
         {/* Protected Routes - Require authentication */}

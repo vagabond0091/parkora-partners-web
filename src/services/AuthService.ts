@@ -1,4 +1,4 @@
-import type { LoginRequest, LoginResponse, JwtPayload } from '@/types/services/auth.types';
+import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, JwtPayload } from '@/types/services/auth.types';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -54,6 +54,48 @@ export const AuthService = {
    */
   decodeToken: (token: string): JwtPayload => {
     return decodeJwt(token);
+  },
+
+  /**
+   * Registers a new user
+   * @param data - Registration data
+   * @returns Registration response
+   */
+  register: async (data: RegisterRequest): Promise<RegisterResponse> => {
+    const response = await fetch(`${API_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      try {
+        // Parse the error response JSON
+        const errorData = await response.json();
+        // Extract message from backend error response structure
+        // Backend returns: { message, code, status, data }
+        const errorMessage = errorData?.message || 'Registration failed';
+        throw new Error(errorMessage);
+      } catch (error) {
+        // If error is already an Error with message, re-throw it
+        if (error instanceof Error && error.message !== 'Registration failed') {
+          throw error;
+        }
+        // Fallback if JSON parsing fails
+        const errorText = await response.text().catch(() => 'Registration failed');
+        try {
+          // Try to parse as JSON string
+          const parsed = JSON.parse(errorText);
+          throw new Error(parsed.message || 'Registration failed');
+        } catch {
+          throw new Error(errorText || 'Registration failed');
+        }
+      }
+    }
+
+    return response.json();
   },
 
   /**
