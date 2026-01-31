@@ -202,27 +202,6 @@ export const RegisterPage = () => {
               </div>
             )}
 
-            <Input
-              label="Username"
-              type="text"
-              name="username"
-              placeholder="Enter your username"
-              value={formData.username}
-              onChange={handleChange}
-              error={fieldErrors.username}
-            />
-
-            <Input
-              label="Email"
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              error={fieldErrors.email}
-              required
-            />
-
             <div className="grid grid-cols-2 gap-4">
               <Input
                 label="First Name"
@@ -246,6 +225,17 @@ export const RegisterPage = () => {
             </div>
 
             <Input
+              label="Email"
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleChange}
+              error={fieldErrors.email}
+              required
+            />
+
+            <Input
               label="Phone"
               type="tel"
               name="phone"
@@ -253,6 +243,16 @@ export const RegisterPage = () => {
               value={formData.phone}
               onChange={handleChange}
               error={fieldErrors.phone}
+            />
+
+            <Input
+              label="Username"
+              type="text"
+              name="username"
+              placeholder="Enter your username"
+              value={formData.username}
+              onChange={handleChange}
+              error={fieldErrors.username}
             />
 
             <Input
