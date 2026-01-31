@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/common/Input/Input';
 import { Button } from '@/components/common/Button/Button';
+import { useAuthStore } from '@/stores/authStore';
 import { useAppStatusStore } from '@/stores/appStatusStore';
 import { AuthService } from '@/services/AuthService';
 import { ROUTES } from '@/routes/routePaths';
@@ -9,6 +10,7 @@ import logo from '@/assets/logo/logo.png';
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
+  const setUser = useAuthStore((state) => state.setUser);
   const isLoading = useAppStatusStore((state) => state.isLoading);
   const error = useAppStatusStore((state) => state.error);
   const setLoading = useAppStatusStore((state) => state.setLoading);
@@ -136,10 +138,55 @@ export const RegisterPage = () => {
         phone: formData.phone || undefined,
       };
       
-      await AuthService.register(registerData);
+      const response = await AuthService.register(registerData);
       
-      // Redirect to login page on success
-      navigate(ROUTES.LOGIN);
+      // Check if registration response includes a token
+      if (response.data && typeof response.data === 'string') {
+        // Token is in response.data, decode and set user
+        const token = response.data;
+        const payload = AuthService.decodeToken(token);
+        
+        const user = {
+          id: payload.userId,
+          email: payload.email,
+          name: `${payload.firstName} ${payload.lastName}`,
+          roles: payload.roles,
+        };
+        
+        setUser(user, token);
+        navigate(ROUTES.DASHBOARD);
+      } else {
+        // If no token in response, auto-login with registered credentials
+        // Use email as username if username is not provided
+        const loginCredentials = {
+          username: registerData.username || registerData.email,
+          password: registerData.password,
+        };
+        
+        try {
+          const loginResponse = await AuthService.login(loginCredentials);
+          const token = loginResponse.data;
+          const payload = AuthService.decodeToken(token);
+          
+          const user = {
+            id: payload.userId,
+            email: payload.email,
+            name: `${payload.firstName} ${payload.lastName}`,
+            roles: payload.roles,
+          };
+          
+          setUser(user, token);
+          navigate(ROUTES.DASHBOARD);
+        } catch (loginErr) {
+          // If auto-login fails, redirect to login page
+          const errorMessage = loginErr instanceof Error ? loginErr.message : 'Registration successful. Please login.';
+          setError(errorMessage);
+          // Still redirect to login after a short delay
+          setTimeout(() => {
+            navigate(ROUTES.LOGIN);
+          }, 2000);
+        }
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Registration failed';
       setError(errorMessage);

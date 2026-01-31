@@ -62,7 +62,7 @@ export const AuthService = {
    * @returns Registration response
    */
   register: async (data: RegisterRequest): Promise<RegisterResponse> => {
-    const response = await fetch(`${API_URL}/auth/register`, {
+    const response = await fetch(`${API_URL}/auth/register/partners`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
