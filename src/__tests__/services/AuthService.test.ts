@@ -1,14 +1,6 @@
 import { AuthService } from '@/services/AuthService';
 import type { LoginRequest, LoginResponse } from '@/types/services/auth.types';
 
-// Mock environment variable
-const mockApiUrl = 'http://localhost:3000/api';
-
-// Mock import.meta.env using type assertion
-(import.meta as any).env = {
-  VITE_API_URL: mockApiUrl,
-};
-
 // Mock global fetch
 const mockFetch = jest.fn();
 globalThis.fetch = mockFetch as unknown as typeof fetch;
@@ -52,7 +44,7 @@ describe('AuthService', () => {
 
         // Assert
         expect(mockFetch).toHaveBeenCalledWith(
-          `${mockApiUrl}/auth/login`,
+          expect.stringContaining('/auth/login'),
           {
             method: 'POST',
             headers: {
@@ -118,6 +110,7 @@ describe('AuthService', () => {
         const mockResponse = {
           ok: false,
           json: jest.fn().mockResolvedValue(errorResponse),
+          text: jest.fn().mockResolvedValue(''),
         };
         mockFetch.mockResolvedValue(mockResponse);
 

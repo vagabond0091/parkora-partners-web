@@ -6,6 +6,7 @@ const config: Config = {
   roots: ['<rootDir>/src'],
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   moduleNameMapper: {
+    '^@/config/env$': '<rootDir>/src/config/__mocks__/env.ts',
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.ts',
@@ -20,6 +21,7 @@ const config: Config = {
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
     '!src/main.tsx',
+    '!src/config/__mocks__/**',
   ],
 };
 

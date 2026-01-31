@@ -1,6 +1,7 @@
 import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, JwtPayload } from '@/types/services/auth.types';
+import { getApiUrl } from '@/config/env';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = getApiUrl();
 
 /**
  * Decodes JWT token to extract payload
@@ -22,28 +23,31 @@ export const AuthService = {
     });
 
     if (!response.ok) {
+      let errorMessage = 'Login failed';
+      
       try {
-        // Parse the error response JSON
+        // Try to parse as JSON first
         const errorData = await response.json();
-        // Extract message from backend error response structure
-        // Backend returns: { message, code, status, data }
-        const errorMessage = errorData?.message || 'Login failed';
-        throw new Error(errorMessage);
-      } catch (error) {
-        // If error is already an Error with message, re-throw it
-        if (error instanceof Error && error.message !== 'Login failed') {
-          throw error;
-        }
-        // Fallback if JSON parsing fails
-        const errorText = await response.text().catch(() => 'Login failed');
+        errorMessage = errorData?.message || 'Login failed';
+      } catch {
+        // JSON parsing failed, try text() as fallback
         try {
-          // Try to parse as JSON string
-          const parsed = JSON.parse(errorText);
-          throw new Error(parsed.message || 'Login failed');
+          const errorText = await response.text();
+          try {
+            // Try to parse text as JSON
+            const parsed = JSON.parse(errorText);
+            errorMessage = parsed.message || 'Login failed';
+          } catch {
+            // Not valid JSON, use text as error message
+            errorMessage = errorText || 'Login failed';
+          }
         } catch {
-          throw new Error(errorText || 'Login failed');
+          // Both json() and text() failed, use default
+          errorMessage = 'Login failed';
         }
       }
+      
+      throw new Error(errorMessage);
     }
 
     return response.json();
@@ -71,28 +75,31 @@ export const AuthService = {
     });
 
     if (!response.ok) {
+      let errorMessage = 'Registration failed';
+      
       try {
-        // Parse the error response JSON
+        // Try to parse as JSON first
         const errorData = await response.json();
-        // Extract message from backend error response structure
-        // Backend returns: { message, code, status, data }
-        const errorMessage = errorData?.message || 'Registration failed';
-        throw new Error(errorMessage);
-      } catch (error) {
-        // If error is already an Error with message, re-throw it
-        if (error instanceof Error && error.message !== 'Registration failed') {
-          throw error;
-        }
-        // Fallback if JSON parsing fails
-        const errorText = await response.text().catch(() => 'Registration failed');
+        errorMessage = errorData?.message || 'Registration failed';
+      } catch {
+        // JSON parsing failed, try text() as fallback
         try {
-          // Try to parse as JSON string
-          const parsed = JSON.parse(errorText);
-          throw new Error(parsed.message || 'Registration failed');
+          const errorText = await response.text();
+          try {
+            // Try to parse text as JSON
+            const parsed = JSON.parse(errorText);
+            errorMessage = parsed.message || 'Registration failed';
+          } catch {
+            // Not valid JSON, use text as error message
+            errorMessage = errorText || 'Registration failed';
+          }
         } catch {
-          throw new Error(errorText || 'Registration failed');
+          // Both json() and text() failed, use default
+          errorMessage = 'Registration failed';
         }
       }
+      
+      throw new Error(errorMessage);
     }
 
     return response.json();
