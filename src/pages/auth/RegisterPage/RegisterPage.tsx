@@ -7,49 +7,8 @@ import { useAuthStore } from '@/stores/authStore';
 import { useAppStatusStore } from '@/stores/appStatusStore';
 import { AuthService } from '@/services/AuthService';
 import { ROUTES } from '@/routes/routePaths';
+import { registerSchema, type RegisterFormData } from '@/validation/register.validation';
 import logo from '@/assets/logo/logo.png';
-
-/**
- * Zod schema for registration form validation
- */
-const registerSchema = z.object({
-  username: z.string().optional(),
-  email: z
-    .string()
-    .min(1, 'Email is required')
-    .email('Email should be valid')
-    .max(255, 'Email must not exceed 255 characters'),
-  password: z
-    .string()
-    .min(1, 'Password is required')
-    .min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string(),
-  firstName: z
-    .string()
-    .max(100, 'First name must not exceed 100 characters')
-    .refine(
-      (val) => !val.trim() || !/^\d+$/.test(val.trim()),
-      'First name cannot be all numbers'
-    )
-    .optional(),
-  lastName: z
-    .string()
-    .max(100, 'Last name must not exceed 100 characters')
-    .refine(
-      (val) => !val.trim() || !/^\d+$/.test(val.trim()),
-      'Last name cannot be all numbers'
-    )
-    .optional(),
-  phone: z
-    .string()
-    .max(20, 'Phone must not exceed 20 characters')
-    .optional(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
-
-type RegisterFormData = z.infer<typeof registerSchema>;
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
