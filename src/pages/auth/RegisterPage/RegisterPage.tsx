@@ -319,23 +319,13 @@ export const RegisterPage = () => {
               <div className="flex items-center">
                 {/* Step 1 */}
                 <div className="flex items-center">
-                  <span className={clsx(
-                    'text-sm mr-3 transition-colors',
-                    currentStep === 1 
-                      ? 'font-semibold text-purple-600' 
-                      : completedSteps.has(1)
-                        ? 'font-semibold text-green-600'
-                        : 'text-gray-500'
-                  )}>
-                    Your Information
-                  </span>
                   <div className={clsx(
                     'flex items-center justify-center w-10 h-10 rounded-full font-semibold transition-colors',
                     completedSteps.has(1)
                       ? 'bg-green-500 text-white'
-                      : currentStep >= 1 
-                        ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white' 
-                        : 'bg-gray-200 text-gray-500'
+                      : currentStep === 1 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-300 text-gray-500'
                   )}>
                     {completedSteps.has(1) ? (
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -345,37 +335,35 @@ export const RegisterPage = () => {
                       '1'
                     )}
                   </div>
+                  <span className={clsx(
+                    'text-sm ml-3 transition-colors',
+                    currentStep === 1 
+                      ? 'font-semibold text-purple-600' 
+                      : completedSteps.has(1)
+                        ? 'font-semibold text-green-600'
+                        : 'text-gray-500'
+                  )}>
+                    Personal Information
+                  </span>
                 </div>
                 
                 {/* Connector Line */}
                 <div className={clsx(
-                  'w-24 h-1 mx-2 transition-colors',
+                  'w-24 h-0.5 mx-2 transition-colors',
                   completedSteps.has(1)
-                    ? 'bg-green-500'
-                    : currentStep >= 2 
-                      ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600' 
-                      : 'bg-gray-200'
+                    ? 'bg-green-500 border-0'
+                    : 'border-t-2 border-dashed border-gray-300'
                 )} />
                 
                 {/* Step 2 */}
                 <div className="flex items-center">
-                  <span className={clsx(
-                    'text-sm mr-3 transition-colors',
-                    currentStep === 2 
-                      ? 'font-semibold text-purple-600' 
-                      : completedSteps.has(2)
-                        ? 'font-semibold text-green-600'
-                        : 'text-gray-500'
-                  )}>
-                    Company Details
-                  </span>
                   <div className={clsx(
                     'flex items-center justify-center w-10 h-10 rounded-full font-semibold transition-colors',
                     completedSteps.has(2)
                       ? 'bg-green-500 text-white'
-                      : currentStep >= 2 
-                        ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white' 
-                        : 'bg-gray-200 text-gray-500'
+                      : currentStep === 2 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-300 text-gray-500'
                   )}>
                     {completedSteps.has(2) ? (
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -385,6 +373,16 @@ export const RegisterPage = () => {
                       '2'
                     )}
                   </div>
+                  <span className={clsx(
+                    'text-sm ml-3 transition-colors',
+                    currentStep === 2 
+                      ? 'font-semibold text-purple-600' 
+                      : completedSteps.has(2)
+                        ? 'font-semibold text-green-600'
+                        : 'text-gray-500'
+                  )}>
+                    Company Details
+                  </span>
                 </div>
               </div>
             </div>
