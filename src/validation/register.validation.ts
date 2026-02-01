@@ -1,10 +1,16 @@
 import { z } from 'zod';
 
 /**
- * Zod schema for registration form validation
+ * Zod schema for step 1 (user information) validation
  */
-export const registerSchema = z.object({
-  username: z.string().optional(),
+export const userInfoSchema = z.object({
+  username: z
+    .string()
+    .refine(
+      (val) => !val || val.trim() === '' || (val.length >= 3 && val.length <= 100),
+      'Username must be between 3 and 100 characters'
+    )
+    .optional(),
   email: z
     .string()
     .min(1, 'Email is required')
@@ -39,6 +45,61 @@ export const registerSchema = z.object({
   message: 'Passwords do not match',
   path: ['confirmPassword'],
 });
+
+/**
+ * Zod schema for step 2 (company information) validation
+ */
+export const companyInfoSchema = z.object({
+  companyName: z
+    .string()
+    .min(1, 'Company name is required')
+    .max(255, 'Company name must not exceed 255 characters'),
+  businessRegistrationNumber: z
+    .string()
+    .max(100, 'Business registration number must not exceed 100 characters')
+    .optional(),
+  taxIdentificationNumber: z
+    .string()
+    .max(50, 'Tax identification number must not exceed 50 characters')
+    .optional(),
+  businessType: z
+    .string()
+    .max(50, 'Business type must not exceed 50 characters')
+    .optional(),
+  addressLine1: z
+    .string()
+    .max(255, 'Address line 1 must not exceed 255 characters')
+    .optional(),
+  addressLine2: z
+    .string()
+    .max(255, 'Address line 2 must not exceed 255 characters')
+    .optional(),
+  city: z
+    .string()
+    .max(100, 'City must not exceed 100 characters')
+    .optional(),
+  state: z
+    .string()
+    .max(100, 'State must not exceed 100 characters')
+    .optional(),
+  province: z
+    .string()
+    .max(100, 'Province must not exceed 100 characters')
+    .optional(),
+  postalCode: z
+    .string()
+    .max(20, 'Postal code must not exceed 20 characters')
+    .optional(),
+  country: z
+    .string()
+    .max(100, 'Country must not exceed 100 characters')
+    .optional(),
+});
+
+/**
+ * Complete registration schema combining both steps
+ */
+export const registerSchema = userInfoSchema.merge(companyInfoSchema);
 
 /**
  * Type inferred from register schema

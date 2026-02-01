@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
+import { clsx } from 'clsx';
 import { Input } from '@/components/common/Input/Input';
 import { Button } from '@/components/common/Button/Button';
 import { useAuthStore } from '@/stores/authStore';
 import { useAppStatusStore } from '@/stores/appStatusStore';
 import { AuthService } from '@/services/AuthService';
 import { ROUTES } from '@/routes/routePaths';
-import { registerSchema, type RegisterFormData } from '@/validation/register.validation';
+import { userInfoSchema, companyInfoSchema, registerSchema, type RegisterFormData } from '@/validation/register.validation';
 import logo from '@/assets/logo/logo.png';
 
 export const RegisterPage = () => {
@@ -19,6 +20,7 @@ export const RegisterPage = () => {
   const setError = useAppStatusStore((state) => state.setError);
   const clearError = useAppStatusStore((state) => state.clearError);
   
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<RegisterFormData>({
     username: '',
     email: '',
@@ -27,6 +29,17 @@ export const RegisterPage = () => {
     firstName: '',
     lastName: '',
     phone: '',
+    companyName: '',
+    businessRegistrationNumber: '',
+    taxIdentificationNumber: '',
+    businessType: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    province: '',
+    postalCode: '',
+    country: '',
   });
   
   const [showPassword, setShowPassword] = useState(false);
@@ -47,19 +60,51 @@ export const RegisterPage = () => {
       });
     }
     
-    // Validate on change - for password/confirmPassword, validate whole form
+    // Validate on change - for password/confirmPassword, validate whole step
     // For other fields, validate just that field
     try {
       if (name === 'confirmPassword' || name === 'password') {
-        registerSchema.parse(updatedData);
-      } else if (name === 'email') {
-        registerSchema.shape.email.parse(value);
-      } else if (name === 'firstName') {
-        registerSchema.shape.firstName.parse(value);
-      } else if (name === 'lastName') {
-        registerSchema.shape.lastName.parse(value);
-      } else if (name === 'phone') {
-        registerSchema.shape.phone.parse(value);
+        if (currentStep === 1) {
+          userInfoSchema.parse(updatedData);
+        }
+      } else if (currentStep === 1) {
+        // Validate user info fields
+        if (name === 'email') {
+          userInfoSchema.shape.email.parse(value);
+        } else if (name === 'firstName') {
+          userInfoSchema.shape.firstName.parse(value);
+        } else if (name === 'lastName') {
+          userInfoSchema.shape.lastName.parse(value);
+        } else if (name === 'phone') {
+          userInfoSchema.shape.phone.parse(value);
+        } else if (name === 'username') {
+          userInfoSchema.shape.username.parse(value);
+        }
+      } else if (currentStep === 2) {
+        // Validate company info fields
+        if (name === 'companyName') {
+          companyInfoSchema.shape.companyName.parse(value);
+        } else if (name === 'businessRegistrationNumber') {
+          companyInfoSchema.shape.businessRegistrationNumber.parse(value);
+        } else if (name === 'taxIdentificationNumber') {
+          companyInfoSchema.shape.taxIdentificationNumber.parse(value);
+        } else if (name === 'businessType') {
+          companyInfoSchema.shape.businessType.parse(value);
+        } else if (name === 'addressLine1') {
+          companyInfoSchema.shape.addressLine1.parse(value);
+        } else if (name === 'addressLine2') {
+          companyInfoSchema.shape.addressLine2.parse(value);
+        } else if (name === 'city') {
+          companyInfoSchema.shape.city.parse(value);
+        } else if (name === 'state') {
+          companyInfoSchema.shape.state.parse(value);
+        } else if (name === 'province') {
+          companyInfoSchema.shape.province.parse(value);
+        } else if (name === 'postalCode') {
+          companyInfoSchema.shape.postalCode.parse(value);
+        } else if (name === 'country') {
+          companyInfoSchema.shape.country.parse(value);
+        }
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -71,12 +116,57 @@ export const RegisterPage = () => {
     }
   };
 
+  const validateStep = (step: number): boolean => {
+    try {
+      if (step === 1) {
+        userInfoSchema.parse(formData);
+      } else if (step === 2) {
+        companyInfoSchema.parse(formData);
+      }
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errors: Record<string, string> = {};
+        error.issues.forEach((issue) => {
+          const fieldName = issue.path[0] as string;
+          if (fieldName) {
+            errors[fieldName] = issue.message;
+          }
+        });
+        setFieldErrors(errors);
+      }
+      return false;
+    }
+  };
+
+  const handleNext = () => {
+    clearError();
+    if (validateStep(1)) {
+      setCurrentStep(2);
+    }
+  };
+
+  const handlePrevious = () => {
+    clearError();
+    setFieldErrors({});
+    setCurrentStep(1);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
     setFieldErrors({});
     
-    // Validate form using Zod
+    // Validate both steps before submitting
+    if (!validateStep(1) || !validateStep(2)) {
+      // If step 2 validation fails, show step 2
+      if (!validateStep(2)) {
+        setCurrentStep(2);
+      }
+      return;
+    }
+    
+    // Final validation of complete form
     try {
       registerSchema.parse(formData);
     } catch (error) {
@@ -103,6 +193,17 @@ export const RegisterPage = () => {
         firstName: formData.firstName || undefined,
         lastName: formData.lastName || undefined,
         phone: formData.phone || undefined,
+        companyName: formData.companyName,
+        businessRegistrationNumber: formData.businessRegistrationNumber || undefined,
+        taxIdentificationNumber: formData.taxIdentificationNumber || undefined,
+        businessType: formData.businessType || undefined,
+        addressLine1: formData.addressLine1 || undefined,
+        addressLine2: formData.addressLine2 || undefined,
+        city: formData.city || undefined,
+        state: formData.state || undefined,
+        province: formData.province || undefined,
+        postalCode: formData.postalCode || undefined,
+        country: formData.country || undefined,
       };
       
       const response = await AuthService.register(registerData);
@@ -191,7 +292,7 @@ export const RegisterPage = () => {
       <div className="absolute -right-32 bottom-1/4 w-96 h-96 bg-gradient-to-br from-purple-200/60 to-pink-200/40 rounded-full blur-3xl" />
       
       {/* Register card */}
-      <div className="relative w-full max-w-md mx-4 my-8">
+      <div className="relative w-full max-w-2xl mx-4 my-8">
         <div className="bg-white rounded-3xl shadow-xl shadow-purple-900/5 p-8 md:p-10">
           {/* Logo */}
           <div className="-mb-6">
@@ -208,6 +309,44 @@ export const RegisterPage = () => {
             <p className="text-gray-500">Create your Partners account</p>
           </div>
 
+          {/* Step Indicator */}
+          <div className="mb-8">
+            <div className="flex items-center justify-center">
+              <div className="flex items-center">
+                <div className={clsx(
+                  'flex items-center justify-center w-10 h-10 rounded-full font-semibold transition-colors',
+                  currentStep >= 1 
+                    ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white' 
+                    : 'bg-gray-200 text-gray-500'
+                )}>
+                  1
+                </div>
+                <div className={clsx(
+                  'w-24 h-1 mx-2 transition-colors',
+                  currentStep >= 2 
+                    ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600' 
+                    : 'bg-gray-200'
+                )} />
+                <div className={clsx(
+                  'flex items-center justify-center w-10 h-10 rounded-full font-semibold transition-colors',
+                  currentStep >= 2 
+                    ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white' 
+                    : 'bg-gray-200 text-gray-500'
+                )}>
+                  2
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-between mt-2 text-sm text-gray-500">
+              <span className={clsx(currentStep === 1 && 'font-semibold text-purple-600')}>
+                Your Information
+              </span>
+              <span className={clsx(currentStep === 2 && 'font-semibold text-purple-600')}>
+                Company Details
+              </span>
+            </div>
+          </div>
+
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
@@ -216,91 +355,234 @@ export const RegisterPage = () => {
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
-              <Input
-                label="First Name"
-                type="text"
-                name="firstName"
-                placeholder="First name"
-                value={formData.firstName}
-                onChange={handleChange}
-                error={fieldErrors.firstName}
-              />
+            {/* Step 1: User Information */}
+            {currentStep === 1 && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    label="First Name"
+                    type="text"
+                    name="firstName"
+                    placeholder="First name"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    error={fieldErrors.firstName}
+                  />
 
-              <Input
-                label="Last Name"
-                type="text"
-                name="lastName"
-                placeholder="Last name"
-                value={formData.lastName}
-                onChange={handleChange}
-                error={fieldErrors.lastName}
-              />
-            </div>
+                  <Input
+                    label="Last Name"
+                    type="text"
+                    name="lastName"
+                    placeholder="Last name"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    error={fieldErrors.lastName}
+                  />
+                </div>
 
-            <Input
-              label="Email"
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              error={fieldErrors.email}
-              required
-            />
+                <Input
+                  label="Email"
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  error={fieldErrors.email}
+                  required
+                />
 
-            <Input
-              label="Phone"
-              type="tel"
-              name="phone"
-              placeholder="Enter your phone number"
-              value={formData.phone}
-              onChange={handleChange}
-              error={fieldErrors.phone}
-            />
+                <Input
+                  label="Phone"
+                  type="tel"
+                  name="phone"
+                  placeholder="Enter your phone number"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  error={fieldErrors.phone}
+                />
 
-            <Input
-              label="Username"
-              type="text"
-              name="username"
-              placeholder="Enter your username"
-              value={formData.username}
-              onChange={handleChange}
-              error={fieldErrors.username}
-            />
+                <Input
+                  label="Username"
+                  type="text"
+                  name="username"
+                  placeholder="Enter your username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  error={fieldErrors.username}
+                />
 
-            <Input
-              label="Password"
-              type={showPassword ? 'text' : 'password'}
-              name="password"
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={handleChange}
-              rightIcon={<EyeIcon onClick={() => setShowPassword(!showPassword)} show={showPassword} />}
-              error={fieldErrors.password}
-              required
-            />
+                <Input
+                  label="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                  rightIcon={<EyeIcon onClick={() => setShowPassword(!showPassword)} show={showPassword} />}
+                  error={fieldErrors.password}
+                  required
+                />
 
-            <Input
-              label="Confirm Password"
-              type={showConfirmPassword ? 'text' : 'password'}
-              name="confirmPassword"
-              placeholder="••••••••"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              rightIcon={<EyeIcon onClick={() => setShowConfirmPassword(!showConfirmPassword)} show={showConfirmPassword} />}
-              error={fieldErrors.confirmPassword}
-              required
-            />
+                <Input
+                  label="Confirm Password"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  name="confirmPassword"
+                  placeholder="••••••••"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  rightIcon={<EyeIcon onClick={() => setShowConfirmPassword(!showConfirmPassword)} show={showConfirmPassword} />}
+                  error={fieldErrors.confirmPassword}
+                  required
+                />
 
-            {/* Sign Up Button */}
-            <Button
-              type="submit"
-              isLoading={isLoading}
-              className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white hover:from-orange-600 hover:via-pink-600 hover:to-purple-700 focus:ring-purple-500"
-            >
-              Sign Up
-            </Button>
+                <Button
+                  type="button"
+                  onClick={handleNext}
+                  className="w-full bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white hover:from-orange-600 hover:via-pink-600 hover:to-purple-700 focus:ring-purple-500"
+                >
+                  Next
+                </Button>
+              </>
+            )}
+
+            {/* Step 2: Company Information */}
+            {currentStep === 2 && (
+              <>
+                <Input
+                  label="Company Name"
+                  type="text"
+                  name="companyName"
+                  placeholder="Enter company name"
+                  value={formData.companyName}
+                  onChange={handleChange}
+                  error={fieldErrors.companyName}
+                  required
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    label="Business Registration Number"
+                    type="text"
+                    name="businessRegistrationNumber"
+                    placeholder="Enter registration number"
+                    value={formData.businessRegistrationNumber}
+                    onChange={handleChange}
+                    error={fieldErrors.businessRegistrationNumber}
+                  />
+
+                  <Input
+                    label="Tax Identification Number"
+                    type="text"
+                    name="taxIdentificationNumber"
+                    placeholder="Enter tax ID"
+                    value={formData.taxIdentificationNumber}
+                    onChange={handleChange}
+                    error={fieldErrors.taxIdentificationNumber}
+                  />
+                </div>
+
+                <Input
+                  label="Business Type"
+                  type="text"
+                  name="businessType"
+                  placeholder="Enter business type"
+                  value={formData.businessType}
+                  onChange={handleChange}
+                  error={fieldErrors.businessType}
+                />
+
+                <Input
+                  label="Address Line 1"
+                  type="text"
+                  name="addressLine1"
+                  placeholder="Enter address line 1"
+                  value={formData.addressLine1}
+                  onChange={handleChange}
+                  error={fieldErrors.addressLine1}
+                />
+
+                <Input
+                  label="Address Line 2"
+                  type="text"
+                  name="addressLine2"
+                  placeholder="Enter address line 2"
+                  value={formData.addressLine2}
+                  onChange={handleChange}
+                  error={fieldErrors.addressLine2}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    label="City"
+                    type="text"
+                    name="city"
+                    placeholder="Enter city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    error={fieldErrors.city}
+                  />
+
+                  <Input
+                    label="State"
+                    type="text"
+                    name="state"
+                    placeholder="Enter state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    error={fieldErrors.state}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    label="Province"
+                    type="text"
+                    name="province"
+                    placeholder="Enter province"
+                    value={formData.province}
+                    onChange={handleChange}
+                    error={fieldErrors.province}
+                  />
+
+                  <Input
+                    label="Postal Code"
+                    type="text"
+                    name="postalCode"
+                    placeholder="Enter postal code"
+                    value={formData.postalCode}
+                    onChange={handleChange}
+                    error={fieldErrors.postalCode}
+                  />
+                </div>
+
+                <Input
+                  label="Country"
+                  type="text"
+                  name="country"
+                  placeholder="Enter country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  error={fieldErrors.country}
+                />
+
+                <div className="flex gap-4">
+                  <Button
+                    type="button"
+                    onClick={handlePrevious}
+                    className="flex-1 bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-500"
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    type="submit"
+                    isLoading={isLoading}
+                    className="flex-1 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white hover:from-orange-600 hover:via-pink-600 hover:to-purple-700 focus:ring-purple-500"
+                  >
+                    Sign Up
+                  </Button>
+                </div>
+              </>
+            )}
           </form>
 
           {/* Sign in link */}

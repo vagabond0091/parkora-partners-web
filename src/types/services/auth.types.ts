@@ -17,6 +17,17 @@ export interface RegisterRequest {
   firstName?: string;
   lastName?: string;
   phone?: string;
+  companyName: string;
+  businessRegistrationNumber?: string;
+  taxIdentificationNumber?: string;
+  businessType?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  province?: string;
+  postalCode?: string;
+  country?: string;
 }
 
 export interface RegisterResponse {
