@@ -21,6 +21,7 @@ export const RegisterPage = () => {
   const clearError = useAppStatusStore((state) => state.clearError);
   
   const [currentStep, setCurrentStep] = useState(1);
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [formData, setFormData] = useState<RegisterFormData>({
     username: '',
     email: '',
@@ -142,6 +143,7 @@ export const RegisterPage = () => {
   const handleNext = () => {
     clearError();
     if (validateStep(1)) {
+      setCompletedSteps((prev) => new Set(prev).add(1));
       setCurrentStep(2);
     }
   };
@@ -183,6 +185,8 @@ export const RegisterPage = () => {
       }
     }
     
+    // Mark step 2 as completed before submitting
+    setCompletedSteps((prev) => new Set(prev).add(2));
     setLoading(true);
     
     try {
@@ -315,25 +319,43 @@ export const RegisterPage = () => {
               <div className="flex items-center">
                 <div className={clsx(
                   'flex items-center justify-center w-10 h-10 rounded-full font-semibold transition-colors',
-                  currentStep >= 1 
-                    ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white' 
-                    : 'bg-gray-200 text-gray-500'
+                  completedSteps.has(1)
+                    ? 'bg-green-500 text-white'
+                    : currentStep >= 1 
+                      ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white' 
+                      : 'bg-gray-200 text-gray-500'
                 )}>
-                  1
+                  {completedSteps.has(1) ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    '1'
+                  )}
                 </div>
                 <div className={clsx(
                   'w-24 h-1 mx-2 transition-colors',
-                  currentStep >= 2 
-                    ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600' 
-                    : 'bg-gray-200'
+                  completedSteps.has(1)
+                    ? 'bg-green-500'
+                    : currentStep >= 2 
+                      ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600' 
+                      : 'bg-gray-200'
                 )} />
                 <div className={clsx(
                   'flex items-center justify-center w-10 h-10 rounded-full font-semibold transition-colors',
-                  currentStep >= 2 
-                    ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white' 
-                    : 'bg-gray-200 text-gray-500'
+                  completedSteps.has(2)
+                    ? 'bg-green-500 text-white'
+                    : currentStep >= 2 
+                      ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white' 
+                      : 'bg-gray-200 text-gray-500'
                 )}>
-                  2
+                  {completedSteps.has(2) ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    '2'
+                  )}
                 </div>
               </div>
             </div>
