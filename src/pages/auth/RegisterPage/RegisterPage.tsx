@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { clsx } from 'clsx';
-import { Country } from 'country-state-city';
+import { Country, City } from 'country-state-city';
 import { Input } from '@/components/common/Input/Input';
 import { Select } from '@/components/common/Select/Select';
 import { Button } from '@/components/common/Button/Button';
@@ -50,6 +50,16 @@ export const RegisterPage = () => {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const countries = useMemo(() => Country.getAllCountries(), []);
+
+  const selectedCountry = useMemo(() => {
+    if (!formData.country) return null;
+    return countries.find((country) => country.name === formData.country);
+  }, [formData.country, countries]);
+
+  const cities = useMemo(() => {
+    if (!selectedCountry) return [];
+    return City.getCitiesOfCountry(selectedCountry.isoCode) || [];
+  }, [selectedCountry]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -124,6 +134,20 @@ export const RegisterPage = () => {
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     const updatedData = { ...formData, [name]: value };
+    
+    // Clear city when country changes
+    if (name === 'country') {
+      updatedData.city = '';
+      // Clear city error as well
+      if (fieldErrors.city) {
+        setFieldErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors.city;
+          return newErrors;
+        });
+      }
+    }
+    
     setFormData(updatedData);
     
     // Clear error for this field when user changes selection
@@ -139,6 +163,8 @@ export const RegisterPage = () => {
     try {
       if (name === 'country' && currentStep === 2) {
         companyInfoSchema.shape.country.parse(value);
+      } else if (name === 'city' && currentStep === 2) {
+        companyInfoSchema.shape.city.parse(value);
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -586,15 +612,27 @@ export const RegisterPage = () => {
                 />
 
                 <div className="grid grid-cols-2 gap-4">
-                  <Input
+                  <Select
                     label="City"
-                    type="text"
                     name="city"
-                    placeholder="Enter city"
                     value={formData.city}
-                    onChange={handleChange}
+                    onChange={handleSelectChange}
                     error={fieldErrors.city}
-                  />
+                    disabled={!selectedCountry || cities.length === 0}
+                  >
+                    <option value="">
+                      {!selectedCountry 
+                        ? 'Select country first' 
+                        : cities.length === 0 
+                          ? 'No cities available' 
+                          : 'Select a city'}
+                    </option>
+                    {cities.map((city) => (
+                      <option key={city.name} value={city.name}>
+                        {city.name}
+                      </option>
+                    ))}
+                  </Select>
 
                   <Input
                     label="State"

@@ -33,6 +33,7 @@ export const Select = ({
             'appearance-none cursor-pointer',
             rightIcon && 'pr-12',
             error && 'border-red-400 focus:ring-red-500/20 focus:border-red-400',
+            props.disabled && 'opacity-50 cursor-not-allowed bg-gray-100',
             className
           )}
           {...props}
