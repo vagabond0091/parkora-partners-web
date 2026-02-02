@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { clsx } from 'clsx';
@@ -61,10 +61,36 @@ export const RegisterPage = () => {
     return State.getStatesOfCountry(selectedCountry.isoCode) || [];
   }, [selectedCountry]);
 
+  const selectedState = useMemo(() => {
+    if (!formData.state || !selectedCountry) return null;
+    return states.find((state) => state.name === formData.state);
+  }, [formData.state, states, selectedCountry]);
+
   const cities = useMemo(() => {
     if (!selectedCountry) return [];
+    
+    // If states are available for this country, only show cities when a state is selected
+    if (states.length > 0) {
+      if (selectedState) {
+        return City.getCitiesOfState(selectedCountry.isoCode, selectedState.isoCode) || [];
+      }
+      // If states are available but none selected, return empty array
+      return [];
+    }
+    
+    // If no states available, get all cities for the country
     return City.getCitiesOfCountry(selectedCountry.isoCode) || [];
-  }, [selectedCountry]);
+  }, [selectedCountry, selectedState, states.length]);
+
+  // Clear city if it's not in the current cities list (e.g., when state changes)
+  useEffect(() => {
+    if (formData.city && cities.length > 0) {
+      const cityExists = cities.some((city) => city.name === formData.city);
+      if (!cityExists) {
+        setFormData((prev) => ({ ...prev, city: '' }));
+      }
+    }
+  }, [cities, formData.city]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -702,14 +728,16 @@ export const RegisterPage = () => {
                   value={formData.city}
                   onChange={handleSelectChange}
                   error={fieldErrors.city}
-                  disabled={!selectedCountry || cities.length === 0}
+                  disabled={!selectedCountry || (states.length > 0 && !selectedState) || cities.length === 0}
                 >
                   <option value="">
                     {!selectedCountry 
                       ? 'Select country first' 
-                      : cities.length === 0 
-                        ? 'No cities available' 
-                        : 'Select a city'}
+                      : states.length > 0 && !selectedState
+                        ? 'Select state/province first'
+                        : cities.length === 0 
+                          ? 'No cities available' 
+                          : 'Select a city'}
                   </option>
                   {cities.map((city) => (
                     <option key={city.name} value={city.name}>
