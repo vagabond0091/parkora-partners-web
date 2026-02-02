@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { clsx } from 'clsx';
+import { Country } from 'country-state-city';
 import { Input } from '@/components/common/Input/Input';
+import { Select } from '@/components/common/Select/Select';
 import { Button } from '@/components/common/Button/Button';
 import { useAuthStore } from '@/stores/authStore';
 import { useAppStatusStore } from '@/stores/appStatusStore';
@@ -46,6 +48,8 @@ export const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const countries = useMemo(() => Country.getAllCountries(), []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -106,6 +110,35 @@ export const RegisterPage = () => {
         } else if (name === 'country') {
           companyInfoSchema.shape.country.parse(value);
         }
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldError = error.issues.find((issue) => issue.path[0] === name);
+        if (fieldError) {
+          setFieldErrors((prev) => ({ ...prev, [name]: fieldError.message }));
+        }
+      }
+    }
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    const updatedData = { ...formData, [name]: value };
+    setFormData(updatedData);
+    
+    // Clear error for this field when user changes selection
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+    
+    // Validate on change
+    try {
+      if (name === 'country' && currentStep === 2) {
+        companyInfoSchema.shape.country.parse(value);
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -596,15 +629,20 @@ export const RegisterPage = () => {
                   />
                 </div>
 
-                <Input
+                <Select
                   label="Country"
-                  type="text"
                   name="country"
-                  placeholder="Enter country"
                   value={formData.country}
-                  onChange={handleChange}
+                  onChange={handleSelectChange}
                   error={fieldErrors.country}
-                />
+                >
+                  <option value="">Select a country</option>
+                  {countries.map((country) => (
+                    <option key={country.isoCode} value={country.name}>
+                      {country.name}
+                    </option>
+                  ))}
+                </Select>
 
                 <div className="flex gap-4">
                   <Button
