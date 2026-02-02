@@ -56,12 +56,12 @@ export const companyInfoSchema = z.object({
     .max(255, 'Company name must not exceed 255 characters'),
   businessRegistrationNumber: z
     .string()
-    .max(100, 'Business registration number must not exceed 100 characters')
-    .optional(),
+    .min(1, 'Business registration number is required')
+    .max(100, 'Business registration number must not exceed 100 characters'),
   taxIdentificationNumber: z
     .string()
-    .max(50, 'Tax identification number must not exceed 50 characters')
-    .optional(),
+    .min(1, 'Tax identification number is required')
+    .max(50, 'Tax identification number must not exceed 50 characters'),
   businessType: z
     .string()
     .max(50, 'Business type must not exceed 50 characters')

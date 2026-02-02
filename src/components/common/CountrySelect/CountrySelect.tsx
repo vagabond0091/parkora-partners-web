@@ -10,6 +10,7 @@ export const CountrySelect = ({
   error,
   countries,
   disabled = false,
+  required = false,
 }: CountrySelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -58,6 +59,7 @@ export const CountrySelect = ({
           className="block text-sm font-medium text-gray-700 mb-1.5"
         >
           {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
       <div className="relative" ref={dropdownRef}>

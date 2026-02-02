@@ -619,6 +619,7 @@ export const RegisterPage = () => {
                     value={formData.businessRegistrationNumber}
                     onChange={handleChange}
                     error={fieldErrors.businessRegistrationNumber}
+                    required
                   />
 
                   <Input
@@ -629,6 +630,7 @@ export const RegisterPage = () => {
                     value={formData.taxIdentificationNumber}
                     onChange={handleChange}
                     error={fieldErrors.taxIdentificationNumber}
+                    required
                   />
                 </div>
 

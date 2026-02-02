@@ -7,4 +7,5 @@ export interface CountrySelectProps {
   error?: string;
   countries: ICountry[];
   disabled?: boolean;
+  required?: boolean;
 }

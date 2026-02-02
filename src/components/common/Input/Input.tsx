@@ -19,6 +19,7 @@ export const Input = ({
           className="block text-sm font-medium text-gray-700 mb-1.5"
         >
           {label}
+          {props.required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
       <div className="relative">
