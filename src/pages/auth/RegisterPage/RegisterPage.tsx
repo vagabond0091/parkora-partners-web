@@ -5,6 +5,7 @@ import { clsx } from 'clsx';
 import { Country, State, City } from 'country-state-city';
 import { Input } from '@/components/common/Input/Input';
 import { Select } from '@/components/common/Select/Select';
+import { CountrySelect } from '@/components/common/CountrySelect/CountrySelect';
 import { Button } from '@/components/common/Button/Button';
 import { useAuthStore } from '@/stores/authStore';
 import { useAppStatusStore } from '@/stores/appStatusStore';
@@ -661,20 +662,13 @@ export const RegisterPage = () => {
                   error={fieldErrors.addressLine2}
                 />
 
-                <Select
+                <CountrySelect
                   label="Country"
-                  name="country"
                   value={formData.country}
                   onChange={handleSelectChange}
                   error={fieldErrors.country}
-                >
-                  <option value="">Select a country</option>
-                  {countries.map((country) => (
-                    <option key={country.isoCode} value={country.name}>
-                      {country.name}
-                    </option>
-                  ))}
-                </Select>
+                  countries={countries}
+                />
 
                 {states.length > 0 ? (
                   <Select
