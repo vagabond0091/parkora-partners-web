@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { clsx } from 'clsx';
-import { Country, City } from 'country-state-city';
+import { Country, State, City } from 'country-state-city';
 import { Input } from '@/components/common/Input/Input';
 import { Select } from '@/components/common/Select/Select';
 import { Button } from '@/components/common/Button/Button';
@@ -55,6 +55,11 @@ export const RegisterPage = () => {
     if (!formData.country) return null;
     return countries.find((country) => country.name === formData.country);
   }, [formData.country, countries]);
+
+  const states = useMemo(() => {
+    if (!selectedCountry) return [];
+    return State.getStatesOfCountry(selectedCountry.isoCode) || [];
+  }, [selectedCountry]);
 
   const cities = useMemo(() => {
     if (!selectedCountry) return [];
@@ -135,10 +140,27 @@ export const RegisterPage = () => {
     const { name, value } = e.target;
     const updatedData = { ...formData, [name]: value };
     
-    // Clear city when country changes
+    // Clear dependent fields when country changes
     if (name === 'country') {
+      updatedData.state = '';
+      updatedData.province = '';
       updatedData.city = '';
-      // Clear city error as well
+      // Clear errors for dependent fields
+      ['state', 'province', 'city'].forEach((field) => {
+        if (fieldErrors[field]) {
+          setFieldErrors((prev) => {
+            const newErrors = { ...prev };
+            delete newErrors[field];
+            return newErrors;
+          });
+        }
+      });
+    }
+    
+    // Clear state/province when country changes (handled above)
+    // Clear city when state changes (if needed)
+    if (name === 'state' || name === 'province') {
+      updatedData.city = '';
       if (fieldErrors.city) {
         setFieldErrors((prev) => {
           const newErrors = { ...prev };
@@ -163,6 +185,8 @@ export const RegisterPage = () => {
     try {
       if (name === 'country' && currentStep === 2) {
         companyInfoSchema.shape.country.parse(value);
+      } else if (name === 'state' && currentStep === 2) {
+        companyInfoSchema.shape.state.parse(value);
       } else if (name === 'city' && currentStep === 2) {
         companyInfoSchema.shape.city.parse(value);
       }
@@ -500,7 +524,6 @@ export const RegisterPage = () => {
                   onChange={handleChange}
                   error={fieldErrors.phone}
                 />
-
                 <Input
                   label="Username"
                   type="text"
@@ -510,7 +533,6 @@ export const RegisterPage = () => {
                   onChange={handleChange}
                   error={fieldErrors.username}
                 />
-
                 <Input
                   label="Password"
                   type={showPassword ? 'text' : 'password'}
@@ -534,6 +556,8 @@ export const RegisterPage = () => {
                   error={fieldErrors.confirmPassword}
                   required
                 />
+
+              
 
                 <Button
                   type="button"
@@ -605,67 +629,11 @@ export const RegisterPage = () => {
                   label="Address Line 2"
                   type="text"
                   name="addressLine2"
-                  placeholder="Enter address line 2"
+                  placeholder="Enter address line 2 (optional)"
                   value={formData.addressLine2}
                   onChange={handleChange}
                   error={fieldErrors.addressLine2}
                 />
-
-                <div className="grid grid-cols-2 gap-4">
-                  <Select
-                    label="City"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleSelectChange}
-                    error={fieldErrors.city}
-                    disabled={!selectedCountry || cities.length === 0}
-                  >
-                    <option value="">
-                      {!selectedCountry 
-                        ? 'Select country first' 
-                        : cities.length === 0 
-                          ? 'No cities available' 
-                          : 'Select a city'}
-                    </option>
-                    {cities.map((city) => (
-                      <option key={city.name} value={city.name}>
-                        {city.name}
-                      </option>
-                    ))}
-                  </Select>
-
-                  <Input
-                    label="State"
-                    type="text"
-                    name="state"
-                    placeholder="Enter state"
-                    value={formData.state}
-                    onChange={handleChange}
-                    error={fieldErrors.state}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <Input
-                    label="Province"
-                    type="text"
-                    name="province"
-                    placeholder="Enter province"
-                    value={formData.province}
-                    onChange={handleChange}
-                    error={fieldErrors.province}
-                  />
-
-                  <Input
-                    label="Postal Code"
-                    type="text"
-                    name="postalCode"
-                    placeholder="Enter postal code"
-                    value={formData.postalCode}
-                    onChange={handleChange}
-                    error={fieldErrors.postalCode}
-                  />
-                </div>
 
                 <Select
                   label="Country"
@@ -681,6 +649,84 @@ export const RegisterPage = () => {
                     </option>
                   ))}
                 </Select>
+
+                {states.length > 0 ? (
+                  <Select
+                    label="State / Province"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleSelectChange}
+                    error={fieldErrors.state}
+                    disabled={!selectedCountry}
+                  >
+                    <option value="">
+                      {!selectedCountry 
+                        ? 'Select country first' 
+                        : 'Select a state/province'}
+                    </option>
+                    {states.map((state) => (
+                      <option key={state.isoCode} value={state.name}>
+                        {state.name}
+                      </option>
+                    ))}
+                  </Select>
+                ) : (
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      label="State"
+                      type="text"
+                      name="state"
+                      placeholder="Enter state"
+                      value={formData.state}
+                      onChange={handleChange}
+                      error={fieldErrors.state}
+                      disabled={!selectedCountry}
+                    />
+
+                    <Input
+                      label="Province"
+                      type="text"
+                      name="province"
+                      placeholder="Enter province"
+                      value={formData.province}
+                      onChange={handleChange}
+                      error={fieldErrors.province}
+                      disabled={!selectedCountry}
+                    />
+                  </div>
+                )}
+
+                <Select
+                  label="City"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleSelectChange}
+                  error={fieldErrors.city}
+                  disabled={!selectedCountry || cities.length === 0}
+                >
+                  <option value="">
+                    {!selectedCountry 
+                      ? 'Select country first' 
+                      : cities.length === 0 
+                        ? 'No cities available' 
+                        : 'Select a city'}
+                  </option>
+                  {cities.map((city) => (
+                    <option key={city.name} value={city.name}>
+                      {city.name}
+                    </option>
+                  ))}
+                </Select>
+
+                <Input
+                  label="Postal Code"
+                  type="text"
+                  name="postalCode"
+                  placeholder="Enter postal code"
+                  value={formData.postalCode}
+                  onChange={handleChange}
+                  error={fieldErrors.postalCode}
+                />
 
                 <div className="flex gap-4">
                   <Button
