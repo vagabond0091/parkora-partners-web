@@ -86,11 +86,19 @@ export const PhoneInput = ({
   }, [selectedCountry, onCountryChange]);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const phoneNumber = e.target.value;
+    let phoneNumber = e.target.value;
+    
+    // If country code is selected, remove leading 0 (international format doesn't use it)
+    // For example: Philippines domestic "09675427831" -> international "9675427831"
+    if (selectedCountry && phoneNumber.startsWith('0')) {
+      phoneNumber = phoneNumber.substring(1);
+    }
+    
     // Combine country code with phone number
     const fullPhoneNumber = selectedCountry 
       ? `+${selectedCountry.phonecode} ${phoneNumber}`.trim()
       : phoneNumber;
+    
     
     const syntheticEvent = {
       target: { name, value: fullPhoneNumber },
