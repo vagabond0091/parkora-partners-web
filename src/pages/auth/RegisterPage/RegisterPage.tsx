@@ -96,6 +96,70 @@ export const RegisterPage = () => {
     }
   }, [cities, formData.city]);
 
+  /**
+   * Helper function to clear field error
+   */
+  const clearFieldError = (fieldName: string) => {
+    setFieldErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[fieldName];
+      return newErrors;
+    });
+  };
+
+  /**
+   * Validates a single field value
+   * @param fieldName - Name of the field to validate
+   * @param value - Value to validate
+   * @param step - Current step (1 or 2)
+   * @param fullData - Complete form data for full step validation
+   * @returns Error message if invalid, null if valid
+   */
+  const validateFieldValue = (
+    fieldName: string,
+    value: string,
+    step: number,
+    fullData: RegisterFormData
+  ): string | null => {
+    const schema = step === 1 ? userInfoSchema : companyInfoSchema;
+
+    // Special case: Phone validation with country code
+    if (fieldName === 'phone' && value && value.trim() !== '') {
+      const result = validatePhoneNumber(value, phoneCountryCode);
+      return result.isValid ? null : (result.error || 'Invalid phone number');
+    }
+
+    // Special case: Password fields require full step validation
+    if (fieldName === 'password' || fieldName === 'confirmPassword') {
+      try {
+        schema.parse(fullData);
+        return null;
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          const fieldError = error.issues.find((issue) => issue.path[0] === fieldName);
+          return fieldError?.message || null;
+        }
+      }
+      return null;
+    }
+
+    // Standard field validation using Zod schema
+    try {
+      const schemaShape = schema.shape as Record<string, z.ZodTypeAny>;
+      const fieldSchema = schemaShape[fieldName];
+      if (fieldSchema && typeof fieldSchema.parse === 'function') {
+        fieldSchema.parse(value);
+      }
+      return null;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldError = error.issues.find((issue) => issue.path[0] === fieldName);
+        return fieldError?.message || null;
+      }
+      return null;
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const updatedData = { ...formData, [name]: value };
@@ -103,81 +167,17 @@ export const RegisterPage = () => {
     
     // Clear error for this field when user starts typing
     if (fieldErrors[name]) {
-      setFieldErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
+      clearFieldError(name);
     }
     
-    // Validate on change - for password/confirmPassword, validate whole step
-    // For other fields, validate just that field
-    try {
-      if (name === 'confirmPassword' || name === 'password') {
-        if (currentStep === 1) {
-          userInfoSchema.parse(updatedData);
-        }
-      } else if (currentStep === 1) {
-        // Validate user info fields
-        if (name === 'email') {
-          userInfoSchema.shape.email.parse(value);
-        } else if (name === 'firstName') {
-          userInfoSchema.shape.firstName.parse(value);
-        } else if (name === 'lastName') {
-          userInfoSchema.shape.lastName.parse(value);
-        } else if (name === 'phone') {
-          // Validate phone with country code using libphonenumber-js
-          if (value && value.trim() !== '') {
-            const result = validatePhoneNumber(value, phoneCountryCode);
-            if (!result.isValid) {
-              setFieldErrors((prev) => ({ ...prev, phone: result.error || 'Please enter a valid phone number' }));
-              return;
-            }
-          }
-          // Clear error if valid
-          if (fieldErrors.phone) {
-            setFieldErrors((prev) => {
-              const newErrors = { ...prev };
-              delete newErrors.phone;
-              return newErrors;
-            });
-          }
-        } else if (name === 'username') {
-          userInfoSchema.shape.username.parse(value);
-        }
-      } else if (currentStep === 2) {
-        // Validate company info fields
-        if (name === 'companyName') {
-          companyInfoSchema.shape.companyName.parse(value);
-        } else if (name === 'businessRegistrationNumber') {
-          companyInfoSchema.shape.businessRegistrationNumber.parse(value);
-        } else if (name === 'taxIdentificationNumber') {
-          companyInfoSchema.shape.taxIdentificationNumber.parse(value);
-        } else if (name === 'businessType') {
-          companyInfoSchema.shape.businessType.parse(value);
-        } else if (name === 'addressLine1') {
-          companyInfoSchema.shape.addressLine1.parse(value);
-        } else if (name === 'addressLine2') {
-          companyInfoSchema.shape.addressLine2.parse(value);
-        } else if (name === 'city') {
-          companyInfoSchema.shape.city.parse(value);
-        } else if (name === 'state') {
-          companyInfoSchema.shape.state.parse(value);
-        } else if (name === 'province') {
-          companyInfoSchema.shape.province.parse(value);
-        } else if (name === 'postalCode') {
-          companyInfoSchema.shape.postalCode.parse(value);
-        } else if (name === 'country') {
-          companyInfoSchema.shape.country.parse(value);
-        }
-      }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const fieldError = error.issues.find((issue) => issue.path[0] === name);
-        if (fieldError) {
-          setFieldErrors((prev) => ({ ...prev, [name]: fieldError.message }));
-        }
-      }
+    // Validate the field
+    const errorMessage = validateFieldValue(name, value, currentStep, updatedData);
+    
+    if (errorMessage) {
+      setFieldErrors((prev) => ({ ...prev, [name]: errorMessage }));
+    } else if (name === 'phone') {
+      // Special handling for phone - clear error if valid
+      clearFieldError('phone');
     }
   };
 
@@ -185,62 +185,34 @@ export const RegisterPage = () => {
     const { name, value } = e.target;
     const updatedData = { ...formData, [name]: value };
     
-    // Clear dependent fields when country changes
-    if (name === 'country') {
-      updatedData.state = '';
-      updatedData.province = '';
-      updatedData.city = '';
-      // Clear errors for dependent fields
-      ['state', 'province', 'city'].forEach((field) => {
+    // Handle dependent field clearing
+    const dependentFields: Record<string, string[]> = {
+      country: ['state', 'province', 'city'],
+      state: ['city'],
+      province: ['city'],
+    };
+    
+    if (name in dependentFields) {
+      dependentFields[name].forEach((field) => {
+        updatedData[field as keyof RegisterFormData] = '';
         if (fieldErrors[field]) {
-          setFieldErrors((prev) => {
-            const newErrors = { ...prev };
-            delete newErrors[field];
-            return newErrors;
-          });
+          clearFieldError(field);
         }
       });
-    }
-    
-    // Clear state/province when country changes (handled above)
-    // Clear city when state changes (if needed)
-    if (name === 'state' || name === 'province') {
-      updatedData.city = '';
-      if (fieldErrors.city) {
-        setFieldErrors((prev) => {
-          const newErrors = { ...prev };
-          delete newErrors.city;
-          return newErrors;
-        });
-      }
     }
     
     setFormData(updatedData);
     
     // Clear error for this field when user changes selection
     if (fieldErrors[name]) {
-      setFieldErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
+      clearFieldError(name);
     }
     
-    // Validate on change
-    try {
-      if (name === 'country' && currentStep === 2) {
-        companyInfoSchema.shape.country.parse(value);
-      } else if (name === 'state' && currentStep === 2) {
-        companyInfoSchema.shape.state.parse(value);
-      } else if (name === 'city' && currentStep === 2) {
-        companyInfoSchema.shape.city.parse(value);
-      }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const fieldError = error.issues.find((issue) => issue.path[0] === name);
-        if (fieldError) {
-          setFieldErrors((prev) => ({ ...prev, [name]: fieldError.message }));
-        }
+    // Validate the field (only for step 2 select fields)
+    if (currentStep === 2) {
+      const errorMessage = validateFieldValue(name, value, currentStep, updatedData);
+      if (errorMessage) {
+        setFieldErrors((prev) => ({ ...prev, [name]: errorMessage }));
       }
     }
   };
