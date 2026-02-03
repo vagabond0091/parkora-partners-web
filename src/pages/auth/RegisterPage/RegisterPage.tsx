@@ -708,29 +708,40 @@ export const RegisterPage = () => {
                   </div>
                 )}
 
-                <Select
-                  label="City"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleSelectChange}
-                  error={fieldErrors.city}
-                  disabled={!selectedCountry || (states.length > 0 && !selectedState) || cities.length === 0}
-                >
-                  <option value="">
-                    {!selectedCountry 
-                      ? 'Select country first' 
-                      : states.length > 0 && !selectedState
-                        ? 'Select state/province first'
-                        : cities.length === 0 
-                          ? 'No cities available' 
+                {cities.length > 0 ? (
+                  <Select
+                    label="City"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleSelectChange}
+                    error={fieldErrors.city}
+                    disabled={!selectedCountry || (states.length > 0 && !selectedState)}
+                  >
+                    <option value="">
+                      {!selectedCountry 
+                        ? 'Select country first' 
+                        : states.length > 0 && !selectedState
+                          ? 'Select state/province first'
                           : 'Select a city'}
-                  </option>
-                  {cities.map((city) => (
-                    <option key={city.name} value={city.name}>
-                      {city.name}
                     </option>
-                  ))}
-                </Select>
+                    {cities.map((city) => (
+                      <option key={city.name} value={city.name}>
+                        {city.name}
+                      </option>
+                    ))}
+                  </Select>
+                ) : (
+                  <Input
+                    label="City"
+                    type="text"
+                    name="city"
+                    placeholder="Enter city name"
+                    value={formData.city}
+                    onChange={handleChange}
+                    error={fieldErrors.city}
+                    disabled={!selectedCountry || (states.length > 0 && !selectedState)}
+                  />
+                )}
 
                 <Input
                   label="Postal Code"
