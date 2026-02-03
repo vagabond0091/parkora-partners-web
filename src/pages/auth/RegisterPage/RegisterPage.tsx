@@ -6,6 +6,7 @@ import { Country, State, City } from 'country-state-city';
 import { Input } from '@/components/common/Input/Input';
 import { Select } from '@/components/common/Select/Select';
 import { CountrySelect } from '@/components/common/CountrySelect/CountrySelect';
+import { PhoneInput } from '@/components/common/PhoneInput/PhoneInput';
 import { Button } from '@/components/common/Button/Button';
 import { useAuthStore } from '@/stores/authStore';
 import { useAppStatusStore } from '@/stores/appStatusStore';
@@ -542,12 +543,11 @@ export const RegisterPage = () => {
                   required
                 />
 
-                <Input
+                <PhoneInput
                   label="Phone"
-                  type="tel"
                   name="phone"
-                  placeholder="Enter your phone number"
-                  value={formData.phone}
+                  placeholder="Enter phone number"
+                  value={formData.phone || ''}
                   onChange={handleChange}
                   error={fieldErrors.phone}
                 />
