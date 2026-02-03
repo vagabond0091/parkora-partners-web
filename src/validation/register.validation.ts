@@ -39,7 +39,6 @@ export const userInfoSchema = z.object({
     .optional(),
   phone: z
     .string()
-    .max(13, 'Phone must not exceed 13 characters')
     .optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',

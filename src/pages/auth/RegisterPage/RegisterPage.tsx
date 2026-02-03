@@ -8,6 +8,7 @@ import { Select } from '@/components/common/Select/Select';
 import { CountrySelect } from '@/components/common/CountrySelect/CountrySelect';
 import { PhoneInput } from '@/components/common/PhoneInput/PhoneInput';
 import { Button } from '@/components/common/Button/Button';
+import { validatePhoneNumber } from '@/utils/phoneValidation';
 import { useAuthStore } from '@/stores/authStore';
 import { useAppStatusStore } from '@/stores/appStatusStore';
 import { AuthService } from '@/services/AuthService';
@@ -50,6 +51,7 @@ export const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [phoneCountryCode, setPhoneCountryCode] = useState<string | null>(null);
 
   const countries = useMemo(() => Country.getAllCountries(), []);
 
@@ -124,7 +126,22 @@ export const RegisterPage = () => {
         } else if (name === 'lastName') {
           userInfoSchema.shape.lastName.parse(value);
         } else if (name === 'phone') {
-          userInfoSchema.shape.phone.parse(value);
+          // Validate phone with country code using libphonenumber-js
+          if (value && value.trim() !== '') {
+            const result = validatePhoneNumber(value, phoneCountryCode);
+            if (!result.isValid) {
+              setFieldErrors((prev) => ({ ...prev, phone: result.error || 'Please enter a valid phone number' }));
+              return;
+            }
+          }
+          // Clear error if valid
+          if (fieldErrors.phone) {
+            setFieldErrors((prev) => {
+              const newErrors = { ...prev };
+              delete newErrors.phone;
+              return newErrors;
+            });
+          }
         } else if (name === 'username') {
           userInfoSchema.shape.username.parse(value);
         }
@@ -549,6 +566,7 @@ export const RegisterPage = () => {
                   placeholder="Enter phone number"
                   value={formData.phone || ''}
                   onChange={handleChange}
+                  onCountryChange={setPhoneCountryCode}
                   error={fieldErrors.phone}
                 />
                 <Input

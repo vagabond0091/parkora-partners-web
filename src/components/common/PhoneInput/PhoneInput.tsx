@@ -10,6 +10,7 @@ export const PhoneInput = ({
   name,
   value,
   onChange,
+  onCountryChange,
   error,
   required = false,
   placeholder = 'Enter phone number',
@@ -71,7 +72,18 @@ export const PhoneInput = ({
     setSelectedCountry(country);
     setIsOpen(false);
     setSearchTerm('');
+    // Notify parent component of country change
+    if (onCountryChange) {
+      onCountryChange(country.isoCode);
+    }
   };
+
+  // Notify parent when country is detected/initialized
+  useEffect(() => {
+    if (selectedCountry && onCountryChange) {
+      onCountryChange(selectedCountry.isoCode);
+    }
+  }, [selectedCountry, onCountryChange]);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const phoneNumber = e.target.value;
