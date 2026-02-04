@@ -2,10 +2,13 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LoginPage } from '@/pages/auth/LoginPage/LoginPage';
 import { RegisterPage } from '@/pages/auth/RegisterPage/RegisterPage';
 import { DashboardPage } from '@/pages/dashboard/DashboardPage/DashboardPage';
+import { AnalyticsPage } from '@/pages/dashboard/AnalyticsPage/AnalyticsPage';
+import { SettingsPage } from '@/pages/dashboard/SettingsPage/SettingsPage';
 import { NotFoundPage } from '@/pages/error/NotFoundPage/NotFoundPage';
 import { AccessDeniedPage } from '@/pages/error/AccessDeniedPage/AccessDeniedPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { PublicRoute } from './PublicRoute';
+import { DashboardLayout } from '@/components/layout/DashboardLayout/DashboardLayout';
 import { ROUTES } from './routePaths';
 
 export const AppRoutes = () => {
@@ -20,7 +23,11 @@ export const AppRoutes = () => {
 
         {/* Protected Routes - Require authentication */}
         <Route element={<ProtectedRoute />}>
-          <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
+          <Route element={<DashboardLayout />}>
+            <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
+            <Route path={ROUTES.DASHBOARD_ANALYTICS} element={<AnalyticsPage />} />
+            <Route path={ROUTES.DASHBOARD_SETTINGS} element={<SettingsPage />} />
+          </Route>
         </Route>
 
         {/* Access Denied Page - Public route for unauthorized access */}
