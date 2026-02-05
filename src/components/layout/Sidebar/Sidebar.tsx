@@ -3,6 +3,7 @@ import { clsx } from 'clsx';
 import { useAuthStore } from '@/stores/authStore';
 import { ROUTES } from '@/routes/routePaths';
 import type { SidebarProps } from '@/types/components/sidebar.types';
+import logo from '@/assets/logo/logo.png';
 
 /**
  * Sidebar navigation component for dashboard pages.
@@ -95,9 +96,16 @@ export const Sidebar = ({ className }: SidebarProps) => {
       )}
     >
       <div className="p-6 border-b border-gray-200">
-        <h2 className="text-xl font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
-          Parkora Partners
-        </h2>
+        <div className="flex items-center gap-3">
+          <img 
+            src={logo} 
+            alt="Parkora" 
+            className="h-8 w-auto"
+          />
+          <h2 className="text-xl font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+            Parkora Partners
+          </h2>
+        </div>
       </div>
 
       <nav className="flex-1 overflow-y-auto p-4">
