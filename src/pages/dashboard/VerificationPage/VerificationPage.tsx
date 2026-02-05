@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { z } from 'zod';
 import { Button } from '@/components/common/Button/Button';
 import { Input } from '@/components/common/Input/Input';
 import { useAppStatusStore } from '@/stores/appStatusStore';
+import { verificationSchema } from '@/validation/verification.validation';
 
 /**
  * Business verification page component.
@@ -40,56 +42,65 @@ export const VerificationPage = () => {
     if (!files || files.length === 0) return;
 
     const file = files[0];
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+    const fieldSchema = verificationSchema.shape[field as keyof typeof verificationSchema.shape];
 
-    if (file.size > maxSize) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        [field]: 'File size must be less than 10MB',
-      }));
-      return;
-    }
-
-    if (!allowedTypes.includes(file.type)) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        [field]: 'File must be PDF, JPEG, or PNG',
-      }));
-      return;
+    if (fieldSchema) {
+      const result = fieldSchema.safeParse(file);
+      if (!result.success) {
+        const errorMessage = result.error.issues[0]?.message || 'Invalid file';
+        setFieldErrors((prev) => ({
+          ...prev,
+          [field]: errorMessage,
+        }));
+        return;
+      }
     }
 
     setFormData((prev) => ({ ...prev, [field]: file }));
-    if (fieldErrors[field]) {
-      setFieldErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
-    }
+    setFieldErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[field];
+      return newErrors;
+    });
   };
 
   const handleAdditionalFilesChange = (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
     const fileArray = Array.from(files);
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+    const additionalDocumentsSchema = verificationSchema.shape.additionalDocuments;
 
-    const validFiles = fileArray.filter((file) => {
-      if (file.size > maxSize) return false;
-      if (!allowedTypes.includes(file.type)) return false;
-      return true;
+    const validFiles: File[] = [];
+    const errors: string[] = [];
+
+    fileArray.forEach((file) => {
+      const result = z.instanceof(File).safeParse(file);
+      if (result.success) {
+        validFiles.push(file);
+      } else {
+        errors.push(result.error.issues[0]?.message || 'Invalid file');
+      }
     });
 
-    if (validFiles.length !== fileArray.length) {
-      setError('Some files were rejected. Only PDF, JPEG, or PNG files under 10MB are allowed.');
+    if (validFiles.length > 0) {
+      const currentFiles = [...formData.additionalDocuments, ...validFiles];
+      const result = additionalDocumentsSchema.safeParse(currentFiles);
+      
+      if (!result.success) {
+        const errorMessage = result.error.issues[0]?.message || 'Some files were rejected';
+        setError(errorMessage);
+        return;
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        additionalDocuments: currentFiles,
+      }));
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      additionalDocuments: [...prev.additionalDocuments, ...validFiles],
-    }));
+    if (errors.length > 0 && validFiles.length === 0) {
+      setError('All files were rejected. Only PDF, JPEG, or PNG files under 10MB are allowed.');
+    }
   };
 
   const removeAdditionalFile = (index: number) => {
@@ -104,22 +115,18 @@ export const VerificationPage = () => {
     clearError();
     setFieldErrors({});
 
-    // Validation
-    const errors: Record<string, string> = {};
-    if (!formData.businessRegistrationNumber.trim()) {
-      errors.businessRegistrationNumber = 'Business registration number is required';
-    }
-    if (!formData.taxIdentificationNumber.trim()) {
-      errors.taxIdentificationNumber = 'Tax identification number is required';
-    }
-    if (!formData.businessLicense) {
-      errors.businessLicense = 'Business license document is required';
-    }
-    if (!formData.taxDocument) {
-      errors.taxDocument = 'Tax document is required';
-    }
+    // Validate using Zod schema
+    const result = verificationSchema.safeParse(formData);
 
-    if (Object.keys(errors).length > 0) {
+    if (!result.success) {
+      // Extract errors from Zod
+      const errors: Record<string, string> = {};
+      result.error.issues.forEach((issue) => {
+        const path = issue.path[0] as string;
+        if (path) {
+          errors[path] = issue.message;
+        }
+      });
       setFieldErrors(errors);
       return;
     }
@@ -129,11 +136,11 @@ export const VerificationPage = () => {
     try {
       // TODO: Implement API call to submit verification documents
       // const formDataToSend = new FormData();
-      // formDataToSend.append('businessRegistrationNumber', formData.businessRegistrationNumber);
-      // formDataToSend.append('taxIdentificationNumber', formData.taxIdentificationNumber);
-      // formDataToSend.append('businessLicense', formData.businessLicense);
-      // formDataToSend.append('taxDocument', formData.taxDocument);
-      // formData.additionalDocuments.forEach((file) => {
+      // formDataToSend.append('businessRegistrationNumber', result.data.businessRegistrationNumber);
+      // formDataToSend.append('taxIdentificationNumber', result.data.taxIdentificationNumber);
+      // formDataToSend.append('businessLicense', result.data.businessLicense);
+      // formDataToSend.append('taxDocument', result.data.taxDocument);
+      // result.data.additionalDocuments?.forEach((file) => {
       //   formDataToSend.append('additionalDocuments', file);
       // });
       // await VerificationService.submitVerification(formDataToSend);
