@@ -26,8 +26,12 @@ export const ProtectedRoute = () => {
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
 
-  // Check if accessing dashboard and verify role
-  if (location.pathname === ROUTES.DASHBOARD) {
+  // Check if accessing dashboard or verification page and verify role
+  const requiresPartnersRole = 
+    location.pathname === ROUTES.DASHBOARD || 
+    location.pathname === ROUTES.DASHBOARD_VERIFICATION;
+
+  if (requiresPartnersRole) {
     const hasAccess = user.roles?.some(
       (role) => role.toLowerCase() === 'partners'
     );
