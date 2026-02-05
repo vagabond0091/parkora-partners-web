@@ -36,19 +36,9 @@ const requiredFileSchema = z
 
 /**
  * Zod schema for business verification form validation.
- * Validates business information and required documents.
+ * Validates required documents for verification.
  */
 export const verificationSchema = z.object({
-  businessRegistrationNumber: z
-    .string()
-    .min(1, 'Business registration number is required')
-    .max(100, 'Business registration number must not exceed 100 characters')
-    .trim(),
-  taxIdentificationNumber: z
-    .string()
-    .min(1, 'Tax identification number is required')
-    .max(50, 'Tax identification number must not exceed 50 characters')
-    .trim(),
   businessLicense: requiredFileSchema,
   taxDocument: requiredFileSchema,
   additionalDocuments: z

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { z } from 'zod';
 import { Button } from '@/components/common/Button/Button';
-import { Input } from '@/components/common/Input/Input';
 import { useAppStatusStore } from '@/stores/appStatusStore';
 import { verificationSchema } from '@/validation/verification.validation';
 
@@ -16,8 +15,6 @@ export const VerificationPage = () => {
   const clearError = useAppStatusStore((state) => state.clearError);
 
   const [formData, setFormData] = useState({
-    businessRegistrationNumber: '',
-    taxIdentificationNumber: '',
     businessLicense: null as File | null,
     taxDocument: null as File | null,
     additionalDocuments: [] as File[],
@@ -25,18 +22,6 @@ export const VerificationPage = () => {
 
   const [verificationStatus, setVerificationStatus] = useState<'pending' | 'approved' | 'rejected'>('pending');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (fieldErrors[field]) {
-      setFieldErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
-    }
-    clearError();
-  };
 
   const handleFileChange = (field: string, files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -136,8 +121,6 @@ export const VerificationPage = () => {
     try {
       // TODO: Implement API call to submit verification documents
       // const formDataToSend = new FormData();
-      // formDataToSend.append('businessRegistrationNumber', result.data.businessRegistrationNumber);
-      // formDataToSend.append('taxIdentificationNumber', result.data.taxIdentificationNumber);
       // formDataToSend.append('businessLicense', result.data.businessLicense);
       // formDataToSend.append('taxDocument', result.data.taxDocument);
       // result.data.additionalDocuments?.forEach((file) => {
@@ -224,31 +207,6 @@ export const VerificationPage = () => {
 
         {/* Verification Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Business Information */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Business Information</h2>
-            
-            <Input
-              label="Business Registration Number"
-              type="text"
-              placeholder="Enter your business registration number"
-              value={formData.businessRegistrationNumber}
-              onChange={(e) => handleInputChange('businessRegistrationNumber', e.target.value)}
-              error={fieldErrors.businessRegistrationNumber}
-              required
-            />
-
-            <Input
-              label="Tax Identification Number"
-              type="text"
-              placeholder="Enter your tax identification number"
-              value={formData.taxIdentificationNumber}
-              onChange={(e) => handleInputChange('taxIdentificationNumber', e.target.value)}
-              error={fieldErrors.taxIdentificationNumber}
-              required
-            />
-          </div>
-
           {/* Required Documents */}
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-gray-900">Required Documents</h2>
