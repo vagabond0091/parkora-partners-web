@@ -4,6 +4,7 @@ import { RegisterPage } from '@/pages/auth/RegisterPage/RegisterPage';
 import { DashboardPage } from '@/pages/dashboard/DashboardPage/DashboardPage';
 import { AnalyticsPage } from '@/pages/dashboard/AnalyticsPage/AnalyticsPage';
 import { SettingsPage } from '@/pages/dashboard/SettingsPage/SettingsPage';
+import { VerificationPage } from '@/pages/dashboard/VerificationPage/VerificationPage';
 import { NotFoundPage } from '@/pages/error/NotFoundPage/NotFoundPage';
 import { AccessDeniedPage } from '@/pages/error/AccessDeniedPage/AccessDeniedPage';
 import { ProtectedRoute } from './ProtectedRoute';
@@ -27,6 +28,7 @@ export const AppRoutes = () => {
             <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
             <Route path={ROUTES.DASHBOARD_ANALYTICS} element={<AnalyticsPage />} />
             <Route path={ROUTES.DASHBOARD_SETTINGS} element={<SettingsPage />} />
+            <Route path={ROUTES.DASHBOARD_VERIFICATION} element={<VerificationPage />} />
           </Route>
         </Route>
 
