@@ -1,0 +1,220 @@
+---
+description: Validation rules for Parkora Partners Web - Zod validation conventions
+globs: src/validation/**/*.ts, src/**/*validation*.ts
+---
+
+# Parkora Validation Rules
+
+## Core Principles
+
+1. **Zod First** - Always use Zod schemas for validation, never manual if-else conditions
+2. **Schema-Based** - Define validation schemas in `src/validation/` directory
+3. **Type Safety** - Use `z.infer` to derive TypeScript types from schemas
+4. **No If-Else Chains** - Use Zod's built-in validation methods instead of multiple if-else conditions
+5. **Error Handling** - Use Zod's error handling mechanisms, not manual error objects
+
+## File Structure
+
+```
+src/
+├── validation/
+│   ├── register.validation.ts
+│   ├── verification.validation.ts
+│   └── [feature].validation.ts
+```
+
+## Validation Schema Patterns
+
+### Basic Field Validation
+
+```typescript
+import { z } from 'zod';
+
+export const schema = z.object({
+  fieldName: z
+    .string()
+    .min(1, 'Field is required')
+    .max(100, 'Field must not exceed 100 characters')
+    .trim(),
+});
+```
+
+### Required vs Optional Fields
+
+```typescript
+// Required field
+requiredField: z.string().min(1, 'Field is required'),
+
+// Optional field
+optionalField: z.string().optional(),
+
+// Optional with default
+optionalWithDefault: z.string().optional().default(''),
+```
+
+### File Validation
+
+```typescript
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png'] as const;
+
+export const fileSchema = z
+  .instanceof(File, { message: 'File is required' })
+  .refine((file) => file.size <= MAX_FILE_SIZE, {
+    message: 'File size must be less than 10MB',
+  })
+  .refine(
+    (file) => ALLOWED_FILE_TYPES.includes(file.type as typeof ALLOWED_FILE_TYPES[number]),
+    {
+      message: 'File must be PDF, JPEG, or PNG',
+    }
+  );
+```
+
+### Array Validation
+
+```typescript
+documents: z
+  .array(z.instanceof(File))
+  .refine((files) => files.every((file) => file.size <= MAX_FILE_SIZE), {
+    message: 'All files must be less than 10MB',
+    path: ['documents'],
+  })
+  .optional()
+  .default([]),
+```
+
+### Cross-Field Validation
+
+```typescript
+export const schema = z
+  .object({
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
+```
+
+## Usage in Components
+
+### Correct: Using Zod Schema
+
+```typescript
+import { z } from 'zod';
+import { verificationSchema } from '@/validation/verification.validation';
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  // Validate using Zod schema
+  const result = verificationSchema.safeParse(formData);
+  
+  if (!result.success) {
+    // Extract errors from Zod
+    const errors: Record<string, string> = {};
+    result.error.issues.forEach((issue) => {
+      const path = issue.path[0] as string;
+      errors[path] = issue.message;
+    });
+    setFieldErrors(errors);
+    return;
+  }
+  
+  // Use validated data
+  const validatedData = result.data;
+  // ... submit form
+};
+```
+
+### Forbidden: Manual If-Else Validation
+
+```typescript
+// ❌ DO NOT DO THIS
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  const errors: Record<string, string> = {};
+  
+  if (!formData.businessRegistrationNumber.trim()) {
+    errors.businessRegistrationNumber = 'Business registration number is required';
+  }
+  if (!formData.taxIdentificationNumber.trim()) {
+    errors.taxIdentificationNumber = 'Tax identification number is required';
+  }
+  if (!formData.businessLicense) {
+    errors.businessLicense = 'Business license document is required';
+  }
+  // ... more if-else conditions
+  
+  if (Object.keys(errors).length > 0) {
+    setFieldErrors(errors);
+    return;
+  }
+  // ...
+};
+```
+
+## Field-Level Validation
+
+For real-time field validation, use Zod's `safeParse` on individual fields:
+
+```typescript
+import { verificationSchema } from '@/validation/verification.validation';
+
+const validateField = (fieldName: string, value: unknown): string | null => {
+  const fieldSchema = verificationSchema.shape[fieldName];
+  if (!fieldSchema) return null;
+  
+  const result = fieldSchema.safeParse(value);
+  return result.success ? null : result.error.errors[0]?.message || null;
+};
+```
+
+## Schema Composition
+
+Combine multiple schemas when needed:
+
+```typescript
+export const userInfoSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+export const companyInfoSchema = z.object({
+  companyName: z.string().min(1),
+});
+
+export const completeSchema = userInfoSchema.merge(companyInfoSchema);
+```
+
+## Type Inference
+
+Always export types from validation schemas:
+
+```typescript
+export const verificationSchema = z.object({
+  // ... fields
+});
+
+export type VerificationFormData = z.infer<typeof verificationSchema>;
+```
+
+## Error Message Guidelines
+
+1. **Be specific** - "Business registration number is required" not "Field is required"
+2. **Be actionable** - "File size must be less than 10MB" not "File too large"
+3. **Use consistent language** - Follow existing error message patterns
+4. **Include constraints** - "Must be between 3 and 100 characters"
+
+## Best Practices
+
+1. Define schemas in `src/validation/` directory
+2. Use Zod's built-in validators (min, max, email, etc.)
+3. Use `refine()` for custom validation logic
+4. Use `safeParse()` for error handling
+5. Export both schema and type from validation files
+6. Never use if-else chains for multiple field validation
+7. Never manually build error objects
+8. Never duplicate validation logic in components
