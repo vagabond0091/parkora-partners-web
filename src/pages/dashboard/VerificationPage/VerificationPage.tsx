@@ -310,7 +310,7 @@ export const VerificationPage = () => {
             <Button
               type="submit"
               isLoading={isLoading}
-              className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white hover:from-orange-600 hover:via-pink-600 hover:to-purple-700 focus:ring-purple-500"
+              className="!w-fit bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white hover:from-orange-600 hover:via-pink-600 hover:to-purple-700 focus:ring-purple-500"
             >
               Submit for Verification
             </Button>
