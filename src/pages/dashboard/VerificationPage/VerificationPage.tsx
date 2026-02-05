@@ -306,7 +306,7 @@ export const VerificationPage = () => {
           </div>
 
           {/* Submit Button */}
-          <div className="pt-4">
+          <div className="pt-4 flex justify-center">
             <Button
               type="submit"
               isLoading={isLoading}
