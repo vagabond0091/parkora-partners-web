@@ -207,21 +207,49 @@ export const VerificationPage = () => {
 
         {/* Verification Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Required Documents */}
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-gray-900">Required Documents</h2>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Business License <span className="text-red-500">*</span>
+                Upload Business License <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <input
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) => handleFileChange('businessLicense', e.target.files)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all duration-200"
-                />
+                <label
+                  className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50/60 px-6 py-6 text-center cursor-pointer transition-colors hover:border-purple-400 hover:bg-purple-50/40"
+                >
+                  <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
+                    <svg
+                      className="h-5 w-5 text-gray-400"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 16h3m0 0h3m-3 0v4"
+                      />
+                    </svg>
+                  </span>
+                  <span className="text-sm font-medium text-gray-900">
+                    Click to upload{' '}
+                    <span className="font-normal text-gray-500">
+                      or drag and drop
+                    </span>
+                  </span>
+                  <span className="mt-1 text-xs text-gray-500">
+                    PDF, JPEG, or PNG (max 10MB)
+                  </span>
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => handleFileChange('businessLicense', e.target.files)}
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                  />
+                </label>
               </div>
               {fieldErrors.businessLicense && (
                 <p className="mt-1.5 text-sm text-red-500">{fieldErrors.businessLicense}</p>
@@ -231,11 +259,8 @@ export const VerificationPage = () => {
                   Selected: {formData.businessLicense.name}
                 </p>
               )}
-              <p className="mt-1 text-xs text-gray-500">
-                PDF, JPEG, or PNG (max 10MB)
-              </p>
               {formData.businessLicense && (
-                <p className="mt-1.5 text-sm text-green-600 font-medium">
+                <p className="mt-1.5 text-sm text-gray-600 font-medium">
                   File Uploaded
                 </p>
               )}
@@ -261,14 +286,14 @@ export const VerificationPage = () => {
                   Selected: {formData.taxDocument.name}
                 </p>
               )}
-              <p className="mt-1 text-xs text-gray-500">
-                PDF, JPEG, or PNG (max 10MB)
-              </p>
               {formData.taxDocument && (
-                <p className="mt-1.5 text-sm text-green-600 font-medium">
+                <p className="mt-1.5 text-sm text-gray-600 font-medium">
                   File Uploaded
                 </p>
               )}
+              <p className="mt-1 text-xs text-gray-500">
+                PDF, JPEG, or PNG (max 10MB)
+              </p>
             </div>
           </div>
 
