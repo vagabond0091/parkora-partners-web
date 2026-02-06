@@ -234,6 +234,11 @@ export const VerificationPage = () => {
               <p className="mt-1 text-xs text-gray-500">
                 PDF, JPEG, or PNG (max 10MB)
               </p>
+              {formData.businessLicense && (
+                <p className="mt-1.5 text-sm text-green-600 font-medium">
+                  File Uploaded
+                </p>
+              )}
             </div>
 
             <div>
@@ -259,6 +264,11 @@ export const VerificationPage = () => {
               <p className="mt-1 text-xs text-gray-500">
                 PDF, JPEG, or PNG (max 10MB)
               </p>
+              {formData.taxDocument && (
+                <p className="mt-1.5 text-sm text-green-600 font-medium">
+                  File Uploaded
+                </p>
+              )}
             </div>
           </div>
 
