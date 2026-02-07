@@ -168,6 +168,28 @@ export const VerificationPage = () => {
     }
   };
 
+  const removeFile = (field: 'businessLicense' | 'taxDocument') => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: null,
+    }));
+    setFileStatuses((prev) => {
+      const newStatuses = { ...prev };
+      delete newStatuses[field];
+      return newStatuses;
+    });
+    setUploadProgress((prev) => {
+      const newProgress = { ...prev };
+      delete newProgress[field];
+      return newProgress;
+    });
+    setFieldErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[field];
+      return newErrors;
+    });
+  };
+
   const removeAdditionalFile = (index: number) => {
     const fileToRemove = formData.additionalDocuments[index];
     if (fileToRemove) {
@@ -415,6 +437,13 @@ export const VerificationPage = () => {
                         </button>
                       )}
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => removeFile('businessLicense')}
+                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium ml-2"
+                    >
+                      Remove
+                    </button>
                   </div>
                 </div>
               )}
@@ -512,6 +541,13 @@ export const VerificationPage = () => {
                         </button>
                       )}
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => removeFile('taxDocument')}
+                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium ml-2"
+                    >
+                      Remove
+                    </button>
                   </div>
                 </div>
               )}
