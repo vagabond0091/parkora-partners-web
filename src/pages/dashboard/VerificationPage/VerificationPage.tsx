@@ -129,6 +129,11 @@ export const VerificationPage = () => {
       if (!result.success) {
         const errorMessage = result.error.issues[0]?.message || 'Some files were rejected';
         setError(errorMessage);
+        // Mark files as error
+        validFiles.forEach((file) => {
+          const fileKey = `additional_${file.name}_${file.size}`;
+          setFileStatuses((prev) => ({ ...prev, [fileKey]: 'error' }));
+        });
         return;
       }
 
@@ -136,6 +141,26 @@ export const VerificationPage = () => {
         ...prev,
         additionalDocuments: currentFiles,
       }));
+
+      // Set upload status and simulate progress for each new file
+      validFiles.forEach((file) => {
+        const fileKey = `additional_${file.name}_${file.size}`;
+        setFileStatuses((prev) => ({ ...prev, [fileKey]: 'uploading' }));
+        setUploadProgress((prev) => ({ ...prev, [fileKey]: 0 }));
+        
+        // Simulate upload progress
+        const interval = setInterval(() => {
+          setUploadProgress((prev) => {
+            const current = prev[fileKey] || 0;
+            if (current >= 100) {
+              clearInterval(interval);
+              setFileStatuses((prevStatus) => ({ ...prevStatus, [fileKey]: 'success' }));
+              return prev;
+            }
+            return { ...prev, [fileKey]: current + 10 };
+          });
+        }, 200);
+      });
     }
 
     if (errors.length > 0 && validFiles.length === 0) {
@@ -144,10 +169,43 @@ export const VerificationPage = () => {
   };
 
   const removeAdditionalFile = (index: number) => {
+    const fileToRemove = formData.additionalDocuments[index];
+    if (fileToRemove) {
+      const fileKey = `additional_${fileToRemove.name}_${fileToRemove.size}`;
+      setFileStatuses((prev) => {
+        const newStatuses = { ...prev };
+        delete newStatuses[fileKey];
+        return newStatuses;
+      });
+      setUploadProgress((prev) => {
+        const newProgress = { ...prev };
+        delete newProgress[fileKey];
+        return newProgress;
+      });
+    }
     setFormData((prev) => ({
       ...prev,
       additionalDocuments: prev.additionalDocuments.filter((_, i) => i !== index),
     }));
+  };
+
+  const handleRetryAdditionalFile = (file: File) => {
+    const fileKey = `additional_${file.name}_${file.size}`;
+    setFileStatuses((prev) => ({ ...prev, [fileKey]: 'uploading' }));
+    setUploadProgress((prev) => ({ ...prev, [fileKey]: 0 }));
+    
+    // Simulate retry upload
+    const interval = setInterval(() => {
+      setUploadProgress((prev) => {
+        const current = prev[fileKey] || 0;
+        if (current >= 100) {
+          clearInterval(interval);
+          setFileStatuses((prevStatus) => ({ ...prevStatus, [fileKey]: 'success' }));
+          return prev;
+        }
+        return { ...prev, [fileKey]: current + 10 };
+      });
+    }, 200);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -506,30 +564,76 @@ export const VerificationPage = () => {
                   />
                 </label>
               </div>
-              {formData.additionalDocuments.length > 0 && (
-                <p className="mt-1.5 text-sm text-gray-600 font-medium">
-                  {formData.additionalDocuments.length} file{formData.additionalDocuments.length > 1 ? 's' : ''} uploaded
-                </p>
-              )}
             </div>
 
             {formData.additionalDocuments.length > 0 && (
-              <div className="space-y-2">
-                {formData.additionalDocuments.map((file, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
-                  >
-                    <span className="text-sm text-gray-700">{file.name}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeAdditionalFile(index)}
-                      className="text-red-500 hover:text-red-700 text-sm font-medium"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
+              <div className="mt-4">
+                <h3 className="text-sm font-medium text-gray-900 mb-3">Files Uploaded</h3>
+                <div className="space-y-3">
+                  {formData.additionalDocuments.map((file, index) => {
+                    const fileKey = `additional_${file.name}_${file.size}`;
+                    const status = fileStatuses[fileKey] || 'success';
+                    return (
+                      <div
+                        key={`${file.name}-${file.size}-${index}`}
+                        className={`flex items-center gap-3 p-3 rounded-lg border ${
+                          status === 'error' 
+                            ? 'border-red-300 bg-red-50' 
+                            : 'border-gray-200 bg-white'
+                        }`}
+                      >
+                        <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                          <svg
+                            className="h-5 w-5 text-gray-600"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {file.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {formatFileSize(file.size)}
+                          </p>
+                          {status === 'uploading' && (
+                            <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+                              <div
+                                className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
+                                style={{ width: `${uploadProgress[fileKey] || 0}%` }}
+                              />
+                            </div>
+                          )}
+                          {status === 'error' && (
+                            <button
+                              type="button"
+                              onClick={() => handleRetryAdditionalFile(file)}
+                              className="mt-2 text-xs text-red-600 hover:text-red-700 font-medium"
+                            >
+                              Try again
+                            </button>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeAdditionalFile(index)}
+                          className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium ml-2"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
