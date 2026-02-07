@@ -22,6 +22,21 @@ export const VerificationPage = () => {
 
   const [verificationStatus, setVerificationStatus] = useState<'pending' | 'approved' | 'rejected'>('pending');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [fileStatuses, setFileStatuses] = useState<Record<string, 'uploading' | 'success' | 'error'>>({});
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+
+  /**
+   * Formats file size to human-readable format.
+   * @param bytes - File size in bytes
+   * @returns Formatted file size string
+   */
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + sizes[i];
+  };
 
   const handleFileChange = (field: string, files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -37,6 +52,7 @@ export const VerificationPage = () => {
           ...prev,
           [field]: errorMessage,
         }));
+        setFileStatuses((prev) => ({ ...prev, [field]: 'error' }));
         return;
       }
     }
@@ -47,6 +63,45 @@ export const VerificationPage = () => {
       delete newErrors[field];
       return newErrors;
     });
+    
+    // Simulate upload progress
+    setFileStatuses((prev) => ({ ...prev, [field]: 'uploading' }));
+    setUploadProgress((prev) => ({ ...prev, [field]: 0 }));
+    
+    // Simulate upload progress
+    const interval = setInterval(() => {
+      setUploadProgress((prev) => {
+        const current = prev[field] || 0;
+        if (current >= 100) {
+          clearInterval(interval);
+          setFileStatuses((prevStatus) => ({ ...prevStatus, [field]: 'success' }));
+          return prev;
+        }
+        return { ...prev, [field]: current + 10 };
+      });
+    }, 200);
+  };
+
+  const handleRetryUpload = (field: string) => {
+    const file = formData[field as keyof typeof formData];
+    if (file) {
+      // Reset status and retry
+      setFileStatuses((prev) => ({ ...prev, [field]: 'uploading' }));
+      setUploadProgress((prev) => ({ ...prev, [field]: 0 }));
+      
+      // Simulate retry upload
+      const interval = setInterval(() => {
+        setUploadProgress((prev) => {
+          const current = prev[field] || 0;
+          if (current >= 100) {
+            clearInterval(interval);
+            setFileStatuses((prevStatus) => ({ ...prevStatus, [field]: 'success' }));
+            return prev;
+          }
+          return { ...prev, [field]: current + 10 };
+        });
+      }, 200);
+    }
   };
 
   const handleAdditionalFilesChange = (files: FileList | null) => {
@@ -244,6 +299,7 @@ export const VerificationPage = () => {
                   <input
                     type="file"
                     accept=".pdf,.jpg,.jpeg,.png"
+                    data-field="businessLicense"
                     onChange={(e) => handleFileChange('businessLicense', e.target.files)}
                     className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                   />
@@ -253,9 +309,56 @@ export const VerificationPage = () => {
                 <p className="mt-1.5 text-sm text-red-500">{fieldErrors.businessLicense}</p>
               )}
               {formData.businessLicense && (
-                <p className="mt-1.5 text-sm text-gray-600 font-medium">
-                  File Uploaded
-                </p>
+                <div className="mt-4">
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">File Uploaded</h3>
+                  <div className={`flex items-center gap-3 p-3 rounded-lg border ${
+                    fileStatuses.businessLicense === 'error' 
+                      ? 'border-red-300 bg-red-50' 
+                      : 'border-gray-200 bg-white'
+                  }`}>
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                      <svg
+                        className="h-5 w-5 text-gray-600"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {formData.businessLicense.name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {formatFileSize(formData.businessLicense.size)}
+                      </p>
+                      {fileStatuses.businessLicense === 'uploading' && (
+                        <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+                          <div
+                            className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
+                            style={{ width: `${uploadProgress.businessLicense || 0}%` }}
+                          />
+                        </div>
+                      )}
+                      {fileStatuses.businessLicense === 'error' && (
+                        <button
+                          type="button"
+                          onClick={() => handleRetryUpload('businessLicense')}
+                          className="mt-2 text-xs text-red-600 hover:text-red-700 font-medium"
+                        >
+                          Try again
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
 
@@ -293,6 +396,7 @@ export const VerificationPage = () => {
                   <input
                     type="file"
                     accept=".pdf,.jpg,.jpeg,.png"
+                    data-field="taxDocument"
                     onChange={(e) => handleFileChange('taxDocument', e.target.files)}
                     className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                   />
@@ -302,9 +406,56 @@ export const VerificationPage = () => {
                 <p className="mt-1.5 text-sm text-red-500">{fieldErrors.taxDocument}</p>
               )}
               {formData.taxDocument && (
-                <p className="mt-1.5 text-sm text-gray-600 font-medium">
-                  File Uploaded
-                </p>
+                <div className="mt-4">
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">File Uploaded</h3>
+                  <div className={`flex items-center gap-3 p-3 rounded-lg border ${
+                    fileStatuses.taxDocument === 'error' 
+                      ? 'border-red-300 bg-red-50' 
+                      : 'border-gray-200 bg-white'
+                  }`}>
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                      <svg
+                        className="h-5 w-5 text-gray-600"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {formData.taxDocument.name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {formatFileSize(formData.taxDocument.size)}
+                      </p>
+                      {fileStatuses.taxDocument === 'uploading' && (
+                        <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+                          <div
+                            className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
+                            style={{ width: `${uploadProgress.taxDocument || 0}%` }}
+                          />
+                        </div>
+                      )}
+                      {fileStatuses.taxDocument === 'error' && (
+                        <button
+                          type="button"
+                          onClick={() => handleRetryUpload('taxDocument')}
+                          className="mt-2 text-xs text-red-600 hover:text-red-700 font-medium"
+                        >
+                          Try again
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           </div>
