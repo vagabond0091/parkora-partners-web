@@ -1,4 +1,18 @@
 /**
+ * Document type for file uploads
+ */
+export const DocumentType = {
+  BUSINESS_REGISTRATION: 'BUSINESS_REGISTRATION',
+  TAX_IDENTIFICATION: 'TAX_IDENTIFICATION',
+  ADDITIONAL_DOCUMENT: 'ADDITIONAL_DOCUMENT',
+} as const;
+
+/**
+ * Document type values
+ */
+export type DocumentType = typeof DocumentType[keyof typeof DocumentType];
+
+/**
  * Response from file upload API
  */
 export interface FileUploadResponse {
@@ -26,4 +40,5 @@ export interface ApiResponse<T> {
  */
 export interface FileUploadRequest {
   file: File;
+  documentType: DocumentType;
 }

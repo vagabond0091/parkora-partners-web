@@ -20,6 +20,7 @@ export const FileUploadService = {
   ): Promise<ApiResponse<FileUploadResponse>> => {
     const formData = new FormData();
     formData.append('file', request.file);
+    formData.append('documentType', request.documentType);
 
     const token = getAuthToken();
 

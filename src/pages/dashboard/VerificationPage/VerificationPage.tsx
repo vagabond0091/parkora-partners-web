@@ -5,6 +5,7 @@ import { useAppStatusStore } from '@/stores/appStatusStore';
 import { verificationSchema } from '@/validation/verification.validation';
 import { FileUploadService } from '@/services/FileUploadService';
 import type { FileUploadResponse } from '@/types/services/fileUpload.types';
+import { DocumentType } from '@/types/services/fileUpload.types';
 
 /**
  * Business verification page component.
@@ -39,6 +40,21 @@ export const VerificationPage = () => {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + sizes[i];
+  };
+
+  /**
+   * Gets the document type based on the field name.
+   * @param field - The field name
+   * @returns The corresponding document type
+   */
+  const getDocumentType = (field: string): DocumentType => {
+    if (field === 'businessLicense') {
+      return DocumentType.BUSINESS_REGISTRATION;
+    }
+    if (field === 'taxDocument') {
+      return DocumentType.TAX_IDENTIFICATION;
+    }
+    return DocumentType.ADDITIONAL_DOCUMENT;
   };
 
   const handleFileChange = (field: string, files: FileList | null) => {
@@ -93,6 +109,7 @@ export const VerificationPage = () => {
         const response = await FileUploadService.upload(
           {
             file: file,
+            documentType: getDocumentType(field),
           },
           (progress) => {
             setUploadProgress((prev) => ({ ...prev, [field]: progress }));
@@ -220,6 +237,7 @@ export const VerificationPage = () => {
       const response = await FileUploadService.upload(
         {
           file: file,
+          documentType: DocumentType.ADDITIONAL_DOCUMENT,
         },
         (progress) => {
           setUploadProgress((prev) => ({ ...prev, [fileKey]: progress }));
@@ -275,7 +293,10 @@ export const VerificationPage = () => {
         
         try {
           const response = await FileUploadService.upload(
-            { file: formData.businessLicense },
+            { 
+              file: formData.businessLicense,
+              documentType: DocumentType.BUSINESS_REGISTRATION,
+            },
             (progress) => {
               setUploadProgress((prev) => ({ ...prev, businessLicense: progress }));
             }
@@ -298,7 +319,10 @@ export const VerificationPage = () => {
         
         try {
           const response = await FileUploadService.upload(
-            { file: formData.taxDocument },
+            { 
+              file: formData.taxDocument,
+              documentType: DocumentType.TAX_IDENTIFICATION,
+            },
             (progress) => {
               setUploadProgress((prev) => ({ ...prev, taxDocument: progress }));
             }
@@ -322,7 +346,10 @@ export const VerificationPage = () => {
         
         try {
           const response = await FileUploadService.upload(
-            { file },
+            { 
+              file,
+              documentType: DocumentType.ADDITIONAL_DOCUMENT,
+            },
             (progress) => {
               setUploadProgress((prev) => ({ ...prev, [fileKey]: progress }));
             }
