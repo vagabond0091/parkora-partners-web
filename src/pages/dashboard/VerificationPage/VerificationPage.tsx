@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { Button } from '@/components/common/Button/Button';
 import { useAppStatusStore } from '@/stores/appStatusStore';
 import { verificationSchema } from '@/validation/verification.validation';
+import { FileUploadService } from '@/services/FileUploadService';
+import type { FileUploadResponse } from '@/types/services/fileUpload.types';
 
 /**
  * Business verification page component.
@@ -24,6 +26,7 @@ export const VerificationPage = () => {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [fileStatuses, setFileStatuses] = useState<Record<string, 'uploading' | 'success' | 'error'>>({});
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+  const [uploadedFiles, setUploadedFiles] = useState<Record<string, FileUploadResponse>>({});
 
   /**
    * Formats file size to human-readable format.
@@ -38,7 +41,7 @@ export const VerificationPage = () => {
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + sizes[i];
   };
 
-  const handleFileChange = (field: string, files: FileList | null) => {
+  const handleFileChange = async (field: string, files: FileList | null) => {
     if (!files || files.length === 0) return;
 
     const file = files[0];
@@ -64,47 +67,72 @@ export const VerificationPage = () => {
       return newErrors;
     });
     
-    // Simulate upload progress
+    // Start upload to Supabase
     setFileStatuses((prev) => ({ ...prev, [field]: 'uploading' }));
     setUploadProgress((prev) => ({ ...prev, [field]: 0 }));
-    
-    // Simulate upload progress
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        const current = prev[field] || 0;
-        if (current >= 100) {
-          clearInterval(interval);
-          setFileStatuses((prevStatus) => ({ ...prevStatus, [field]: 'success' }));
-          return prev;
-        }
-        return { ...prev, [field]: current + 10 };
-      });
-    }, 200);
-  };
 
-  const handleRetryUpload = (field: string) => {
-    const file = formData[field as keyof typeof formData];
-    if (file) {
-      // Reset status and retry
-      setFileStatuses((prev) => ({ ...prev, [field]: 'uploading' }));
-      setUploadProgress((prev) => ({ ...prev, [field]: 0 }));
-      
-      // Simulate retry upload
-      const interval = setInterval(() => {
-        setUploadProgress((prev) => {
-          const current = prev[field] || 0;
-          if (current >= 100) {
-            clearInterval(interval);
-            setFileStatuses((prevStatus) => ({ ...prevStatus, [field]: 'success' }));
-            return prev;
-          }
-          return { ...prev, [field]: current + 10 };
-        });
-      }, 200);
+    try {
+      const response = await FileUploadService.upload(
+        {
+          bucket: 'verification-documents',
+          folder: 'documents',
+          file: file,
+        },
+        (progress) => {
+          setUploadProgress((prev) => ({ ...prev, [field]: progress }));
+        }
+      );
+
+      setUploadedFiles((prev) => ({ ...prev, [field]: response.data }));
+      setFileStatuses((prev) => ({ ...prev, [field]: 'success' }));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'File upload failed';
+      setFieldErrors((prev) => ({
+        ...prev,
+        [field]: errorMessage,
+      }));
+      setFileStatuses((prev) => ({ ...prev, [field]: 'error' }));
     }
   };
 
-  const handleAdditionalFilesChange = (files: FileList | null) => {
+  const handleRetryUpload = async (field: string) => {
+    const file = formData[field as keyof typeof formData];
+    if (file && file instanceof File) {
+      // Reset status and retry
+      setFileStatuses((prev) => ({ ...prev, [field]: 'uploading' }));
+      setUploadProgress((prev) => ({ ...prev, [field]: 0 }));
+      setFieldErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+
+      try {
+        const response = await FileUploadService.upload(
+          {
+            bucket: 'verification-documents',
+            folder: 'documents',
+            file: file,
+          },
+          (progress) => {
+            setUploadProgress((prev) => ({ ...prev, [field]: progress }));
+          }
+        );
+
+        setUploadedFiles((prev) => ({ ...prev, [field]: response.data }));
+        setFileStatuses((prev) => ({ ...prev, [field]: 'success' }));
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'File upload failed';
+        setFieldErrors((prev) => ({
+          ...prev,
+          [field]: errorMessage,
+        }));
+        setFileStatuses((prev) => ({ ...prev, [field]: 'error' }));
+      }
+    }
+  };
+
+  const handleAdditionalFilesChange = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
     const fileArray = Array.from(files);
@@ -142,25 +170,32 @@ export const VerificationPage = () => {
         additionalDocuments: currentFiles,
       }));
 
-      // Set upload status and simulate progress for each new file
-      validFiles.forEach((file) => {
+      // Upload each new file to Supabase
+      for (const file of validFiles) {
         const fileKey = `additional_${file.name}_${file.size}`;
         setFileStatuses((prev) => ({ ...prev, [fileKey]: 'uploading' }));
         setUploadProgress((prev) => ({ ...prev, [fileKey]: 0 }));
-        
-        // Simulate upload progress
-        const interval = setInterval(() => {
-          setUploadProgress((prev) => {
-            const current = prev[fileKey] || 0;
-            if (current >= 100) {
-              clearInterval(interval);
-              setFileStatuses((prevStatus) => ({ ...prevStatus, [fileKey]: 'success' }));
-              return prev;
+
+        try {
+          const response = await FileUploadService.upload(
+            {
+              bucket: 'verification-documents',
+              folder: 'documents',
+              file: file,
+            },
+            (progress) => {
+              setUploadProgress((prev) => ({ ...prev, [fileKey]: progress }));
             }
-            return { ...prev, [fileKey]: current + 10 };
-          });
-        }, 200);
-      });
+          );
+
+          setUploadedFiles((prev) => ({ ...prev, [fileKey]: response.data }));
+          setFileStatuses((prev) => ({ ...prev, [fileKey]: 'success' }));
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'File upload failed';
+          setFileStatuses((prev) => ({ ...prev, [fileKey]: 'error' }));
+          setError(`Failed to upload ${file.name}: ${errorMessage}`);
+        }
+      }
     }
 
     if (errors.length > 0 && validFiles.length === 0) {
@@ -211,23 +246,30 @@ export const VerificationPage = () => {
     }));
   };
 
-  const handleRetryAdditionalFile = (file: File) => {
+  const handleRetryAdditionalFile = async (file: File) => {
     const fileKey = `additional_${file.name}_${file.size}`;
     setFileStatuses((prev) => ({ ...prev, [fileKey]: 'uploading' }));
     setUploadProgress((prev) => ({ ...prev, [fileKey]: 0 }));
-    
-    // Simulate retry upload
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        const current = prev[fileKey] || 0;
-        if (current >= 100) {
-          clearInterval(interval);
-          setFileStatuses((prevStatus) => ({ ...prevStatus, [fileKey]: 'success' }));
-          return prev;
+
+    try {
+      const response = await FileUploadService.upload(
+        {
+          bucket: 'verification-documents',
+          folder: 'documents',
+          file: file,
+        },
+        (progress) => {
+          setUploadProgress((prev) => ({ ...prev, [fileKey]: progress }));
         }
-        return { ...prev, [fileKey]: current + 10 };
-      });
-    }, 200);
+      );
+
+      setUploadedFiles((prev) => ({ ...prev, [fileKey]: response.data }));
+      setFileStatuses((prev) => ({ ...prev, [fileKey]: 'success' }));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'File upload failed';
+      setFileStatuses((prev) => ({ ...prev, [fileKey]: 'error' }));
+      setError(`Failed to upload ${file.name}: ${errorMessage}`);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -251,19 +293,29 @@ export const VerificationPage = () => {
       return;
     }
 
+    // Check if all required files have been uploaded
+    if (!uploadedFiles.businessLicense || !uploadedFiles.taxDocument) {
+      setError('Please ensure all required documents are uploaded successfully before submitting.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // TODO: Implement API call to submit verification documents
-      // const formDataToSend = new FormData();
-      // formDataToSend.append('businessLicense', result.data.businessLicense);
-      // formDataToSend.append('taxDocument', result.data.taxDocument);
-      // result.data.additionalDocuments?.forEach((file) => {
-      //   formDataToSend.append('additionalDocuments', file);
-      // });
-      // await VerificationService.submitVerification(formDataToSend);
+      // TODO: Implement API call to submit verification with uploaded file URLs
+      // The uploadedFiles object contains the file URLs from Supabase
+      // You can use these URLs to submit the verification request
+      // Example:
+      // const verificationData = {
+      //   businessLicenseUrl: uploadedFiles.businessLicense.url,
+      //   taxDocumentUrl: uploadedFiles.taxDocument.url,
+      //   additionalDocuments: Object.values(uploadedFiles)
+      //     .filter((file, index) => index > 1) // Skip businessLicense and taxDocument
+      //     .map((file) => file.url),
+      // };
+      // await VerificationService.submitVerification(verificationData);
 
-      // Simulate API call
+      // For now, simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       setVerificationStatus('pending');
