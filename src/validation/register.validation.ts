@@ -98,7 +98,13 @@ export const companyInfoSchema = z.object({
 /**
  * Complete registration schema combining both steps
  */
-export const registerSchema = userInfoSchema.merge(companyInfoSchema);
+export const registerSchema = userInfoSchema.merge(companyInfoSchema).refine(
+  (data) => data.password === data.confirmPassword,
+  {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  }
+);
 
 /**
  * Type inferred from register schema
