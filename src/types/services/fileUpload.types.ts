@@ -42,3 +42,21 @@ export interface FileUploadRequest {
   file: File;
   documentType: DocumentType;
 }
+
+/**
+ * Batch file upload request parameters
+ */
+export interface BatchFileUploadRequest {
+  businessLicense?: File;
+  taxDocument?: File;
+  additionalDocuments?: File[];
+}
+
+/**
+ * Batch file upload response
+ */
+export interface BatchFileUploadResponse {
+  businessLicense?: FileUploadResponse;
+  taxDocument?: FileUploadResponse;
+  additionalDocuments?: FileUploadResponse[];
+}

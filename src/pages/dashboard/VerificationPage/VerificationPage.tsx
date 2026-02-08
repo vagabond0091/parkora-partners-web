@@ -283,90 +283,77 @@ export const VerificationPage = () => {
     setLoading(true);
 
     try {
-      // Upload all files to Supabase
-      const uploadResults: Record<string, FileUploadResponse> = {};
-
-      // Upload business license
-      if (formData.businessLicense) {
-        setFileStatuses((prev) => ({ ...prev, businessLicense: 'uploading' }));
-        setUploadProgress((prev) => ({ ...prev, businessLicense: 0 }));
-        
-        try {
-          const response = await FileUploadService.upload(
-            { 
-              file: formData.businessLicense,
-              documentType: DocumentType.BUSINESS_REGISTRATION,
-            },
-            (progress) => {
-              setUploadProgress((prev) => ({ ...prev, businessLicense: progress }));
-            }
-          );
-          uploadResults.businessLicense = response.data;
-          setUploadedFiles((prev) => ({ ...prev, businessLicense: response.data }));
-          setFileStatuses((prev) => ({ ...prev, businessLicense: 'success' }));
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'File upload failed';
-          setFieldErrors((prev) => ({ ...prev, businessLicense: errorMessage }));
-          setFileStatuses((prev) => ({ ...prev, businessLicense: 'error' }));
-          throw error;
-        }
-      }
-
-      // Upload tax document
-      if (formData.taxDocument) {
-        setFileStatuses((prev) => ({ ...prev, taxDocument: 'uploading' }));
-        setUploadProgress((prev) => ({ ...prev, taxDocument: 0 }));
-        
-        try {
-          const response = await FileUploadService.upload(
-            { 
-              file: formData.taxDocument,
-              documentType: DocumentType.TAX_IDENTIFICATION,
-            },
-            (progress) => {
-              setUploadProgress((prev) => ({ ...prev, taxDocument: progress }));
-            }
-          );
-          uploadResults.taxDocument = response.data;
-          setUploadedFiles((prev) => ({ ...prev, taxDocument: response.data }));
-          setFileStatuses((prev) => ({ ...prev, taxDocument: 'success' }));
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'File upload failed';
-          setFieldErrors((prev) => ({ ...prev, taxDocument: errorMessage }));
-          setFileStatuses((prev) => ({ ...prev, taxDocument: 'error' }));
-          throw error;
-        }
-      }
-
-      // Upload additional documents
-      const additionalUploadPromises = formData.additionalDocuments.map(async (file) => {
-        const fileKey = `additional_${file.name}_${file.size}`;
-        setFileStatuses((prev) => ({ ...prev, [fileKey]: 'uploading' }));
-        setUploadProgress((prev) => ({ ...prev, [fileKey]: 0 }));
-        
-        try {
-          const response = await FileUploadService.upload(
-            { 
-              file,
-              documentType: DocumentType.ADDITIONAL_DOCUMENT,
-            },
-            (progress) => {
-              setUploadProgress((prev) => ({ ...prev, [fileKey]: progress }));
-            }
-          );
-          uploadResults[fileKey] = response.data;
-          setUploadedFiles((prev) => ({ ...prev, [fileKey]: response.data }));
-          setFileStatuses((prev) => ({ ...prev, [fileKey]: 'success' }));
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'File upload failed';
-          setFileStatuses((prev) => ({ ...prev, [fileKey]: 'error' }));
-          setError(`Failed to upload ${file.name}: ${errorMessage}`);
-          throw error;
-        }
+      // Set all files to uploading status
+      setFileStatuses((prev) => {
+        const newStatuses = { ...prev };
+        if (formData.businessLicense) newStatuses.businessLicense = 'uploading';
+        if (formData.taxDocument) newStatuses.taxDocument = 'uploading';
+        formData.additionalDocuments.forEach((file) => {
+          const fileKey = `additional_${file.name}_${file.size}`;
+          newStatuses[fileKey] = 'uploading';
+        });
+        return newStatuses;
       });
 
-      // Wait for all additional document uploads to complete
-      await Promise.all(additionalUploadPromises);
+      setUploadProgress((prev) => {
+        const newProgress = { ...prev };
+        if (formData.businessLicense) newProgress.businessLicense = 0;
+        if (formData.taxDocument) newProgress.taxDocument = 0;
+        formData.additionalDocuments.forEach((file) => {
+          const fileKey = `additional_${file.name}_${file.size}`;
+          newProgress[fileKey] = 0;
+        });
+        return newProgress;
+      });
+
+      // Single batch upload call - sends all 3 parameters in one API call
+      const response = await FileUploadService.uploadBatch(
+        {
+          businessLicense: formData.businessLicense || undefined,
+          taxDocument: formData.taxDocument || undefined,
+          additionalDocuments: formData.additionalDocuments.length > 0 
+            ? formData.additionalDocuments 
+            : undefined,
+        },
+        (progress) => {
+          // Update progress for all files
+          setUploadProgress((prev) => {
+            const newProgress = { ...prev };
+            if (formData.businessLicense) newProgress.businessLicense = progress;
+            if (formData.taxDocument) newProgress.taxDocument = progress;
+            formData.additionalDocuments.forEach((file) => {
+              const fileKey = `additional_${file.name}_${file.size}`;
+              newProgress[fileKey] = progress;
+            });
+            return newProgress;
+          });
+        }
+      );
+
+      // Process response and update states
+      const uploadResults: Record<string, FileUploadResponse> = {};
+
+      if (response.data.businessLicense) {
+        uploadResults.businessLicense = response.data.businessLicense;
+        setUploadedFiles((prev) => ({ ...prev, businessLicense: response.data.businessLicense! }));
+        setFileStatuses((prev) => ({ ...prev, businessLicense: 'success' }));
+      }
+
+      if (response.data.taxDocument) {
+        uploadResults.taxDocument = response.data.taxDocument;
+        setUploadedFiles((prev) => ({ ...prev, taxDocument: response.data.taxDocument! }));
+        setFileStatuses((prev) => ({ ...prev, taxDocument: 'success' }));
+      }
+
+      if (response.data.additionalDocuments) {
+        response.data.additionalDocuments.forEach((fileResponse, index) => {
+          const file = formData.additionalDocuments[index];
+          const fileKey = `additional_${file.name}_${file.size}`;
+          uploadResults[fileKey] = fileResponse;
+          setUploadedFiles((prev) => ({ ...prev, [fileKey]: fileResponse }));
+          setFileStatuses((prev) => ({ ...prev, [fileKey]: 'success' }));
+        });
+      }
 
       // Check if all required files uploaded successfully
       if (!uploadResults.businessLicense || !uploadResults.taxDocument) {
@@ -375,12 +362,23 @@ export const VerificationPage = () => {
         return;
       }
 
-
       setVerificationStatus('pending');
       setError('Verification submitted successfully! Your documents are under review.');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to submit verification';
       setError(errorMessage);
+      
+      // Mark all files as error
+      setFileStatuses((prev) => {
+        const newStatuses = { ...prev };
+        if (formData.businessLicense) newStatuses.businessLicense = 'error';
+        if (formData.taxDocument) newStatuses.taxDocument = 'error';
+        formData.additionalDocuments.forEach((file) => {
+          const fileKey = `additional_${file.name}_${file.size}`;
+          newStatuses[fileKey] = 'error';
+        });
+        return newStatuses;
+      });
     } finally {
       setLoading(false);
     }
