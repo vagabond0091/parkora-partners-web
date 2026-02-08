@@ -25,7 +25,5 @@ export interface ApiResponse<T> {
  * File upload request parameters
  */
 export interface FileUploadRequest {
-  bucket: string;
-  folder?: string;
   file: File;
 }

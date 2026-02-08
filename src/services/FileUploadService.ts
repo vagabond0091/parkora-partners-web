@@ -28,10 +28,6 @@ export const FileUploadService = {
     onProgress?: (progress: number) => void
   ): Promise<ApiResponse<FileUploadResponse>> => {
     const formData = new FormData();
-    formData.append('bucket', request.bucket);
-    if (request.folder) {
-      formData.append('folder', request.folder);
-    }
     formData.append('file', request.file);
 
     const token = getAuthToken();

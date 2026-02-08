@@ -74,8 +74,6 @@ export const VerificationPage = () => {
     try {
       const response = await FileUploadService.upload(
         {
-          bucket: 'verification-documents',
-          folder: 'documents',
           file: file,
         },
         (progress) => {
@@ -110,8 +108,6 @@ export const VerificationPage = () => {
       try {
         const response = await FileUploadService.upload(
           {
-            bucket: 'verification-documents',
-            folder: 'documents',
             file: file,
           },
           (progress) => {
@@ -179,8 +175,6 @@ export const VerificationPage = () => {
         try {
           const response = await FileUploadService.upload(
             {
-              bucket: 'verification-documents',
-              folder: 'documents',
               file: file,
             },
             (progress) => {
@@ -254,8 +248,6 @@ export const VerificationPage = () => {
     try {
       const response = await FileUploadService.upload(
         {
-          bucket: 'verification-documents',
-          folder: 'documents',
           file: file,
         },
         (progress) => {
