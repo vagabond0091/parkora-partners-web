@@ -67,7 +67,7 @@ export const FileUploadService = {
         reject(new Error('File upload was aborted'));
       });
 
-      xhr.open('POST', `${API_URL}/upload`);
+      xhr.open('POST', `${API_URL}/storage/upload`);
       
       if (token) {
         xhr.setRequestHeader('Authorization', `Bearer ${token}`);

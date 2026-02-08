@@ -24,7 +24,7 @@ export const VerificationPage = () => {
 
   const [verificationStatus, setVerificationStatus] = useState<'pending' | 'approved' | 'rejected'>('pending');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [fileStatuses, setFileStatuses] = useState<Record<string, 'uploading' | 'success' | 'error'>>({});
+  const [fileStatuses, setFileStatuses] = useState<Record<string, 'selected' | 'uploading' | 'success' | 'error'>>({});
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, FileUploadResponse>>({});
 
@@ -41,7 +41,7 @@ export const VerificationPage = () => {
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + sizes[i];
   };
 
-  const handleFileChange = async (field: string, files: FileList | null) => {
+  const handleFileChange = (field: string, files: FileList | null) => {
     if (!files || files.length === 0) return;
 
     const file = files[0];
@@ -67,30 +67,14 @@ export const VerificationPage = () => {
       return newErrors;
     });
     
-    // Start upload to Supabase
-    setFileStatuses((prev) => ({ ...prev, [field]: 'uploading' }));
-    setUploadProgress((prev) => ({ ...prev, [field]: 0 }));
-
-    try {
-      const response = await FileUploadService.upload(
-        {
-          file: file,
-        },
-        (progress) => {
-          setUploadProgress((prev) => ({ ...prev, [field]: progress }));
-        }
-      );
-
-      setUploadedFiles((prev) => ({ ...prev, [field]: response.data }));
-      setFileStatuses((prev) => ({ ...prev, [field]: 'success' }));
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'File upload failed';
-      setFieldErrors((prev) => ({
-        ...prev,
-        [field]: errorMessage,
-      }));
-      setFileStatuses((prev) => ({ ...prev, [field]: 'error' }));
-    }
+    // Mark file as selected (not uploaded yet)
+    setFileStatuses((prev) => ({ ...prev, [field]: 'selected' }));
+    // Clear any previous upload data for this field
+    setUploadedFiles((prev) => {
+      const newFiles = { ...prev };
+      delete newFiles[field];
+      return newFiles;
+    });
   };
 
   const handleRetryUpload = async (field: string) => {
@@ -128,7 +112,7 @@ export const VerificationPage = () => {
     }
   };
 
-  const handleAdditionalFilesChange = async (files: FileList | null) => {
+  const handleAdditionalFilesChange = (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
     const fileArray = Array.from(files);
@@ -166,30 +150,17 @@ export const VerificationPage = () => {
         additionalDocuments: currentFiles,
       }));
 
-      // Upload each new file to Supabase
-      for (const file of validFiles) {
+      // Mark files as selected (not uploaded yet)
+      validFiles.forEach((file) => {
         const fileKey = `additional_${file.name}_${file.size}`;
-        setFileStatuses((prev) => ({ ...prev, [fileKey]: 'uploading' }));
-        setUploadProgress((prev) => ({ ...prev, [fileKey]: 0 }));
-
-        try {
-          const response = await FileUploadService.upload(
-            {
-              file: file,
-            },
-            (progress) => {
-              setUploadProgress((prev) => ({ ...prev, [fileKey]: progress }));
-            }
-          );
-
-          setUploadedFiles((prev) => ({ ...prev, [fileKey]: response.data }));
-          setFileStatuses((prev) => ({ ...prev, [fileKey]: 'success' }));
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'File upload failed';
-          setFileStatuses((prev) => ({ ...prev, [fileKey]: 'error' }));
-          setError(`Failed to upload ${file.name}: ${errorMessage}`);
-        }
-      }
+        setFileStatuses((prev) => ({ ...prev, [fileKey]: 'selected' }));
+        // Clear any previous upload data for this file
+        setUploadedFiles((prev) => {
+          const newFiles = { ...prev };
+          delete newFiles[fileKey];
+          return newFiles;
+        });
+      });
     }
 
     if (errors.length > 0 && validFiles.length === 0) {
@@ -285,30 +256,98 @@ export const VerificationPage = () => {
       return;
     }
 
-    // Check if all required files have been uploaded
-    if (!uploadedFiles.businessLicense || !uploadedFiles.taxDocument) {
-      setError('Please ensure all required documents are uploaded successfully before submitting.');
+    // Check if all required files are selected
+    if (!formData.businessLicense || !formData.taxDocument) {
+      setError('Please select all required documents before submitting.');
       return;
     }
 
     setLoading(true);
 
     try {
-      // TODO: Implement API call to submit verification with uploaded file URLs
-      // The uploadedFiles object contains the file URLs from Supabase
-      // You can use these URLs to submit the verification request
-      // Example:
-      // const verificationData = {
-      //   businessLicenseUrl: uploadedFiles.businessLicense.url,
-      //   taxDocumentUrl: uploadedFiles.taxDocument.url,
-      //   additionalDocuments: Object.values(uploadedFiles)
-      //     .filter((file, index) => index > 1) // Skip businessLicense and taxDocument
-      //     .map((file) => file.url),
-      // };
-      // await VerificationService.submitVerification(verificationData);
+      // Upload all files to Supabase
+      const uploadResults: Record<string, FileUploadResponse> = {};
 
-      // For now, simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Upload business license
+      if (formData.businessLicense) {
+        setFileStatuses((prev) => ({ ...prev, businessLicense: 'uploading' }));
+        setUploadProgress((prev) => ({ ...prev, businessLicense: 0 }));
+        
+        try {
+          const response = await FileUploadService.upload(
+            { file: formData.businessLicense },
+            (progress) => {
+              setUploadProgress((prev) => ({ ...prev, businessLicense: progress }));
+            }
+          );
+          uploadResults.businessLicense = response.data;
+          setUploadedFiles((prev) => ({ ...prev, businessLicense: response.data }));
+          setFileStatuses((prev) => ({ ...prev, businessLicense: 'success' }));
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'File upload failed';
+          setFieldErrors((prev) => ({ ...prev, businessLicense: errorMessage }));
+          setFileStatuses((prev) => ({ ...prev, businessLicense: 'error' }));
+          throw error;
+        }
+      }
+
+      // Upload tax document
+      if (formData.taxDocument) {
+        setFileStatuses((prev) => ({ ...prev, taxDocument: 'uploading' }));
+        setUploadProgress((prev) => ({ ...prev, taxDocument: 0 }));
+        
+        try {
+          const response = await FileUploadService.upload(
+            { file: formData.taxDocument },
+            (progress) => {
+              setUploadProgress((prev) => ({ ...prev, taxDocument: progress }));
+            }
+          );
+          uploadResults.taxDocument = response.data;
+          setUploadedFiles((prev) => ({ ...prev, taxDocument: response.data }));
+          setFileStatuses((prev) => ({ ...prev, taxDocument: 'success' }));
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'File upload failed';
+          setFieldErrors((prev) => ({ ...prev, taxDocument: errorMessage }));
+          setFileStatuses((prev) => ({ ...prev, taxDocument: 'error' }));
+          throw error;
+        }
+      }
+
+      // Upload additional documents
+      const additionalUploadPromises = formData.additionalDocuments.map(async (file) => {
+        const fileKey = `additional_${file.name}_${file.size}`;
+        setFileStatuses((prev) => ({ ...prev, [fileKey]: 'uploading' }));
+        setUploadProgress((prev) => ({ ...prev, [fileKey]: 0 }));
+        
+        try {
+          const response = await FileUploadService.upload(
+            { file },
+            (progress) => {
+              setUploadProgress((prev) => ({ ...prev, [fileKey]: progress }));
+            }
+          );
+          uploadResults[fileKey] = response.data;
+          setUploadedFiles((prev) => ({ ...prev, [fileKey]: response.data }));
+          setFileStatuses((prev) => ({ ...prev, [fileKey]: 'success' }));
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'File upload failed';
+          setFileStatuses((prev) => ({ ...prev, [fileKey]: 'error' }));
+          setError(`Failed to upload ${file.name}: ${errorMessage}`);
+          throw error;
+        }
+      });
+
+      // Wait for all additional document uploads to complete
+      await Promise.all(additionalUploadPromises);
+
+      // Check if all required files uploaded successfully
+      if (!uploadResults.businessLicense || !uploadResults.taxDocument) {
+        setError('Failed to upload required documents. Please try again.');
+        setLoading(false);
+        return;
+      }
+
 
       setVerificationStatus('pending');
       setError('Verification submitted successfully! Your documents are under review.');
@@ -438,6 +477,8 @@ export const VerificationPage = () => {
                   <div className={`flex items-center gap-3 p-3 rounded-lg border ${
                     fileStatuses.businessLicense === 'error' 
                       ? 'border-red-300 bg-red-50' 
+                      : fileStatuses.businessLicense === 'success'
+                      ? 'border-green-300 bg-green-50'
                       : 'border-gray-200 bg-white'
                   }`}>
                     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
@@ -542,6 +583,8 @@ export const VerificationPage = () => {
                   <div className={`flex items-center gap-3 p-3 rounded-lg border ${
                     fileStatuses.taxDocument === 'error' 
                       ? 'border-red-300 bg-red-50' 
+                      : fileStatuses.taxDocument === 'success'
+                      ? 'border-green-300 bg-green-50'
                       : 'border-gray-200 bg-white'
                   }`}>
                     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
@@ -652,13 +695,15 @@ export const VerificationPage = () => {
                 <div className="space-y-3">
                   {formData.additionalDocuments.map((file, index) => {
                     const fileKey = `additional_${file.name}_${file.size}`;
-                    const status = fileStatuses[fileKey] || 'success';
+                    const status = fileStatuses[fileKey] || 'selected';
                     return (
                       <div
                         key={`${file.name}-${file.size}-${index}`}
                         className={`flex items-center gap-3 p-3 rounded-lg border ${
                           status === 'error' 
                             ? 'border-red-300 bg-red-50' 
+                            : status === 'success'
+                            ? 'border-green-300 bg-green-50'
                             : 'border-gray-200 bg-white'
                         }`}
                       >
