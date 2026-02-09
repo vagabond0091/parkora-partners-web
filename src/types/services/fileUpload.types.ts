@@ -23,6 +23,7 @@ export interface FileUploadResponse {
   fileName: string;
   fileSize: number;
   contentType: string;
+  documentType?: DocumentType;
 }
 
 /**
@@ -53,10 +54,12 @@ export interface BatchFileUploadRequest {
 }
 
 /**
- * Batch file upload response
+ * Batch file upload response from backend
  */
 export interface BatchFileUploadResponse {
-  businessLicense?: FileUploadResponse;
-  taxDocument?: FileUploadResponse;
-  additionalDocuments?: FileUploadResponse[];
+  uploadedFiles: FileUploadResponse[];
+  totalFiles: number;
+  successfulUploads: number;
+  failedUploads: number;
+  message: string;
 }

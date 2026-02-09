@@ -331,35 +331,51 @@ export const VerificationPage = () => {
       );
 
       // Process response and update states
+      // Backend returns uploadedFiles array in order: businessLicense, taxDocument, then additionalDocuments
       const uploadResults: Record<string, FileUploadResponse> = {};
+      const { uploadedFiles: uploadedFilesArray } = response.data;
+      let fileIndex = 0;
 
-      if (response.data.businessLicense) {
-        uploadResults.businessLicense = response.data.businessLicense;
-        setUploadedFiles((prev) => ({ ...prev, businessLicense: response.data.businessLicense! }));
+      // Map businessLicense (first file if present)
+      if (formData.businessLicense && fileIndex < uploadedFilesArray.length) {
+        const fileResponse = uploadedFilesArray[fileIndex];
+        uploadResults.businessLicense = fileResponse;
+        setUploadedFiles((prev) => ({ ...prev, businessLicense: fileResponse }));
         setFileStatuses((prev) => ({ ...prev, businessLicense: 'success' }));
+        fileIndex++;
       }
 
-      if (response.data.taxDocument) {
-        uploadResults.taxDocument = response.data.taxDocument;
-        setUploadedFiles((prev) => ({ ...prev, taxDocument: response.data.taxDocument! }));
+      // Map taxDocument (second file if present)
+      if (formData.taxDocument && fileIndex < uploadedFilesArray.length) {
+        const fileResponse = uploadedFilesArray[fileIndex];
+        uploadResults.taxDocument = fileResponse;
+        setUploadedFiles((prev) => ({ ...prev, taxDocument: fileResponse }));
         setFileStatuses((prev) => ({ ...prev, taxDocument: 'success' }));
+        fileIndex++;
       }
 
-      if (response.data.additionalDocuments) {
-        response.data.additionalDocuments.forEach((fileResponse, index) => {
-          const file = formData.additionalDocuments[index];
+      // Map additionalDocuments (remaining files)
+      formData.additionalDocuments.forEach((file) => {
+        if (fileIndex < uploadedFilesArray.length) {
+          const fileResponse = uploadedFilesArray[fileIndex];
           const fileKey = `additional_${file.name}_${file.size}`;
           uploadResults[fileKey] = fileResponse;
           setUploadedFiles((prev) => ({ ...prev, [fileKey]: fileResponse }));
           setFileStatuses((prev) => ({ ...prev, [fileKey]: 'success' }));
-        });
-      }
+          fileIndex++;
+        }
+      });
 
       // Check if all required files uploaded successfully
       if (!uploadResults.businessLicense || !uploadResults.taxDocument) {
-        setError('Failed to upload required documents. Please try again.');
+        setError(response.data.message || 'Failed to upload required documents. Please try again.');
         setLoading(false);
         return;
+      }
+
+      // Show success message from backend if available
+      if (response.data.message && response.data.successfulUploads > 0) {
+        setError(response.data.message);
       }
 
       setVerificationStatus('pending');

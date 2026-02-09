@@ -125,8 +125,15 @@ export const FileUploadService = {
       xhr.addEventListener('load', () => {
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
-            const response: ApiResponse<BatchFileUploadResponse> = JSON.parse(xhr.responseText);
-            resolve(response);
+            const response: BatchFileUploadResponse = JSON.parse(xhr.responseText);
+            // Wrap in ApiResponse for consistency with other endpoints
+            const wrappedResponse: ApiResponse<BatchFileUploadResponse> = {
+              data: response,
+              errorCode: response.failedUploads > 0 ? 1 : 0,
+              message: response.message,
+              status: response.failedUploads > 0 ? 'partial_success' : 'success',
+            };
+            resolve(wrappedResponse);
           } catch (error) {
             reject(new Error('Failed to parse response'));
           }
