@@ -344,7 +344,7 @@ export const VerificationPage = () => {
       // Process response and update states
       // Backend returns uploadedFiles array in order: businessLicense, taxDocument, then additionalDocuments
       const uploadResults: Record<string, FileUploadResponse> = {};
-      const { uploadedFiles: uploadedFilesArray } = response.data;
+      const uploadedFilesArray = response.data.uploadedFiles || [];
       let fileIndex = 0;
 
       // Map businessLicense (first file if present)
