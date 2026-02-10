@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { z } from 'zod';
 import { Button } from '@/components/common/Button/Button';
 import { useAppStatusStore } from '@/stores/appStatusStore';
@@ -14,6 +14,7 @@ import { DocumentType } from '@/types/services/fileUpload.types';
 export const VerificationPage = () => {
   const isLoading = useAppStatusStore((state) => state.isLoading);
   const setLoading = useAppStatusStore((state) => state.setLoading);
+  const error = useAppStatusStore((state) => state.error);
   const setError = useAppStatusStore((state) => state.setError);
   const clearError = useAppStatusStore((state) => state.clearError);
 
@@ -28,6 +29,16 @@ export const VerificationPage = () => {
   const [fileStatuses, setFileStatuses] = useState<Record<string, 'selected' | 'uploading' | 'success' | 'error'>>({});
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, FileUploadResponse>>({});
+  const errorRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * Scrolls to top of page when error occurs
+   */
+  useEffect(() => {
+    if (error && errorRef.current) {
+      errorRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [error]);
 
   /**
    * Formats file size to human-readable format.
@@ -366,16 +377,28 @@ export const VerificationPage = () => {
         }
       });
 
-      // Check if all required files uploaded successfully
-      if (!uploadResults.businessLicense || !uploadResults.taxDocument) {
-        setError(response.data.message || 'Failed to upload required documents. Please try again.');
+      // Check if uploads failed
+      if (response.data.failedUploads > 0) {
+        const errorMessage = response.data.message || `Failed to upload ${response.data.failedUploads} file(s). Please try again.`;
+        setError(errorMessage);
         setLoading(false);
+        // Scroll to top to show error
+        if (errorRef.current) {
+          errorRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
         return;
       }
 
-      // Show success message from backend if available
-      if (response.data.message && response.data.successfulUploads > 0) {
-        setError(response.data.message);
+      // Check if all required files uploaded successfully
+      if (!uploadResults.businessLicense || !uploadResults.taxDocument) {
+        const errorMessage = response.data.message || 'Failed to upload required documents. Please try again.';
+        setError(errorMessage);
+        setLoading(false);
+        // Scroll to top to show error
+        if (errorRef.current) {
+          errorRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        return;
       }
 
       setVerificationStatus('pending');
@@ -395,6 +418,11 @@ export const VerificationPage = () => {
         });
         return newStatuses;
       });
+
+      // Scroll to top to show error
+      if (errorRef.current) {
+        errorRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     } finally {
       setLoading(false);
     }
@@ -461,6 +489,27 @@ export const VerificationPage = () => {
             <p className="text-sm text-red-800">
               Your verification was rejected. Please review your documents and submit again.
             </p>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div ref={errorRef} className="bg-red-50 border border-red-200 rounded-xl p-4">
+            <div className="flex items-start gap-3">
+              <svg
+                className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <p className="text-sm text-red-800 font-medium">{error}</p>
+            </div>
           </div>
         )}
 
