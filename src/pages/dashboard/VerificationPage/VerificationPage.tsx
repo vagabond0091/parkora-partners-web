@@ -28,16 +28,21 @@ export const VerificationPage = () => {
   const [fileStatuses, setFileStatuses] = useState<Record<string, 'selected' | 'uploading' | 'success' | 'error'>>({});
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, FileUploadResponse>>({});
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const errorRef = useRef<HTMLDivElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
 
   /**
-   * Scrolls to top of page when error occurs
+   * Scrolls to top of page when error or success message occurs
    */
   useEffect(() => {
     if (error && errorRef.current) {
       errorRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, [error]);
+    if (successMessage && successRef.current) {
+      successRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [error, successMessage]);
 
   /**
    * Formats file size to human-readable format.
@@ -257,6 +262,7 @@ export const VerificationPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
+    setSuccessMessage(null);
     setFieldErrors({});
 
     // Validate using Zod schema
@@ -357,6 +363,7 @@ export const VerificationPage = () => {
       if (response.data.failedUploads > 0) {
         const errorMessage = response.data.message || `Failed to upload ${response.data.failedUploads} file(s). Please try again.`;
         setError(errorMessage);
+        setSuccessMessage(null);
         setLoading(false);
         // Scroll to top to show error
         if (errorRef.current) {
@@ -369,6 +376,7 @@ export const VerificationPage = () => {
       if (!uploadResults.businessLicense || !uploadResults.taxDocument) {
         const errorMessage = response.data.message || 'Failed to upload required documents. Please try again.';
         setError(errorMessage);
+        setSuccessMessage(null);
         setLoading(false);
         // Scroll to top to show error
         if (errorRef.current) {
@@ -377,11 +385,15 @@ export const VerificationPage = () => {
         return;
       }
 
+      // All files uploaded successfully - show success message
       setVerificationStatus('pending');
-      setError('Verification submitted successfully! Your documents are under review.');
+      const successMsg = response.data.message || response.message || 'Verification submitted successfully! Your documents are under review.';
+      setSuccessMessage(successMsg);
+      clearError();
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to submit verification';
       setError(errorMessage);
+      setSuccessMessage(null);
       
       // Mark all files as error
       setFileStatuses((prev) => {
@@ -465,12 +477,33 @@ export const VerificationPage = () => {
           </div>
         )}
 
+        {/* Success Message */}
+        {successMessage && (
+          <div ref={successRef} className="bg-green-50 border border-green-200 rounded-xl p-4">
+            <div className="flex items-start gap-3">
+              <svg
+                className="h-5 w-5 text-green-600 mt-0.5 shrink-0"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <p className="text-sm text-green-800 font-medium">{successMessage}</p>
+            </div>
+          </div>
+        )}
+
         {/* Error Message */}
         {error && (
           <div ref={errorRef} className="bg-red-50 border border-red-200 rounded-xl p-4">
             <div className="flex items-start gap-3">
               <svg
-                className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0"
+                className="h-5 w-5 text-red-600 mt-0.5 shrink-0"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
