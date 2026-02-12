@@ -29,6 +29,7 @@ export const VerificationPage = () => {
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, FileUploadResponse>>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isSuccessMessageError, setIsSuccessMessageError] = useState<boolean>(false);
   const errorRef = useRef<HTMLDivElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
 
@@ -263,6 +264,7 @@ export const VerificationPage = () => {
     e.preventDefault();
     clearError();
     setSuccessMessage(null);
+    setIsSuccessMessageError(false);
     setFieldErrors({});
 
     // Validate using Zod schema
@@ -336,27 +338,61 @@ export const VerificationPage = () => {
         // Access documentType field - API returns it as a string
         const docType = fileResponse.documentType as string | undefined;
         
+        // Check if file upload actually succeeded (has filePath/path and no error message)
+        const hasFilePath = (fileResponse.filePath !== null && fileResponse.filePath !== undefined) ||
+                           (fileResponse.path !== null && fileResponse.path !== undefined);
+        const hasErrorMessage = fileResponse.message?.toLowerCase().includes('failed') || false;
+        const isSuccess = hasFilePath && !hasErrorMessage;
+        
         // Handle BUSINESS_LICENSE (API) vs BUSINESS_REGISTRATION (code) mismatch
         if (docType === 'BUSINESS_LICENSE' || docType === DocumentType.BUSINESS_REGISTRATION) {
           uploadResults.businessLicense = fileResponse as FileUploadResponse;
           setUploadedFiles((prev) => ({ ...prev, businessLicense: fileResponse as FileUploadResponse }));
-          setFileStatuses((prev) => ({ ...prev, businessLicense: 'success' }));
+          setFileStatuses((prev) => ({ ...prev, businessLicense: isSuccess ? 'success' : 'error' }));
+          if (!isSuccess) {
+            setFieldErrors((prev) => ({
+              ...prev,
+              businessLicense: fileResponse.message || 'File upload failed',
+            }));
+          }
         } else if (docType === DocumentType.TAX_IDENTIFICATION || docType === 'TAX_IDENTIFICATION') {
           uploadResults.taxDocument = fileResponse as FileUploadResponse;
           setUploadedFiles((prev) => ({ ...prev, taxDocument: fileResponse as FileUploadResponse }));
-          setFileStatuses((prev) => ({ ...prev, taxDocument: 'success' }));
+          setFileStatuses((prev) => ({ ...prev, taxDocument: isSuccess ? 'success' : 'error' }));
+          if (!isSuccess) {
+            setFieldErrors((prev) => ({
+              ...prev,
+              taxDocument: fileResponse.message || 'File upload failed',
+            }));
+          }
         } else if (docType === DocumentType.ADDITIONAL_DOCUMENT || docType === 'ADDITIONAL_DOCUMENT') {
           uploadResults.additionalDocument = fileResponse as FileUploadResponse;
           setUploadedFiles((prev) => ({ ...prev, additionalDocument: fileResponse as FileUploadResponse }));
-          setFileStatuses((prev) => ({ ...prev, additionalDocument: 'success' }));
+          setFileStatuses((prev) => ({ ...prev, additionalDocument: isSuccess ? 'success' : 'error' }));
+          if (!isSuccess) {
+            setFieldErrors((prev) => ({
+              ...prev,
+              additionalDocument: fileResponse.message || 'File upload failed',
+            }));
+          }
         }
       });
 
-      // Check if uploads failed - only treat as error if failedUploads > 0
-      if (response.data.failedUploads > 0) {
-        const errorMessage = response.data.message || `Failed to upload ${response.data.failedUploads} file(s). Please try again.`;
+      // Check if any uploads failed - treat as error if failedUploads > 0 or not all files succeeded
+      const failedUploads = response.data.failedUploads ?? 0;
+      const successfulUploads = response.data.successfulUploads ?? 0;
+      const totalFiles = response.data.totalFiles ?? 0;
+      const hasFailures = failedUploads > 0 || successfulUploads < totalFiles;
+      
+      // Also check individual file statuses to catch any failures
+      const hasFileErrors = Object.values(fileStatuses).some((status) => status === 'error');
+      const hasAnyFailures = hasFailures || hasFileErrors;
+      
+      if (hasAnyFailures) {
+        const errorMessage = response.data.message || `Failed to upload ${failedUploads} file(s). Please try again.`;
         setError(errorMessage);
         setSuccessMessage(null);
+        setIsSuccessMessageError(false);
         setLoading(false);
         // Scroll to top to show error
         if (errorRef.current) {
@@ -365,18 +401,25 @@ export const VerificationPage = () => {
         return;
       }
 
-      // All files uploaded successfully (failedUploads === 0) - show success message
-      // Trust the API response: if failedUploads === 0, it's a success
+      // Check if the message indicates failures (even if hasFailures is false, the message might indicate partial success)
+      const messageText = response.data.message || response.message || '';
+      const messageIndicatesFailure = messageText.toLowerCase().includes('failed') || 
+                                      messageText.toLowerCase().includes('fail') ||
+                                      failedUploads > 0;
+
+      // All files uploaded successfully (failedUploads === 0 and all files succeeded) - show success message
       // Always clear error first to ensure success message displays correctly
       clearError();
       setVerificationStatus('pending');
       // Use the success message from the API response, or fallback to default
-      const successMsg = response.data.message || response.message || 'Verification submitted successfully! Your documents are under review.';
+      const successMsg = messageText || 'Verification submitted successfully! Your documents are under review.';
       setSuccessMessage(successMsg);
+      setIsSuccessMessageError(messageIndicatesFailure);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to submit verification';
       setError(errorMessage);
       setSuccessMessage(null);
+      setIsSuccessMessageError(false);
       
       // Mark all files as error
       setFileStatuses((prev) => {
@@ -460,23 +503,49 @@ export const VerificationPage = () => {
           </div>
         )}
 
-        {/* Success Message */}
+        {/* Success/Error Message */}
         {successMessage && (
-          <div ref={successRef} className="bg-green-50 border border-green-200 rounded-xl p-4">
+          <div 
+            ref={successRef} 
+            className={`rounded-xl p-4 ${
+              isSuccessMessageError 
+                ? 'bg-red-50 border border-red-200' 
+                : 'bg-green-50 border border-green-200'
+            }`}
+          >
             <div className="flex items-start gap-3">
-              <svg
-                className="h-5 w-5 text-green-600 mt-0.5 shrink-0"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <p className="text-sm text-green-800 font-medium">{successMessage}</p>
+              {isSuccessMessageError ? (
+                <svg
+                  className="h-5 w-5 text-red-600 mt-0.5 shrink-0"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="h-5 w-5 text-green-600 mt-0.5 shrink-0"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              )}
+              <p className={`text-sm font-medium ${
+                isSuccessMessageError ? 'text-red-800' : 'text-green-800'
+              }`}>
+                {successMessage}
+              </p>
             </div>
           </div>
         )}
