@@ -327,39 +327,32 @@ export const VerificationPage = () => {
       );
 
       // Process response and update states
-      // Backend returns uploadedFiles array in order: businessLicense, taxDocument, then additionalDocuments
+      // Map files by documentType from the API response
       const uploadResults: Record<string, FileUploadResponse> = {};
       const uploadedFilesArray = response.data.uploadedFiles || [];
-      let fileIndex = 0;
 
-      // Map businessLicense (first file if present)
-      if (formData.businessLicense && fileIndex < uploadedFilesArray.length) {
-        const fileResponse = uploadedFilesArray[fileIndex];
-        uploadResults.businessLicense = fileResponse;
-        setUploadedFiles((prev) => ({ ...prev, businessLicense: fileResponse }));
-        setFileStatuses((prev) => ({ ...prev, businessLicense: 'success' }));
-        fileIndex++;
-      }
+      // Map files by their documentType field
+      uploadedFilesArray.forEach((fileResponse: any) => {
+        // Access documentType field - API returns it as a string
+        const docType = fileResponse.documentType as string | undefined;
+        
+        // Handle BUSINESS_LICENSE (API) vs BUSINESS_REGISTRATION (code) mismatch
+        if (docType === 'BUSINESS_LICENSE' || docType === DocumentType.BUSINESS_REGISTRATION) {
+          uploadResults.businessLicense = fileResponse as FileUploadResponse;
+          setUploadedFiles((prev) => ({ ...prev, businessLicense: fileResponse as FileUploadResponse }));
+          setFileStatuses((prev) => ({ ...prev, businessLicense: 'success' }));
+        } else if (docType === DocumentType.TAX_IDENTIFICATION || docType === 'TAX_IDENTIFICATION') {
+          uploadResults.taxDocument = fileResponse as FileUploadResponse;
+          setUploadedFiles((prev) => ({ ...prev, taxDocument: fileResponse as FileUploadResponse }));
+          setFileStatuses((prev) => ({ ...prev, taxDocument: 'success' }));
+        } else if (docType === DocumentType.ADDITIONAL_DOCUMENT || docType === 'ADDITIONAL_DOCUMENT') {
+          uploadResults.additionalDocument = fileResponse as FileUploadResponse;
+          setUploadedFiles((prev) => ({ ...prev, additionalDocument: fileResponse as FileUploadResponse }));
+          setFileStatuses((prev) => ({ ...prev, additionalDocument: 'success' }));
+        }
+      });
 
-      // Map taxDocument (second file if present)
-      if (formData.taxDocument && fileIndex < uploadedFilesArray.length) {
-        const fileResponse = uploadedFilesArray[fileIndex];
-        uploadResults.taxDocument = fileResponse;
-        setUploadedFiles((prev) => ({ ...prev, taxDocument: fileResponse }));
-        setFileStatuses((prev) => ({ ...prev, taxDocument: 'success' }));
-        fileIndex++;
-      }
-
-      // Map additionalDocument (third file if present)
-      if (formData.additionalDocument && fileIndex < uploadedFilesArray.length) {
-        const fileResponse = uploadedFilesArray[fileIndex];
-        uploadResults.additionalDocument = fileResponse;
-        setUploadedFiles((prev) => ({ ...prev, additionalDocument: fileResponse }));
-        setFileStatuses((prev) => ({ ...prev, additionalDocument: 'success' }));
-        fileIndex++;
-      }
-
-      // Check if uploads failed
+      // Check if uploads failed - only treat as error if failedUploads > 0
       if (response.data.failedUploads > 0) {
         const errorMessage = response.data.message || `Failed to upload ${response.data.failedUploads} file(s). Please try again.`;
         setError(errorMessage);
@@ -372,24 +365,14 @@ export const VerificationPage = () => {
         return;
       }
 
-      // Check if all required files uploaded successfully
-      if (!uploadResults.businessLicense || !uploadResults.taxDocument) {
-        const errorMessage = response.data.message || 'Failed to upload required documents. Please try again.';
-        setError(errorMessage);
-        setSuccessMessage(null);
-        setLoading(false);
-        // Scroll to top to show error
-        if (errorRef.current) {
-          errorRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-        return;
-      }
-
-      // All files uploaded successfully - show success message
+      // All files uploaded successfully (failedUploads === 0) - show success message
+      // Trust the API response: if failedUploads === 0, it's a success
+      // Always clear error first to ensure success message displays correctly
+      clearError();
       setVerificationStatus('pending');
+      // Use the success message from the API response, or fallback to default
       const successMsg = response.data.message || response.message || 'Verification submitted successfully! Your documents are under review.';
       setSuccessMessage(successMsg);
-      clearError();
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to submit verification';
       setError(errorMessage);
