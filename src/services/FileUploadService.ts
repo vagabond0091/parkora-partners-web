@@ -103,12 +103,10 @@ export const FileUploadService = {
       formData.append('taxDocumentDocumentType', DocumentType.TAX_IDENTIFICATION);
     }
 
-    // Append additional documents if present
-    if (request.additionalDocuments && request.additionalDocuments.length > 0) {
-      request.additionalDocuments.forEach((file, index) => {
-        formData.append(`additionalDocuments[${index}]`, file);
-      });
-      formData.append('additionalDocumentsDocumentType', DocumentType.ADDITIONAL_DOCUMENT);
+    // Append additional document if present
+    if (request.additionalDocument) {
+      formData.append('additionalDocument', request.additionalDocument);
+      formData.append('additionalDocumentDocumentType', DocumentType.ADDITIONAL_DOCUMENT);
     }
 
     const token = getAuthToken();

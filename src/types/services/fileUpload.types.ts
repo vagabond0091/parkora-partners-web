@@ -50,7 +50,7 @@ export interface FileUploadRequest {
 export interface BatchFileUploadRequest {
   businessLicense?: File;
   taxDocument?: File;
-  additionalDocuments?: File[];
+  additionalDocument?: File;
 }
 
 /**
@@ -62,4 +62,5 @@ export interface BatchFileUploadResponse {
   successfulUploads: number;
   failedUploads: number;
   message: string;
+  additionalDocument?: FileUploadResponse;
 }

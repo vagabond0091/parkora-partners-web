@@ -41,27 +41,7 @@ const requiredFileSchema = z
 export const verificationSchema = z.object({
   businessLicense: requiredFileSchema,
   taxDocument: requiredFileSchema,
-  additionalDocuments: z
-    .array(z.instanceof(File))
-    .refine(
-      (files) => files.every((file) => file.size <= MAX_FILE_SIZE),
-      {
-        message: 'All files must be less than 10MB',
-        path: ['additionalDocuments'],
-      }
-    )
-    .refine(
-      (files) =>
-        files.every((file) =>
-          ALLOWED_FILE_TYPES.includes(file.type as typeof ALLOWED_FILE_TYPES[number])
-        ),
-      {
-        message: 'All files must be PDF, JPEG, or PNG',
-        path: ['additionalDocuments'],
-      }
-    )
-    .optional()
-    .default([]),
+  additionalDocument: requiredFileSchema.optional(),
 });
 
 /**
