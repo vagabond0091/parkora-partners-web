@@ -7,6 +7,7 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   moduleNameMapper: {
     '^@/config/env$': '<rootDir>/src/config/__mocks__/env.ts',
+    '^@/utils/authUtils$': '<rootDir>/src/utils/__mocks__/authUtils.ts',
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.ts',
