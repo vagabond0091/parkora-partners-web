@@ -137,10 +137,12 @@ export const Sidebar = ({ className }: SidebarProps) => {
                   className={clsx(
                     'flex items-center gap-3 py-3 rounded-xl relative',
                     'transition-colors duration-200',
-                    'focus:outline-none',
+                    'outline-none focus:outline-none focus-visible:outline-none',
+                    'ring-0 focus:ring-0 focus-visible:ring-0',
+                    'ring-offset-0 focus:ring-offset-0 focus-visible:ring-offset-0',
                     active
                       ? 'bg-gradient-to-r from-[rgba(127,19,236,0.2)] to-[rgba(127,19,236,0.05)] border-l-4 border-[#7f13ec] pl-3 pr-4 text-white'
-                      : 'text-gray-300 hover:bg-gray-700/30 px-4 focus:ring-2 focus:ring-offset-2 focus:ring-purple-500'
+                      : 'text-gray-300 hover:bg-gray-700/30 px-4'
                   )}
                 >
                   {item.icon}
