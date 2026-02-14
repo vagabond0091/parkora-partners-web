@@ -455,7 +455,7 @@ export const VerificationPage = () => {
         );
       default:
         return (
-          <span className="inline-flex items-center rounded px-3 py-1 text-xs font-semibold text-white bg-orange-500">
+          <span className="inline-flex items-center rounded px-3 py-1 text-xs font-semibold text-white bg-orange-500 border border-orange-600">
             PENDING
           </span>
         );
@@ -465,16 +465,16 @@ export const VerificationPage = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white mb-2">
+      <div>
+        <div className="flex items-center gap-3 mb-2">
+          <h1 className="text-2xl font-bold text-white">
             Business Verification
           </h1>
-          <p className="text-gray-300">
-            Complete your business verification to unlock full features.
-          </p>
+          {getStatusBadge()}
         </div>
-        {getStatusBadge()}
+        <p className="text-gray-300">
+          Complete your business verification to unlock full features.
+        </p>
       </div>
 
       {/* Status Message */}
@@ -608,7 +608,7 @@ export const VerificationPage = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 16h3m0 0h3m-3 0v4"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                       />
                     </svg>
                   </span>
@@ -714,7 +714,7 @@ export const VerificationPage = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 16h3m0 0h3m-3 0v4"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                       />
                     </svg>
                   </span>
@@ -806,7 +806,7 @@ export const VerificationPage = () => {
           {/* Additional Document Card */}
           <div className="bg-white rounded-2xl shadow-sm p-8 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Additional Document</h2>
+              <h2 className="text-lg font-semibold text-gray-900">ADDITIONAL DOCUMENT</h2>
               <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">OPTIONAL</span>
             </div>
             
@@ -828,7 +828,7 @@ export const VerificationPage = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 16h3m0 0h3m-3 0v4"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                       />
                     </svg>
                   </span>
