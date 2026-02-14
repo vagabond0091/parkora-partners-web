@@ -108,18 +108,18 @@ export const Sidebar = ({ className }: SidebarProps) => {
   return (
     <aside
       className={clsx(
-        'fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200',
+        'fixed left-0 top-0 h-screen w-64 bg-[#1a1f3a] border-r border-gray-700',
         'flex flex-col z-50',
         className
       )}
     >
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-700">
         <div className="flex items-center gap-3">
-          <img 
+          {/* <img 
             src="/logo.svg" 
             alt="Parkora" 
             className="h-8 w-auto"
-          />
+          /> */}
           <h2 className="text-xl font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
             Parkora Partners
           </h2>
@@ -140,7 +140,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
                     'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500',
                     active
                       ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white shadow-lg shadow-purple-500/30'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      : 'text-gray-300 hover:bg-gray-700/50'
                   )}
                 >
                   {item.icon}
@@ -152,18 +152,18 @@ export const Sidebar = ({ className }: SidebarProps) => {
         </ul>
       </nav>
 
-      <div className="p-4 border-t border-gray-200">
-        <div className="mb-4 px-4 py-3 bg-gray-50 rounded-xl">
-          <p className="text-sm font-medium text-gray-900">
+      <div className="p-4 border-t border-gray-700">
+        <div className="mb-4 px-4 py-3 bg-gray-800/50 rounded-xl">
+          <p className="text-sm font-medium text-gray-100">
             {user?.name || 'Partner'}
           </p>
-          <p className="text-xs text-gray-500 mt-1">{user?.email}</p>
+          <p className="text-xs text-gray-400 mt-1">{user?.email}</p>
         </div>
         <button
           onClick={logout}
           className={clsx(
             'w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl',
-            'text-red-600 hover:bg-red-50',
+            'text-red-400 hover:bg-red-900/30',
             'transition-colors duration-200',
             'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'
           )}
