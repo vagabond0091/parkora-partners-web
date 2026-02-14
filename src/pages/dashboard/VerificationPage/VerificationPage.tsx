@@ -597,30 +597,25 @@ export const VerificationPage = () => {
                 Upload Business License <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50/60 px-6 py-6 text-center cursor-pointer transition-colors hover:border-purple-400 hover:bg-purple-50/40">
-                  <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
-                    <svg
-                      className="h-5 w-5 text-gray-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                      />
-                    </svg>
+                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-gray-400 bg-transparent px-6 py-6 text-center cursor-pointer transition-colors">
+                  <svg
+                    className="h-8 w-8 text-gray-400 mb-3"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
+                  </svg>
+                  <span className="text-sm text-gray-400">
+                    Click to upload or drag and drop
                   </span>
-                  <span className="text-sm font-medium text-gray-900">
-                    Click to upload{' '}
-                    <span className="font-normal text-gray-500">
-                      or drag and drop
-                    </span>
-                  </span>
-                  <span className="mt-1 text-xs text-gray-500">
+                  <span className="mt-1 text-xs font-light text-gray-400">
                     PDF, JPEG, or PNG (max 10MB)
                   </span>
                   <input
@@ -703,30 +698,25 @@ export const VerificationPage = () => {
                 Upload Tax Document <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50/60 px-6 py-6 text-center cursor-pointer transition-colors hover:border-purple-400 hover:bg-purple-50/40">
-                  <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
-                    <svg
-                      className="h-5 w-5 text-gray-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                      />
-                    </svg>
+                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-gray-400 bg-transparent px-6 py-6 text-center cursor-pointer transition-colors">
+                  <svg
+                    className="h-8 w-8 text-gray-400 mb-3"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
+                  </svg>
+                  <span className="text-sm text-gray-400">
+                    Click to upload or drag and drop
                   </span>
-                  <span className="text-sm font-medium text-gray-900">
-                    Click to upload{' '}
-                    <span className="font-normal text-gray-500">
-                      or drag and drop
-                    </span>
-                  </span>
-                  <span className="mt-1 text-xs text-gray-500">
+                  <span className="mt-1 text-xs font-light text-gray-400">
                     PDF, JPEG, or PNG (max 10MB)
                   </span>
                   <input
@@ -815,30 +805,25 @@ export const VerificationPage = () => {
                 Upload Additional Supporting Document
               </label>
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50/60 px-6 py-6 text-center cursor-pointer transition-colors hover:border-purple-400 hover:bg-purple-50/40">
-                  <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
-                    <svg
-                      className="h-5 w-5 text-gray-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                      />
-                    </svg>
+                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-gray-400 bg-transparent px-6 py-6 text-center cursor-pointer transition-colors">
+                  <svg
+                    className="h-8 w-8 text-gray-400 mb-3"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
+                  </svg>
+                  <span className="text-sm text-gray-400">
+                    Click to upload or drag and drop
                   </span>
-                  <span className="text-sm font-medium text-gray-900">
-                    Click to upload{' '}
-                    <span className="font-normal text-gray-500">
-                      or drag and drop
-                    </span>
-                  </span>
-                  <span className="mt-1 text-xs text-gray-500">
+                  <span className="mt-1 text-xs font-light text-gray-400">
                     PDF, JPEG, or PNG (max 10MB)
                   </span>
                   <input
