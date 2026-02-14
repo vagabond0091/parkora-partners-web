@@ -472,7 +472,7 @@ export const VerificationPage = () => {
           </h1>
           {getStatusBadge()}
         </div>
-        <p className="text-gray-300">
+        <p className="text-sm text-[#7090af]">
           Complete your business verification to unlock full features.
         </p>
       </div>
