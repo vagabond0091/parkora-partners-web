@@ -803,7 +803,7 @@ export const VerificationPage = () => {
             <div className="pt-6 mt-6 border-t border-[#334155]">
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-bold text-white">ADDITIONAL DOCUMENT</h2>
-                <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">OPTIONAL</span>
+                <span className="text-[10px] font-semibold text-[#94a3b8] bg-[#1e293b] px-3 py-1 rounded-[5px]">OPTIONAL</span>
               </div>
             </div>
             
