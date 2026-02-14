@@ -108,12 +108,12 @@ export const Sidebar = ({ className }: SidebarProps) => {
   return (
     <aside
       className={clsx(
-        'fixed left-0 top-0 h-screen w-64 bg-[#1a1f3a] border-r border-gray-700',
+        'fixed left-0 top-0 h-screen w-64 bg-[#0f172a] ',
         'flex flex-col z-50',
         className
       )}
     >
-      <div className="p-6 border-b border-gray-700">
+      <div className="p-6">
         <div className="flex items-center gap-3">
           {/* <img 
             src="/logo.svg" 
@@ -165,9 +165,9 @@ export const Sidebar = ({ className }: SidebarProps) => {
           onClick={logout}
           className={clsx(
             'w-full flex items-center justify-start gap-2 px-4 py-3 rounded-xl',
-            'text-red-400',
+            'text-red-400 hover:text-red-300 cursor-pointer',
             'transition-colors duration-200',
-            'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'
+            'outline-none focus:outline-none'
           )}
         >
           <svg
