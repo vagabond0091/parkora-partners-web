@@ -19,7 +19,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
       path: ROUTES.DASHBOARD,
       icon: (
         <svg
-          className="w-5 h-5"
+          className="w-4 h-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -38,7 +38,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
       path: ROUTES.DASHBOARD_ANALYTICS,
       icon: (
         <svg
-          className="w-5 h-5"
+          className="w-4 h-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -57,7 +57,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
       path: ROUTES.DASHBOARD_VERIFICATION,
       icon: (
         <svg
-          className="w-5 h-5"
+          className="w-4 h-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -76,7 +76,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
       path: ROUTES.DASHBOARD_SETTINGS,
       icon: (
         <svg
-          className="w-5 h-5"
+          className="w-4 h-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -120,7 +120,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
             alt="Parkora" 
             className="h-8 w-auto"
           /> */}
-          <h2 className="text-xl font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+          <h2 className="text-lg font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
             Parkora Partners
           </h2>
         </div>
@@ -144,7 +144,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
                   )}
                 >
                   {item.icon}
-                  <span className="font-medium">{item.label}</span>
+                  <span className="text-sm font-medium">{item.label}</span>
                 </Link>
               </li>
             );
@@ -154,10 +154,10 @@ export const Sidebar = ({ className }: SidebarProps) => {
 
       <div className="p-4 border-t border-gray-700">
         <div className="mb-4 px-4 py-3 bg-gray-800/50 rounded-xl">
-          <p className="text-sm font-medium text-gray-100">
+          <p className="text-xs font-medium text-gray-100">
             {user?.name || 'Partner'}
           </p>
-          <p className="text-xs text-gray-400 mt-1">{user?.email}</p>
+          <p className="text-[10px] text-gray-400 mt-1">{user?.email}</p>
         </div>
         <button
           onClick={logout}
@@ -169,7 +169,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
           )}
         >
           <svg
-            className="w-5 h-5"
+            className="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -181,7 +181,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
               d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
             />
           </svg>
-          <span className="font-medium">Logout</span>
+          <span className="text-sm font-medium">Logout</span>
         </button>
       </div>
     </aside>
