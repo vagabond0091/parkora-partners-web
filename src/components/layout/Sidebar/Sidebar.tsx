@@ -135,12 +135,12 @@ export const Sidebar = ({ className }: SidebarProps) => {
                 <Link
                   to={item.path}
                   className={clsx(
-                    'flex items-center gap-3 px-4 py-3 rounded-xl',
+                    'flex items-center gap-3 py-3 rounded-xl relative',
                     'transition-colors duration-200',
                     'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500',
                     active
-                      ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white shadow-lg shadow-purple-500/30'
-                      : 'text-gray-300 hover:bg-gray-700/50'
+                      ? 'bg-purple-600 text-white border-l-4 border-purple-500 pl-3 pr-4'
+                      : 'text-gray-300 hover:bg-gray-700/30 px-4'
                   )}
                 >
                   {item.icon}
