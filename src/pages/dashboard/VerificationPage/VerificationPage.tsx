@@ -737,7 +737,7 @@ export const VerificationPage = () => {
                 <p className="mt-1.5 text-sm text-red-500">{fieldErrors.taxDocument}</p>
               )}
               {formData.taxDocument && (
-                <div className="mt-4">
+                <div className="mt-4 mb-4">
                   <h3 className="text-sm font-medium text-gray-900 mb-3">File Uploaded</h3>
                   <div className={`flex items-center gap-3 p-3 rounded-lg border ${
                     fileStatuses.taxDocument === 'error' 
@@ -800,17 +800,21 @@ export const VerificationPage = () => {
             </div>
 
             {/* Additional Document Section */}
-            <div className="pt-6 mt-6 border-t border-[#334155]">
+            <div className="pt-6 mt-10 border-t border-[#1b2335]">
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-bold text-white">ADDITIONAL DOCUMENT</h2>
                 <span className="text-[10px] font-semibold text-[#94a3b8] bg-[#1e293b] px-3 py-1 rounded-[5px]">OPTIONAL</span>
+               
+              </div>
+              <div className="pt-1">
+                <label className="block text-sm font-medium text-[#c7d4e1] mb-1.5">
+                Upload Additional Supporting Document
+              </label>
               </div>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-white mb-1.5">
-                Upload Additional Supporting Document
-              </label>
+             
               <div className="relative">
                 <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569] group">
                   <svg

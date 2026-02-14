@@ -108,7 +108,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
   return (
     <aside
       className={clsx(
-        'fixed left-0 top-0 h-screen w-64 bg-[#1a1f3a] border-r border-gray-700',
+        'fixed left-0 top-0 h-screen w-64 bg-[#0f172a] border-r border-gray-700',
         'flex flex-col z-50',
         className
       )}
