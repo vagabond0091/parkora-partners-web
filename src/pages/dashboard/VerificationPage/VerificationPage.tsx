@@ -597,9 +597,9 @@ export const VerificationPage = () => {
                 Upload Business License <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-gray-400 bg-transparent px-6 py-6 text-center cursor-pointer transition-colors">
+                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569]">
                   <svg
-                    className="h-8 w-8 text-gray-400 mb-3"
+                    className="h-8 w-8 text-[#475569] mb-3"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -612,10 +612,12 @@ export const VerificationPage = () => {
                       d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                     />
                   </svg>
-                  <span className="text-sm text-gray-400">
-                    Click to upload or drag and drop
-                  </span>
-                  <span className="mt-1 text-xs font-light text-gray-400">
+                  <div>
+                    <span className="text-sm text-white">
+                      Click to upload</span>
+                    <span className="text-sm text-[#475569]"> or drag and drop</span>
+                  </div>
+                  <span className="mt-1 text-xs font-light text-[#475569]">
                     PDF, JPEG, or PNG (max 10MB)
                   </span>
                   <input
@@ -698,9 +700,9 @@ export const VerificationPage = () => {
                 Upload Tax Document <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-gray-400 bg-transparent px-6 py-6 text-center cursor-pointer transition-colors">
+                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569]">
                   <svg
-                    className="h-8 w-8 text-gray-400 mb-3"
+                    className="h-8 w-8 text-[#475569] mb-3"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -713,11 +715,14 @@ export const VerificationPage = () => {
                       d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                     />
                   </svg>
-                  <span className="text-sm text-gray-400">
-                    Click to upload or drag and drop
-                  </span>
-                  <span className="mt-1 text-xs font-light text-gray-400">
+                  <div>
+                  <span className="text-sm text-white">
+                  Click to upload</span><span className="text-sm text-[#475569]"> or drag and drop</span>
+                  </div>
+                
+                  <span className="mt-1 text-xs font-light text-[#475569]">
                     PDF, JPEG, or PNG (max 10MB)
+                  
                   </span>
                   <input
                     type="file"
@@ -805,9 +810,9 @@ export const VerificationPage = () => {
                 Upload Additional Supporting Document
               </label>
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-gray-400 bg-transparent px-6 py-6 text-center cursor-pointer transition-colors">
+                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569]">
                   <svg
-                    className="h-8 w-8 text-gray-400 mb-3"
+                    className="h-8 w-8 text-[#475569] mb-3"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -820,10 +825,12 @@ export const VerificationPage = () => {
                       d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                     />
                   </svg>
-                  <span className="text-sm text-gray-400">
-                    Click to upload or drag and drop
-                  </span>
-                  <span className="mt-1 text-xs font-light text-gray-400">
+                  <div>
+                    <span className="text-sm text-white">
+                      Click to upload</span>
+                    <span className="text-sm text-[#475569]"> or drag and drop</span>
+                  </div>
+                  <span className="mt-1 text-xs font-light text-[#475569]">
                     PDF, JPEG, or PNG (max 10MB)
                   </span>
                   <input
