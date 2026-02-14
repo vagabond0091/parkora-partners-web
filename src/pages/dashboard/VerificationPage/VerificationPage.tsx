@@ -443,65 +443,78 @@ export const VerificationPage = () => {
     switch (verificationStatus) {
       case 'approved':
         return (
-          <span className="inline-flex items-center rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 border border-green-200">
+          <span className="inline-flex items-center rounded px-3 py-1 text-xs font-semibold text-white bg-green-600">
             Approved
           </span>
         );
       case 'rejected':
         return (
-          <span className="inline-flex items-center rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700 border border-red-200">
+          <span className="inline-flex items-center rounded px-3 py-1 text-xs font-semibold text-white bg-red-600">
             Rejected
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center rounded-full bg-yellow-50 px-3 py-1 text-xs font-semibold text-yellow-700 border border-yellow-200">
-            Pending
+          <span className="inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase text-amber-400 bg-[#343536] border border-amber-400 shadow-sm">
+            PENDING
           </span>
         );
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-2xl shadow-sm p-8 space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Business Verification
-            </h1>
-            <p className="text-gray-500">
-              Complete your business verification to unlock full features.
-            </p>
-          </div>
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Header */}
+      <div>
+        <div className="flex items-center gap-3 mb-2">
+          <h1 className="text-2xl font-bold text-white">
+            Business Verification
+          </h1>
           {getStatusBadge()}
         </div>
+        <p className="text-sm text-[#7090af]">
+          Complete your business verification to unlock full features.
+        </p>
+      </div>
 
-        {/* Status Message */}
-        {verificationStatus === 'pending' && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+      {/* Status Message */}
+      {verificationStatus === 'pending' && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+          <div className="flex items-start gap-3">
+            <svg
+              className="h-5 w-5 text-yellow-600 mt-0.5 shrink-0"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
+            </svg>
             <p className="text-sm text-yellow-800">
-              Your verification is currently under review. We'll notify you once it's complete.
+              Your verification is currently under review. We'll notify you once it's complete. You can still update documents if required.
             </p>
           </div>
-        )}
+        </div>
+      )}
 
-        {verificationStatus === 'approved' && (
-          <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-            <p className="text-sm text-green-800">
-              Your business has been verified successfully! You now have access to all features.
-            </p>
-          </div>
-        )}
+      {verificationStatus === 'approved' && (
+        <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+          <p className="text-sm text-green-800">
+            Your business has been verified successfully! You now have access to all features.
+          </p>
+        </div>
+      )}
 
-        {verificationStatus === 'rejected' && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-            <p className="text-sm text-red-800">
-              Your verification was rejected. Please review your documents and submit again.
-            </p>
-          </div>
-        )}
+      {verificationStatus === 'rejected' && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+          <p className="text-sm text-red-800">
+            Your verification was rejected. Please review your documents and submit again.
+          </p>
+        </div>
+      )}
 
         {/* Success/Error Message */}
         {successMessage && (
@@ -573,7 +586,8 @@ export const VerificationPage = () => {
 
         {/* Verification Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
+          {/* Required Documents Card */}
+          <div className="bg-white rounded-2xl shadow-sm p-8 space-y-6">
             <h2 className="text-lg font-semibold text-gray-900">Required Documents</h2>
             
             <div>
@@ -594,7 +608,7 @@ export const VerificationPage = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 16h3m0 0h3m-3 0v4"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                       />
                     </svg>
                   </span>
@@ -700,7 +714,7 @@ export const VerificationPage = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 16h3m0 0h3m-3 0v4"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                       />
                     </svg>
                   </span>
@@ -789,9 +803,12 @@ export const VerificationPage = () => {
             </div>
           </div>
 
-          {/* Additional Document */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Additional Document (Optional)</h2>
+          {/* Additional Document Card */}
+          <div className="bg-white rounded-2xl shadow-sm p-8 space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">ADDITIONAL DOCUMENT</h2>
+              <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">OPTIONAL</span>
+            </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -811,7 +828,7 @@ export const VerificationPage = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 16h3m0 0h3m-3 0v4"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                       />
                     </svg>
                   </span>
@@ -904,13 +921,12 @@ export const VerificationPage = () => {
             <Button
               type="submit"
               isLoading={isLoading}
-              className="!w-fit bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white hover:from-orange-600 hover:via-pink-600 hover:to-purple-700 focus:ring-purple-500"
+              className="!w-fit bg-[#6D28D9] text-white hover:bg-[#5B21B6] focus:ring-purple-500"
             >
               Submit for Verification
             </Button>
           </div>
         </form>
-      </div>
     </div>
   );
 };

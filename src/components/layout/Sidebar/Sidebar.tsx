@@ -19,7 +19,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
       path: ROUTES.DASHBOARD,
       icon: (
         <svg
-          className="w-5 h-5"
+          className="w-4 h-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -38,7 +38,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
       path: ROUTES.DASHBOARD_ANALYTICS,
       icon: (
         <svg
-          className="w-5 h-5"
+          className="w-4 h-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -57,7 +57,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
       path: ROUTES.DASHBOARD_VERIFICATION,
       icon: (
         <svg
-          className="w-5 h-5"
+          className="w-4 h-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -76,7 +76,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
       path: ROUTES.DASHBOARD_SETTINGS,
       icon: (
         <svg
-          className="w-5 h-5"
+          className="w-4 h-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -108,19 +108,19 @@ export const Sidebar = ({ className }: SidebarProps) => {
   return (
     <aside
       className={clsx(
-        'fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200',
+        'fixed left-0 top-0 h-screen w-64 bg-[#1a1f3a] border-r border-gray-700',
         'flex flex-col z-50',
         className
       )}
     >
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-700">
         <div className="flex items-center gap-3">
-          <img 
+          {/* <img 
             src="/logo.svg" 
             alt="Parkora" 
             className="h-8 w-auto"
-          />
-          <h2 className="text-xl font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+          /> */}
+          <h2 className="text-lg font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
             Parkora Partners
           </h2>
         </div>
@@ -135,16 +135,18 @@ export const Sidebar = ({ className }: SidebarProps) => {
                 <Link
                   to={item.path}
                   className={clsx(
-                    'flex items-center gap-3 px-4 py-3 rounded-xl',
+                    'flex items-center gap-3 py-3 rounded-xl relative',
                     'transition-colors duration-200',
-                    'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500',
+                    'outline-none focus:outline-none focus-visible:outline-none',
+                    'ring-0 focus:ring-0 focus-visible:ring-0',
+                    'ring-offset-0 focus:ring-offset-0 focus-visible:ring-offset-0',
                     active
-                      ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white shadow-lg shadow-purple-500/30'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? 'bg-gradient-to-r from-[rgba(127,19,236,0.2)] to-[rgba(127,19,236,0.05)] border-l-4 border-[#7f13ec] pl-3 pr-4 text-white'
+                      : 'text-gray-300 hover:bg-gray-700/30 px-4'
                   )}
                 >
                   {item.icon}
-                  <span className="font-medium">{item.label}</span>
+                  <span className="text-sm font-medium">{item.label}</span>
                 </Link>
               </li>
             );
@@ -152,24 +154,24 @@ export const Sidebar = ({ className }: SidebarProps) => {
         </ul>
       </nav>
 
-      <div className="p-4 border-t border-gray-200">
-        <div className="mb-4 px-4 py-3 bg-gray-50 rounded-xl">
-          <p className="text-sm font-medium text-gray-900">
+      <div className="p-4 border-t border-gray-700">
+        <div className="mb-4 px-4 py-3 bg-gray-800/50 rounded-xl">
+          <p className="text-xs font-medium text-gray-100">
             {user?.name || 'Partner'}
           </p>
-          <p className="text-xs text-gray-500 mt-1">{user?.email}</p>
+          <p className="text-[10px] text-gray-400 mt-1">{user?.email}</p>
         </div>
         <button
           onClick={logout}
           className={clsx(
-            'w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl',
-            'text-red-600 hover:bg-red-50',
+            'w-full flex items-center justify-start gap-2 px-4 py-3 rounded-xl',
+            'text-red-400',
             'transition-colors duration-200',
             'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'
           )}
         >
           <svg
-            className="w-5 h-5"
+            className="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -181,7 +183,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
               d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
             />
           </svg>
-          <span className="font-medium">Logout</span>
+          <span className="text-sm font-medium">Logout</span>
         </button>
       </div>
     </aside>
