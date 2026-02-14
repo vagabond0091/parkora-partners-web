@@ -479,7 +479,7 @@ export const VerificationPage = () => {
 
       {/* Status Message */}
       {verificationStatus === 'pending' && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+        <div className="bg-[#343536] border border-yellow-200 rounded-xl p-4">
           <div className="flex items-start gap-3">
             <svg
               className="h-5 w-5 text-yellow-600 mt-0.5 shrink-0"
@@ -493,7 +493,7 @@ export const VerificationPage = () => {
                 clipRule="evenodd"
               />
             </svg>
-            <p className="text-sm text-yellow-800">
+            <p className="text-sm text-[#b5b3b7]">
               Your verification is currently under review. We'll notify you once it's complete. You can still update documents if required.
             </p>
           </div>
