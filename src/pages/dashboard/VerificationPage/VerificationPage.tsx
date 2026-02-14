@@ -597,9 +597,9 @@ export const VerificationPage = () => {
                 Upload Business License <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569]">
+                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569] group">
                   <svg
-                    className="h-8 w-8 text-[#475569] mb-3"
+                    className="h-8 w-8 text-[#475569] mb-3 group-hover:text-[#6D28D9] transition-colors"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -700,9 +700,9 @@ export const VerificationPage = () => {
                 Upload Tax Document <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569]">
+                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569] group">
                   <svg
-                    className="h-8 w-8 text-[#475569] mb-3"
+                    className="h-8 w-8 text-[#475569] mb-3 group-hover:text-[#6D28D9] transition-colors"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -810,9 +810,9 @@ export const VerificationPage = () => {
                 Upload Additional Supporting Document
               </label>
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569]">
+                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569] group">
                   <svg
-                    className="h-8 w-8 text-[#475569] mb-3"
+                    className="h-8 w-8 text-[#475569] mb-3 group-hover:text-[#6D28D9] transition-colors"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
