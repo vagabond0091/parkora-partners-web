@@ -588,12 +588,12 @@ export const VerificationPage = () => {
 
         {/* Verification Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Required Documents Card */}
-          <div className="bg-white rounded-2xl shadow-sm p-8 space-y-6">
-            <h2 className="text-lg font-semibold text-gray-900">Required Documents</h2>
+          {/* Documents Card */}
+          <div className="bg-[#0f172a] rounded-2xl shadow-sm p-8 space-y-6">
+            <h2 className="text-lg font-semibold text-white">Required Documents</h2>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-white mb-1.5">
                 Upload Business License <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -699,7 +699,7 @@ export const VerificationPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-white mb-1.5">
                 Upload Tax Document <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -803,17 +803,15 @@ export const VerificationPage = () => {
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Additional Document Card */}
-          <div className="bg-white rounded-2xl shadow-sm p-8 space-y-6">
+            {/* Additional Document Section */}
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">ADDITIONAL DOCUMENT</h2>
+              <h2 className="text-lg font-semibold text-white">ADDITIONAL DOCUMENT</h2>
               <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">OPTIONAL</span>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-white mb-1.5">
                 Upload Additional Supporting Document
               </label>
               <div className="relative">
