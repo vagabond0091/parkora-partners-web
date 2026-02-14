@@ -139,7 +139,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
                     'transition-colors duration-200',
                     'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500',
                     active
-                      ? 'bg-purple-600 text-white border-l-4 border-purple-500 pl-3 pr-4'
+                      ? 'bg-gradient-to-r from-[rgba(127,19,236,0.2)] to-[rgba(127,19,236,0.05)] border-l-4 border-[#7f13ec] pl-3 pr-4 text-white'
                       : 'text-gray-300 hover:bg-gray-700/30 px-4'
                   )}
                 >
