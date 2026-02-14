@@ -455,7 +455,7 @@ export const VerificationPage = () => {
         );
       default:
         return (
-          <span className="inline-flex items-center rounded px-3 py-1 text-xs font-semibold text-white bg-orange-500 border border-orange-600">
+          <span className="inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase text-amber-400 bg-[#343536] border border-amber-400 shadow-sm">
             PENDING
           </span>
         );
