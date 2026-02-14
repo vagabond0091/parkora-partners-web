@@ -162,8 +162,8 @@ export const Sidebar = ({ className }: SidebarProps) => {
         <button
           onClick={logout}
           className={clsx(
-            'w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl',
-            'text-red-400 hover:bg-red-900/30',
+            'w-full flex items-center justify-start gap-2 px-4 py-3 rounded-xl',
+            'text-red-400',
             'transition-colors duration-200',
             'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'
           )}
