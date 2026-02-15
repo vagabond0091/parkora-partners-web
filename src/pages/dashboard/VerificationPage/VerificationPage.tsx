@@ -525,7 +525,7 @@ export const VerificationPage = () => {
             className={`rounded-xl p-4 ${
               isSuccessMessageError 
                 ? 'bg-red-50 border border-red-200' 
-                : 'bg-green-50 border border-green-200'
+                : 'bg-[#282f39] border border-[#403c34]'
             }`}
           >
             <div className="flex items-start gap-3">
@@ -544,7 +544,7 @@ export const VerificationPage = () => {
                 </svg>
               ) : (
                 <svg
-                  className="h-5 w-5 text-green-600 mt-0.5 shrink-0"
+                  className="h-5 w-5 text-green-500 mt-0.5 shrink-0"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
@@ -557,7 +557,7 @@ export const VerificationPage = () => {
                 </svg>
               )}
               <p className={`text-sm font-medium ${
-                isSuccessMessageError ? 'text-red-800' : 'text-green-800'
+                isSuccessMessageError ? 'text-red-800' : 'text-white'
               }`}>
                 {successMessage}
               </p>
@@ -634,14 +634,7 @@ export const VerificationPage = () => {
               )}
               {formData.businessLicense && (
                 <div className="mt-4">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">File Uploaded</h3>
-                  <div className={`flex items-center gap-3 p-3 rounded-lg border ${
-                    fileStatuses.businessLicense === 'error' 
-                      ? 'border-red-300 bg-red-50' 
-                      : fileStatuses.businessLicense === 'success'
-                      ? 'border-green-300 bg-green-50'
-                      : 'border-gray-200 bg-white'
-                  }`}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-[#282f39] border border-[#403c34]">
                     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                       <svg
                         className="h-5 w-5 text-gray-600"
@@ -659,10 +652,10 @@ export const VerificationPage = () => {
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-white truncate">
                         {formData.businessLicense.name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-400">
                         {formatFileSize(formData.businessLicense.size)}
                       </p>
                       {fileStatuses.businessLicense === 'uploading' && (
@@ -686,7 +679,7 @@ export const VerificationPage = () => {
                     <button
                       type="button"
                       onClick={() => removeFile('businessLicense')}
-                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium ml-2"
+                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
                     >
                       Remove
                     </button>
@@ -738,14 +731,7 @@ export const VerificationPage = () => {
               )}
               {formData.taxDocument && (
                 <div className="mt-4 mb-4">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">File Uploaded</h3>
-                  <div className={`flex items-center gap-3 p-3 rounded-lg border ${
-                    fileStatuses.taxDocument === 'error' 
-                      ? 'border-red-300 bg-red-50' 
-                      : fileStatuses.taxDocument === 'success'
-                      ? 'border-green-300 bg-green-50'
-                      : 'border-gray-200 bg-white'
-                  }`}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-[#282f39] border border-[#403c34]">
                     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                       <svg
                         className="h-5 w-5 text-gray-600"
@@ -763,10 +749,10 @@ export const VerificationPage = () => {
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-white truncate">
                         {formData.taxDocument.name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-400">
                         {formatFileSize(formData.taxDocument.size)}
                       </p>
                       {fileStatuses.taxDocument === 'uploading' && (
@@ -790,7 +776,7 @@ export const VerificationPage = () => {
                     <button
                       type="button"
                       onClick={() => removeFile('taxDocument')}
-                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium ml-2"
+                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
                     >
                       Remove
                     </button>
@@ -852,14 +838,7 @@ export const VerificationPage = () => {
               )}
               {formData.additionalDocument && (
                 <div className="mt-4">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">File Uploaded</h3>
-                  <div className={`flex items-center gap-3 p-3 rounded-lg border ${
-                    fileStatuses.additionalDocument === 'error' 
-                      ? 'border-red-300 bg-red-50' 
-                      : fileStatuses.additionalDocument === 'success'
-                      ? 'border-green-300 bg-green-50'
-                      : 'border-gray-200 bg-white'
-                  }`}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-[#282f39] border border-[#403c34]">
                     <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                       <svg
                         className="h-5 w-5 text-gray-600"
@@ -877,10 +856,10 @@ export const VerificationPage = () => {
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-white truncate">
                         {formData.additionalDocument.name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-400">
                         {formatFileSize(formData.additionalDocument.size)}
                       </p>
                       {fileStatuses.additionalDocument === 'uploading' && (
@@ -904,7 +883,7 @@ export const VerificationPage = () => {
                     <button
                       type="button"
                       onClick={removeAdditionalFile}
-                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium ml-2"
+                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
                     >
                       Remove
                     </button>
