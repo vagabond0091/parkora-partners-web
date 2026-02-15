@@ -634,7 +634,7 @@ export const VerificationPage = () => {
               )}
               {formData.businessLicense && (
                 <div className="mt-4">
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-white border border-gray-200">
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-[#282f39] border border-[#403c34]">
                     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                       <svg
                         className="h-5 w-5 text-gray-600"
@@ -652,10 +652,10 @@ export const VerificationPage = () => {
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-white truncate">
                         {formData.businessLicense.name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-400">
                         {formatFileSize(formData.businessLicense.size)}
                       </p>
                       {fileStatuses.businessLicense === 'uploading' && (
