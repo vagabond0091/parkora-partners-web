@@ -634,14 +634,7 @@ export const VerificationPage = () => {
               )}
               {formData.businessLicense && (
                 <div className="mt-4">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">File Uploaded</h3>
-                  <div className={`flex items-center gap-3 p-3 rounded-lg border ${
-                    fileStatuses.businessLicense === 'error' 
-                      ? 'border-red-300 bg-red-50' 
-                      : fileStatuses.businessLicense === 'success'
-                      ? 'border-green-300 bg-green-50'
-                      : 'border-gray-200 bg-white'
-                  }`}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-white border border-gray-200">
                     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                       <svg
                         className="h-5 w-5 text-gray-600"
@@ -686,7 +679,7 @@ export const VerificationPage = () => {
                     <button
                       type="button"
                       onClick={() => removeFile('businessLicense')}
-                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium ml-2"
+                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
                     >
                       Remove
                     </button>
@@ -738,14 +731,7 @@ export const VerificationPage = () => {
               )}
               {formData.taxDocument && (
                 <div className="mt-4 mb-4">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">File Uploaded</h3>
-                  <div className={`flex items-center gap-3 p-3 rounded-lg border ${
-                    fileStatuses.taxDocument === 'error' 
-                      ? 'border-red-300 bg-red-50' 
-                      : fileStatuses.taxDocument === 'success'
-                      ? 'border-green-300 bg-green-50'
-                      : 'border-gray-200 bg-white'
-                  }`}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-white border border-gray-200">
                     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                       <svg
                         className="h-5 w-5 text-gray-600"
@@ -790,7 +776,7 @@ export const VerificationPage = () => {
                     <button
                       type="button"
                       onClick={() => removeFile('taxDocument')}
-                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium ml-2"
+                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
                     >
                       Remove
                     </button>
@@ -852,14 +838,7 @@ export const VerificationPage = () => {
               )}
               {formData.additionalDocument && (
                 <div className="mt-4">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">File Uploaded</h3>
-                  <div className={`flex items-center gap-3 p-3 rounded-lg border ${
-                    fileStatuses.additionalDocument === 'error' 
-                      ? 'border-red-300 bg-red-50' 
-                      : fileStatuses.additionalDocument === 'success'
-                      ? 'border-green-300 bg-green-50'
-                      : 'border-gray-200 bg-white'
-                  }`}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-white border border-gray-200">
                     <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                       <svg
                         className="h-5 w-5 text-gray-600"
@@ -904,7 +883,7 @@ export const VerificationPage = () => {
                     <button
                       type="button"
                       onClick={removeAdditionalFile}
-                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium ml-2"
+                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
                     >
                       Remove
                     </button>
