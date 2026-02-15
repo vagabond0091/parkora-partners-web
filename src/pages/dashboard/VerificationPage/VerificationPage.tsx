@@ -525,7 +525,7 @@ export const VerificationPage = () => {
             className={`rounded-xl p-4 ${
               isSuccessMessageError 
                 ? 'bg-red-50 border border-red-200' 
-                : 'bg-green-50 border border-green-200'
+                : 'bg-[#282f39] border border-[#403c34]'
             }`}
           >
             <div className="flex items-start gap-3">
@@ -544,7 +544,7 @@ export const VerificationPage = () => {
                 </svg>
               ) : (
                 <svg
-                  className="h-5 w-5 text-green-600 mt-0.5 shrink-0"
+                  className="h-5 w-5 text-green-500 mt-0.5 shrink-0"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
@@ -557,7 +557,7 @@ export const VerificationPage = () => {
                 </svg>
               )}
               <p className={`text-sm font-medium ${
-                isSuccessMessageError ? 'text-red-800' : 'text-green-800'
+                isSuccessMessageError ? 'text-red-800' : 'text-white'
               }`}>
                 {successMessage}
               </p>
