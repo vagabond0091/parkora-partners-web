@@ -590,6 +590,20 @@ export const VerificationPage = () => {
     }
   };
 
+  /**
+   * Checks if a file input should be disabled
+   * Disables when the file is successfully uploaded and not rejected
+   * @param field - The field name to check
+   * @returns True if the input should be disabled
+   */
+  const isInputDisabled = (field: 'businessLicense' | 'taxDocument' | 'additionalDocument'): boolean => {
+    const hasUploadedFile = fileStatuses[field] === 'success' || existingDocuments[field] !== undefined;
+    const isRejected = existingDocuments[field]?.verificationStatus === 'REJECTED';
+    
+    // If file is uploaded and not rejected, disable the input
+    return hasUploadedFile && !isRejected;
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
@@ -725,9 +739,17 @@ export const VerificationPage = () => {
                 Upload Business License <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569] group">
+                <label className={`flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center transition-colors group ${
+                  isInputDisabled('businessLicense') 
+                    ? 'opacity-50 cursor-not-allowed' 
+                    : 'cursor-pointer hover:border-[#475569]'
+                }`}>
                   <svg
-                    className="h-8 w-8 text-[#475569] mb-3 group-hover:text-[#6D28D9] transition-colors"
+                    className={`h-8 w-8 text-[#475569] mb-3 transition-colors ${
+                      isInputDisabled('businessLicense') 
+                        ? '' 
+                        : 'group-hover:text-[#6D28D9]'
+                    }`}
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -753,7 +775,8 @@ export const VerificationPage = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                     data-field="businessLicense"
                     onChange={(e) => handleFileChange('businessLicense', e.target.files)}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    disabled={isInputDisabled('businessLicense')}
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
                   />
                 </label>
               </div>
@@ -831,9 +854,17 @@ export const VerificationPage = () => {
                 Upload Tax Document <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569] group">
+                <label className={`flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center transition-colors group ${
+                  isInputDisabled('taxDocument') 
+                    ? 'opacity-50 cursor-not-allowed' 
+                    : 'cursor-pointer hover:border-[#475569]'
+                }`}>
                   <svg
-                    className="h-8 w-8 text-[#475569] mb-3 group-hover:text-[#6D28D9] transition-colors"
+                    className={`h-8 w-8 text-[#475569] mb-3 transition-colors ${
+                      isInputDisabled('taxDocument') 
+                        ? '' 
+                        : 'group-hover:text-[#6D28D9]'
+                    }`}
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -860,7 +891,8 @@ export const VerificationPage = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                     data-field="taxDocument"
                     onChange={(e) => handleFileChange('taxDocument', e.target.files)}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    disabled={isInputDisabled('taxDocument')}
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
                   />
                 </label>
               </div>
@@ -950,9 +982,17 @@ export const VerificationPage = () => {
             <div>
              
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569] group">
+                <label className={`flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center transition-colors group ${
+                  isInputDisabled('additionalDocument') 
+                    ? 'opacity-50 cursor-not-allowed' 
+                    : 'cursor-pointer hover:border-[#475569]'
+                }`}>
                   <svg
-                    className="h-8 w-8 text-[#475569] mb-3 group-hover:text-[#6D28D9] transition-colors"
+                    className={`h-8 w-8 text-[#475569] mb-3 transition-colors ${
+                      isInputDisabled('additionalDocument') 
+                        ? '' 
+                        : 'group-hover:text-[#6D28D9]'
+                    }`}
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -977,7 +1017,8 @@ export const VerificationPage = () => {
                     type="file"
                     accept=".pdf,.jpg,.jpeg,.png"
                     onChange={(e) => handleAdditionalFileChange(e.target.files)}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    disabled={isInputDisabled('additionalDocument')}
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
                   />
                 </label>
               </div>
