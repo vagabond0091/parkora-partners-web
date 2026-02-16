@@ -207,6 +207,24 @@ export const VerificationPage = () => {
       delete newFiles[field];
       return newFiles;
     });
+    // Clear rejected status from existing documents when a new file is selected
+    const wasRejected = existingDocuments[field]?.verificationStatus === 'REJECTED';
+    setExistingDocuments((prev) => {
+      const newDocuments = { ...prev };
+      delete newDocuments[field];
+      return newDocuments;
+    });
+    // Reset verification status to pending if a rejected file was replaced and no other rejected files remain
+    if (wasRejected && verificationStatus === 'rejected') {
+      const remainingDocuments = { ...existingDocuments };
+      delete remainingDocuments[field];
+      const hasOtherRejected = Object.values(remainingDocuments).some(
+        (doc) => doc?.verificationStatus === 'REJECTED'
+      );
+      if (!hasOtherRejected) {
+        setVerificationStatus('pending');
+      }
+    }
   };
 
   const handleRetryUpload = async (field: string) => {
@@ -279,6 +297,24 @@ export const VerificationPage = () => {
       delete newFiles.additionalDocument;
       return newFiles;
     });
+    // Clear rejected status from existing documents when a new file is selected
+    const wasRejected = existingDocuments.additionalDocument?.verificationStatus === 'REJECTED';
+    setExistingDocuments((prev) => {
+      const newDocuments = { ...prev };
+      delete newDocuments.additionalDocument;
+      return newDocuments;
+    });
+    // Reset verification status to pending if a rejected file was replaced and no other rejected files remain
+    if (wasRejected && verificationStatus === 'rejected') {
+      const remainingDocuments = { ...existingDocuments };
+      delete remainingDocuments.additionalDocument;
+      const hasOtherRejected = Object.values(remainingDocuments).some(
+        (doc) => doc?.verificationStatus === 'REJECTED'
+      );
+      if (!hasOtherRejected) {
+        setVerificationStatus('pending');
+      }
+    }
   };
 
   const removeFile = (field: 'businessLicense' | 'taxDocument') => {
