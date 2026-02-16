@@ -403,32 +403,60 @@ export const VerificationPage = () => {
     setIsSuccessMessageError(false);
     setFieldErrors({});
 
-    // Validate using Zod schema
-    const result = verificationSchema.safeParse(formData);
+    // Check if all required files exist (either in formData or existingDocuments)
+    const hasBusinessLicense = formData.businessLicense || existingDocuments.businessLicense;
+    const hasTaxDocument = formData.taxDocument || existingDocuments.taxDocument;
 
-    if (!result.success) {
-      // Extract errors from Zod
-      const errors: Record<string, string> = {};
-      result.error.issues.forEach((issue) => {
-        const path = issue.path[0] as string;
-        if (path) {
-          errors[path] = issue.message;
-        }
-      });
-      setFieldErrors(errors);
+    if (!hasBusinessLicense || !hasTaxDocument) {
+      setError('Please select all required documents before submitting.');
       return;
     }
 
-    // Check if all required files are selected
-    if (!formData.businessLicense || !formData.taxDocument) {
-      setError('Please select all required documents before submitting.');
+    // Validate only new files using Zod schema (skip validation for already uploaded files)
+    // Only validate files that are in formData (new files), not ones in existingDocuments
+    const errors: Record<string, string> = {};
+
+    // Validate each field individually if it's a new file (in formData)
+    // Skip validation for files that exist in existingDocuments
+    if (formData.businessLicense) {
+      const fieldSchema = verificationSchema.shape.businessLicense;
+      const result = fieldSchema.safeParse(formData.businessLicense);
+      if (!result.success) {
+        errors.businessLicense = result.error.issues[0]?.message || 'Invalid file';
+      }
+    }
+
+    if (formData.taxDocument) {
+      const fieldSchema = verificationSchema.shape.taxDocument;
+      const result = fieldSchema.safeParse(formData.taxDocument);
+      if (!result.success) {
+        errors.taxDocument = result.error.issues[0]?.message || 'Invalid file';
+      }
+    }
+
+    if (formData.additionalDocument) {
+      const fieldSchema = verificationSchema.shape.additionalDocument;
+      if (fieldSchema) {
+        const result = fieldSchema.safeParse(formData.additionalDocument);
+        if (!result.success) {
+          errors.additionalDocument = result.error.issues[0]?.message || 'Invalid file';
+        }
+      }
+    }
+
+    // If there are validation errors, set them and return
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
 
     setLoading(true);
 
     try {
-      // Set all files to uploading status
+      // Check if there are any new files to upload
+      const hasNewFiles = formData.businessLicense || formData.taxDocument || formData.additionalDocument;
+
+      // Set all files to uploading status (only for new files)
       setFileStatuses((prev) => {
         const newStatuses = { ...prev };
         if (formData.businessLicense) newStatuses.businessLicense = 'uploading';
@@ -446,6 +474,7 @@ export const VerificationPage = () => {
       });
 
       // Single batch upload call - sends all 3 parameters in one API call
+      // Only upload files that are in formData (new files), not already uploaded ones
       const response = await FileUploadService.uploadBatch(
         {
           businessLicense: formData.businessLicense || undefined,
@@ -513,6 +542,17 @@ export const VerificationPage = () => {
           }
         }
       });
+
+      // Handle case where no new files were uploaded (all files already exist)
+      if (!hasNewFiles) {
+        // All files are already uploaded, show success message
+        clearError();
+        setVerificationStatus('pending');
+        setSuccessMessage('Verification submitted successfully! Your documents are under review.');
+        setIsSuccessMessageError(false);
+        setLoading(false);
+        return;
+      }
 
       // Check if any uploads failed - treat as error if failedUploads > 0 or not all files succeeded
       const failedUploads = response.data.failedUploads ?? 0;
