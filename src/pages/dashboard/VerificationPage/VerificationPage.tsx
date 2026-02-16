@@ -3,7 +3,7 @@ import { Button } from '@/components/common/Button/Button';
 import { useAppStatusStore } from '@/stores/appStatusStore';
 import { verificationSchema } from '@/validation/verification.validation';
 import { FileUploadService } from '@/services/FileUploadService';
-import type { FileUploadResponse } from '@/types/services/fileUpload.types';
+import type { FileUploadResponse, DocumentInfo } from '@/types/services/fileUpload.types';
 import { DocumentType } from '@/types/services/fileUpload.types';
 
 /**
@@ -28,10 +28,12 @@ export const VerificationPage = () => {
   const [fileStatuses, setFileStatuses] = useState<Record<string, 'selected' | 'uploading' | 'success' | 'error'>>({});
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, FileUploadResponse>>({});
+  const [existingDocuments, setExistingDocuments] = useState<Record<string, DocumentInfo>>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSuccessMessageError, setIsSuccessMessageError] = useState<boolean>(false);
   const errorRef = useRef<HTMLDivElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
+  const hasFetchedDocuments = useRef<boolean>(false);
 
   /**
    * Scrolls to top of page when error or success message occurs
@@ -44,6 +46,104 @@ export const VerificationPage = () => {
       successRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [error, successMessage]);
+
+  /**
+   * Fetches existing documents and rehydrates the form
+   */
+  useEffect(() => {
+    // Prevent duplicate calls (especially in React StrictMode)
+    if (hasFetchedDocuments.current) {
+      return;
+    }
+
+    const fetchDocuments = async () => {
+      hasFetchedDocuments.current = true;
+      try {
+        setLoading(true);
+        const response = await FileUploadService.getDocuments();
+        
+        if (response.data && Array.isArray(response.data)) {
+          const documentsMap: Record<string, DocumentInfo> = {};
+          
+          response.data.forEach((doc: DocumentInfo) => {
+            // Map API documentType to form field names
+            if (doc.documentType === 'BUSINESS_LICENSE' || doc.documentType === DocumentType.BUSINESS_REGISTRATION) {
+              documentsMap.businessLicense = doc;
+              // Set file status to success if document exists
+              setFileStatuses((prev) => ({ ...prev, businessLicense: 'success' }));
+              // Create a FileUploadResponse-like object for display
+              setUploadedFiles((prev) => ({
+                ...prev,
+                businessLicense: {
+                  url: doc.filePath,
+                  path: doc.filePath,
+                  bucket: '',
+                  fileName: doc.fileName,
+                  fileSize: doc.fileSize,
+                  contentType: doc.contentType,
+                  documentType: DocumentType.BUSINESS_REGISTRATION,
+                },
+              }));
+            } else if (doc.documentType === DocumentType.TAX_IDENTIFICATION || doc.documentType === 'TAX_IDENTIFICATION') {
+              documentsMap.taxDocument = doc;
+              setFileStatuses((prev) => ({ ...prev, taxDocument: 'success' }));
+              setUploadedFiles((prev) => ({
+                ...prev,
+                taxDocument: {
+                  url: doc.filePath,
+                  path: doc.filePath,
+                  bucket: '',
+                  fileName: doc.fileName,
+                  fileSize: doc.fileSize,
+                  contentType: doc.contentType,
+                  documentType: DocumentType.TAX_IDENTIFICATION,
+                },
+              }));
+            } else if (doc.documentType === DocumentType.ADDITIONAL_DOCUMENT || doc.documentType === 'ADDITIONAL_DOCUMENT') {
+              documentsMap.additionalDocument = doc;
+              setFileStatuses((prev) => ({ ...prev, additionalDocument: 'success' }));
+              setUploadedFiles((prev) => ({
+                ...prev,
+                additionalDocument: {
+                  url: doc.filePath,
+                  path: doc.filePath,
+                  bucket: '',
+                  fileName: doc.fileName,
+                  fileSize: doc.fileSize,
+                  contentType: doc.contentType,
+                  documentType: DocumentType.ADDITIONAL_DOCUMENT,
+                },
+              }));
+            }
+          });
+          
+          setExistingDocuments(documentsMap);
+          
+          // Update verification status based on documents
+          const hasRejected = response.data.some((doc: DocumentInfo) => doc.verificationStatus === 'REJECTED');
+          const allVerified = response.data.every((doc: DocumentInfo) => doc.verificationStatus === 'VERIFIED');
+          
+          if (allVerified && response.data.length > 0) {
+            setVerificationStatus('approved');
+          } else if (hasRejected) {
+            setVerificationStatus('rejected');
+          } else if (response.data.length > 0) {
+            setVerificationStatus('pending');
+          }
+        }
+      } catch (err) {
+        // Reset the flag on error so it can retry if needed
+        hasFetchedDocuments.current = false;
+        // Silently fail - don't show error if documents can't be fetched
+        // This allows the form to still work for new submissions
+        console.error('Failed to fetch documents:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDocuments();
+  }, []);
 
   /**
    * Formats file size to human-readable format.
@@ -462,6 +562,48 @@ export const VerificationPage = () => {
     }
   };
 
+  /**
+   * Gets the verification status badge for a document
+   * @param status - The verification status
+   * @returns JSX element for the status badge
+   */
+  const getDocumentStatusBadge = (status: string) => {
+    switch (status) {
+      case 'VERIFIED':
+        return (
+          <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold text-white bg-green-600">
+            Verified
+          </span>
+        );
+      case 'REJECTED':
+        return (
+          <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold text-white bg-red-600">
+            Rejected
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold text-amber-400 bg-[#343536] border border-amber-400">
+            Pending
+          </span>
+        );
+    }
+  };
+
+  /**
+   * Checks if a file input should be disabled
+   * Disables when the file is successfully uploaded and not rejected
+   * @param field - The field name to check
+   * @returns True if the input should be disabled
+   */
+  const isInputDisabled = (field: 'businessLicense' | 'taxDocument' | 'additionalDocument'): boolean => {
+    const hasUploadedFile = fileStatuses[field] === 'success' || existingDocuments[field] !== undefined;
+    const isRejected = existingDocuments[field]?.verificationStatus === 'REJECTED';
+    
+    // If file is uploaded and not rejected, disable the input
+    return hasUploadedFile && !isRejected;
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
@@ -597,9 +739,17 @@ export const VerificationPage = () => {
                 Upload Business License <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569] group">
+                <label className={`flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center transition-colors group ${
+                  isInputDisabled('businessLicense') 
+                    ? 'opacity-50 cursor-not-allowed' 
+                    : 'cursor-pointer hover:border-[#475569]'
+                }`}>
                   <svg
-                    className="h-8 w-8 text-[#475569] mb-3 group-hover:text-[#6D28D9] transition-colors"
+                    className={`h-8 w-8 text-[#475569] mb-3 transition-colors ${
+                      isInputDisabled('businessLicense') 
+                        ? '' 
+                        : 'group-hover:text-[#6D28D9]'
+                    }`}
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -625,17 +775,18 @@ export const VerificationPage = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                     data-field="businessLicense"
                     onChange={(e) => handleFileChange('businessLicense', e.target.files)}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    disabled={isInputDisabled('businessLicense')}
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
                   />
                 </label>
               </div>
               {fieldErrors.businessLicense && (
                 <p className="mt-1.5 text-sm text-red-500">{fieldErrors.businessLicense}</p>
               )}
-              {formData.businessLicense && (
+              {(formData.businessLicense || existingDocuments.businessLicense) && (
                 <div className="mt-4">
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-[#282f39] border border-[#403c34]">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                    <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                       <svg
                         className="h-5 w-5 text-gray-600"
                         xmlns="http://www.w3.org/2000/svg"
@@ -652,12 +803,20 @@ export const VerificationPage = () => {
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">
-                        {formData.businessLicense.name}
-                      </p>
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-sm font-medium text-white truncate">
+                          {formData.businessLicense?.name || existingDocuments.businessLicense?.originalFileName || existingDocuments.businessLicense?.fileName}
+                        </p>
+                        {existingDocuments.businessLicense && getDocumentStatusBadge(existingDocuments.businessLicense.verificationStatus)}
+                      </div>
                       <p className="text-xs text-gray-400">
-                        {formatFileSize(formData.businessLicense.size)}
+                        {formData.businessLicense ? formatFileSize(formData.businessLicense.size) : existingDocuments.businessLicense ? formatFileSize(existingDocuments.businessLicense.fileSize) : ''}
                       </p>
+                      {existingDocuments.businessLicense?.rejectionReason && (
+                        <p className="mt-1 text-xs text-red-400">
+                          {existingDocuments.businessLicense.rejectionReason}
+                        </p>
+                      )}
                       {fileStatuses.businessLicense === 'uploading' && (
                         <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
                           <div
@@ -676,13 +835,15 @@ export const VerificationPage = () => {
                         </button>
                       )}
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => removeFile('businessLicense')}
-                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
-                    >
-                      Remove
-                    </button>
+                    {formData.businessLicense && (
+                      <button
+                        type="button"
+                        onClick={() => removeFile('businessLicense')}
+                        className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -693,9 +854,17 @@ export const VerificationPage = () => {
                 Upload Tax Document <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569] group">
+                <label className={`flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center transition-colors group ${
+                  isInputDisabled('taxDocument') 
+                    ? 'opacity-50 cursor-not-allowed' 
+                    : 'cursor-pointer hover:border-[#475569]'
+                }`}>
                   <svg
-                    className="h-8 w-8 text-[#475569] mb-3 group-hover:text-[#6D28D9] transition-colors"
+                    className={`h-8 w-8 text-[#475569] mb-3 transition-colors ${
+                      isInputDisabled('taxDocument') 
+                        ? '' 
+                        : 'group-hover:text-[#6D28D9]'
+                    }`}
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -722,17 +891,18 @@ export const VerificationPage = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                     data-field="taxDocument"
                     onChange={(e) => handleFileChange('taxDocument', e.target.files)}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    disabled={isInputDisabled('taxDocument')}
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
                   />
                 </label>
               </div>
               {fieldErrors.taxDocument && (
                 <p className="mt-1.5 text-sm text-red-500">{fieldErrors.taxDocument}</p>
               )}
-              {formData.taxDocument && (
+              {(formData.taxDocument || existingDocuments.taxDocument) && (
                 <div className="mt-4 mb-4">
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-[#282f39] border border-[#403c34]">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                    <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                       <svg
                         className="h-5 w-5 text-gray-600"
                         xmlns="http://www.w3.org/2000/svg"
@@ -749,12 +919,20 @@ export const VerificationPage = () => {
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">
-                        {formData.taxDocument.name}
-                      </p>
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-sm font-medium text-white truncate">
+                          {formData.taxDocument?.name || existingDocuments.taxDocument?.originalFileName || existingDocuments.taxDocument?.fileName}
+                        </p>
+                        {existingDocuments.taxDocument && getDocumentStatusBadge(existingDocuments.taxDocument.verificationStatus)}
+                      </div>
                       <p className="text-xs text-gray-400">
-                        {formatFileSize(formData.taxDocument.size)}
+                        {formData.taxDocument ? formatFileSize(formData.taxDocument.size) : existingDocuments.taxDocument ? formatFileSize(existingDocuments.taxDocument.fileSize) : ''}
                       </p>
+                      {existingDocuments.taxDocument?.rejectionReason && (
+                        <p className="mt-1 text-xs text-red-400">
+                          {existingDocuments.taxDocument.rejectionReason}
+                        </p>
+                      )}
                       {fileStatuses.taxDocument === 'uploading' && (
                         <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
                           <div
@@ -773,13 +951,15 @@ export const VerificationPage = () => {
                         </button>
                       )}
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => removeFile('taxDocument')}
-                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
-                    >
-                      Remove
-                    </button>
+                    {formData.taxDocument && (
+                      <button
+                        type="button"
+                        onClick={() => removeFile('taxDocument')}
+                        className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -802,9 +982,17 @@ export const VerificationPage = () => {
             <div>
              
               <div className="relative">
-                <label className="flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center cursor-pointer transition-colors hover:border-[#475569] group">
+                <label className={`flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center transition-colors group ${
+                  isInputDisabled('additionalDocument') 
+                    ? 'opacity-50 cursor-not-allowed' 
+                    : 'cursor-pointer hover:border-[#475569]'
+                }`}>
                   <svg
-                    className="h-8 w-8 text-[#475569] mb-3 group-hover:text-[#6D28D9] transition-colors"
+                    className={`h-8 w-8 text-[#475569] mb-3 transition-colors ${
+                      isInputDisabled('additionalDocument') 
+                        ? '' 
+                        : 'group-hover:text-[#6D28D9]'
+                    }`}
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -829,14 +1017,15 @@ export const VerificationPage = () => {
                     type="file"
                     accept=".pdf,.jpg,.jpeg,.png"
                     onChange={(e) => handleAdditionalFileChange(e.target.files)}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    disabled={isInputDisabled('additionalDocument')}
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
                   />
                 </label>
               </div>
               {fieldErrors.additionalDocument && (
                 <p className="mt-1.5 text-sm text-red-500">{fieldErrors.additionalDocument}</p>
               )}
-              {formData.additionalDocument && (
+              {(formData.additionalDocument || existingDocuments.additionalDocument) && (
                 <div className="mt-4">
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-[#282f39] border border-[#403c34]">
                     <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
@@ -856,12 +1045,20 @@ export const VerificationPage = () => {
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">
-                        {formData.additionalDocument.name}
-                      </p>
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-sm font-medium text-white truncate">
+                          {formData.additionalDocument?.name || existingDocuments.additionalDocument?.originalFileName || existingDocuments.additionalDocument?.fileName}
+                        </p>
+                        {existingDocuments.additionalDocument && getDocumentStatusBadge(existingDocuments.additionalDocument.verificationStatus)}
+                      </div>
                       <p className="text-xs text-gray-400">
-                        {formatFileSize(formData.additionalDocument.size)}
+                        {formData.additionalDocument ? formatFileSize(formData.additionalDocument.size) : existingDocuments.additionalDocument ? formatFileSize(existingDocuments.additionalDocument.fileSize) : ''}
                       </p>
+                      {existingDocuments.additionalDocument?.rejectionReason && (
+                        <p className="mt-1 text-xs text-red-400">
+                          {existingDocuments.additionalDocument.rejectionReason}
+                        </p>
+                      )}
                       {fileStatuses.additionalDocument === 'uploading' && (
                         <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
                           <div
@@ -880,13 +1077,15 @@ export const VerificationPage = () => {
                         </button>
                       )}
                     </div>
-                    <button
-                      type="button"
-                      onClick={removeAdditionalFile}
-                      className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
-                    >
-                      Remove
-                    </button>
+                    {formData.additionalDocument && (
+                      <button
+                        type="button"
+                        onClick={removeAdditionalFile}
+                        className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    )}
                   </div>
                 </div>
               )}

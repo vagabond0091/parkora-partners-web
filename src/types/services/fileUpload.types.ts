@@ -64,3 +64,32 @@ export interface BatchFileUploadResponse {
   message: string;
   additionalDocument?: FileUploadResponse;
 }
+
+/**
+ * Verification status for documents
+ */
+export type VerificationStatus = 'VERIFIED' | 'PENDING' | 'REJECTED';
+
+/**
+ * Document information from the documents API
+ */
+export interface DocumentInfo {
+  documentType: string;
+  fileName: string;
+  originalFileName: string;
+  filePath: string;
+  fileSize: number;
+  contentType: string;
+  verificationStatus: VerificationStatus;
+  rejectionReason: string | null;
+}
+
+/**
+ * API response for documents endpoint
+ */
+export interface DocumentsResponse {
+  message: string;
+  code: number;
+  status: string;
+  data: DocumentInfo[];
+}
