@@ -33,6 +33,7 @@ export const VerificationPage = () => {
   const [isSuccessMessageError, setIsSuccessMessageError] = useState<boolean>(false);
   const errorRef = useRef<HTMLDivElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
+  const hasFetchedDocuments = useRef<boolean>(false);
 
   /**
    * Scrolls to top of page when error or success message occurs
@@ -50,7 +51,13 @@ export const VerificationPage = () => {
    * Fetches existing documents and rehydrates the form
    */
   useEffect(() => {
+    // Prevent duplicate calls (especially in React StrictMode)
+    if (hasFetchedDocuments.current) {
+      return;
+    }
+
     const fetchDocuments = async () => {
+      hasFetchedDocuments.current = true;
       try {
         setLoading(true);
         const response = await FileUploadService.getDocuments();
@@ -125,6 +132,8 @@ export const VerificationPage = () => {
           }
         }
       } catch (err) {
+        // Reset the flag on error so it can retry if needed
+        hasFetchedDocuments.current = false;
         // Silently fail - don't show error if documents can't be fetched
         // This allows the form to still work for new submissions
         console.error('Failed to fetch documents:', err);
@@ -134,7 +143,7 @@ export const VerificationPage = () => {
     };
 
     fetchDocuments();
-  }, [setLoading]);
+  }, []);
 
   /**
    * Formats file size to human-readable format.
