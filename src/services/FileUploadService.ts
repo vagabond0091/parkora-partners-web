@@ -1,5 +1,5 @@
 import { getApiUrl } from '@/config/env';
-import type { FileUploadRequest, FileUploadResponse, ApiResponse, BatchFileUploadRequest, BatchFileUploadResponse } from '@/types/services/fileUpload.types';
+import type { FileUploadRequest, FileUploadResponse, ApiResponse, BatchFileUploadRequest, BatchFileUploadResponse, DocumentsResponse } from '@/types/services/fileUpload.types';
 import { DocumentType } from '@/types/services/fileUpload.types';
 import { getAuthToken } from '@/utils/authUtils';
 
@@ -169,5 +169,45 @@ export const FileUploadService = {
 
       xhr.send(formData);
     });
+  },
+
+  /**
+   * Fetches all documents for the current company
+   * @returns Documents response with all company documents
+   */
+  getDocuments: async (): Promise<DocumentsResponse> => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_URL}/documents`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      let errorMessage = 'Failed to fetch documents';
+      
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData?.message || errorMessage;
+      } catch {
+        try {
+          const errorText = await response.text();
+          try {
+            const parsed = JSON.parse(errorText);
+            errorMessage = parsed.message || errorMessage;
+          } catch {
+            errorMessage = errorText || errorMessage;
+          }
+        } catch {
+          errorMessage = 'Failed to fetch documents';
+        }
+      }
+      
+      throw new Error(errorMessage);
+    }
+
+    return response.json();
   },
 };
