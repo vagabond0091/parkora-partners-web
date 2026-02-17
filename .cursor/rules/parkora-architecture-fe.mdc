@@ -8,12 +8,13 @@ globs: src/**
 ## Core Principles
 
 1. **Single Responsibility**: Each component, hook, store has one clear purpose
-2. **Composition Over Complexity**: Break down complex logic into smaller, reusable pieces
-3. **Type Safety First**: TypeScript interfaces for all props, state, and return types — no `any`
-4. **Predictable State**: Zustand for global state, useState for UI-only concerns
-5. **Separation of Concerns**: UI (components) | Logic (hooks) | Data (services/stores)
-6. **Colocation**: Keep related code together — styles, tests, types near their component
-7. **Immutability**: Never mutate state directly; always return new references
+2. **DRY (Don't Repeat Yourself)**: Always check for duplicate code patterns before writing new code. If the same logic appears in 2+ places, extract it into a shared function/component/hook immediately. Refactor proactively - don't wait for user requests.
+3. **Composition Over Complexity**: Break down complex logic into smaller, reusable pieces
+4. **Type Safety First**: TypeScript interfaces for all props, state, and return types — no `any`
+5. **Predictable State**: Zustand for global state, useState for UI-only concerns
+6. **Separation of Concerns**: UI (components) | Logic (hooks) | Data (services/stores)
+7. **Colocation**: Keep related code together — styles, tests, types near their component
+8. **Immutability**: Never mutate state directly; always return new references
 
 ## Root-Level Structure
 
@@ -126,6 +127,54 @@ ApiUtils.ts
     ├── user.types.ts      # UserService types
     └── parking.types.ts   # ParkingService types
     ```
+
+## DRY Principle - Code Duplication Rules
+
+- **Extract duplicate logic immediately**  
+  - If you see the same code pattern in 2+ places, extract it into a shared function/component/hook
+  - Check existing code first before writing new code to see if similar logic already exists
+  - Refactor proactively - identify and fix duplication automatically without waiting for explicit requests
+
+- **When to extract shared code**  
+  - Same logic appears in 2+ places → Extract to shared function
+  - Similar component patterns → Extract to reusable component
+  - Repeated state management → Extract to custom hook or store
+  - Duplicate API processing → Extract to shared service method
+
+- **Example: Extract shared processing logic**
+  ```tsx
+  // Bad - Duplicate Code
+  const fetchDocuments = async () => {
+    const response = await getDocuments();
+    response.data.forEach((doc) => {
+      // 50 lines of processing logic
+    });
+  };
+  
+  const refetchDocuments = async () => {
+    const response = await getDocuments();
+    response.data.forEach((doc) => {
+      // Same 50 lines duplicated
+    });
+  };
+  
+  // Good - Extracted Function
+  const processDocuments = (response) => {
+    response.data.forEach((doc) => {
+      // 50 lines of processing logic
+    });
+  };
+  
+  const fetchDocuments = async () => {
+    const response = await getDocuments();
+    processDocuments(response);
+  };
+  
+  const refetchDocuments = async () => {
+    const response = await getDocuments();
+    processDocuments(response);
+  };
+  ```
 
 ## Utils Rules
 
