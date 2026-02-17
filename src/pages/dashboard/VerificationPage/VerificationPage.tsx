@@ -48,6 +48,82 @@ export const VerificationPage = () => {
   }, [error, successMessage]);
 
   /**
+   * Processes documents from API response and updates component state
+   * @param response - The API response containing documents
+   */
+  const processDocuments = (response: any) => {
+    if (response.data && Array.isArray(response.data)) {
+      const documentsMap: Record<string, DocumentInfo> = {};
+      
+      response.data.forEach((doc: DocumentInfo) => {
+        // Map API documentType to form field names
+        if (doc.documentType === 'BUSINESS_LICENSE' || doc.documentType === DocumentType.BUSINESS_REGISTRATION) {
+          documentsMap.businessLicense = doc;
+          // Set file status to success if document exists
+          setFileStatuses((prev) => ({ ...prev, businessLicense: 'success' }));
+          // Create a FileUploadResponse-like object for display
+          setUploadedFiles((prev) => ({
+            ...prev,
+            businessLicense: {
+              url: doc.filePath,
+              path: doc.filePath,
+              bucket: '',
+              fileName: doc.fileName,
+              fileSize: doc.fileSize,
+              contentType: doc.contentType,
+              documentType: DocumentType.BUSINESS_REGISTRATION,
+            },
+          }));
+        } else if (doc.documentType === DocumentType.TAX_IDENTIFICATION || doc.documentType === 'TAX_IDENTIFICATION') {
+          documentsMap.taxDocument = doc;
+          setFileStatuses((prev) => ({ ...prev, taxDocument: 'success' }));
+          setUploadedFiles((prev) => ({
+            ...prev,
+            taxDocument: {
+              url: doc.filePath,
+              path: doc.filePath,
+              bucket: '',
+              fileName: doc.fileName,
+              fileSize: doc.fileSize,
+              contentType: doc.contentType,
+              documentType: DocumentType.TAX_IDENTIFICATION,
+            },
+          }));
+        } else if (doc.documentType === DocumentType.ADDITIONAL_DOCUMENT || doc.documentType === 'ADDITIONAL_DOCUMENT') {
+          documentsMap.additionalDocument = doc;
+          setFileStatuses((prev) => ({ ...prev, additionalDocument: 'success' }));
+          setUploadedFiles((prev) => ({
+            ...prev,
+            additionalDocument: {
+              url: doc.filePath,
+              path: doc.filePath,
+              bucket: '',
+              fileName: doc.fileName,
+              fileSize: doc.fileSize,
+              contentType: doc.contentType,
+              documentType: DocumentType.ADDITIONAL_DOCUMENT,
+            },
+          }));
+        }
+      });
+      
+      setExistingDocuments(documentsMap);
+      
+      // Update verification status based on documents
+      const hasRejected = response.data.some((doc: DocumentInfo) => doc.verificationStatus === 'REJECTED');
+      const allVerified = response.data.every((doc: DocumentInfo) => doc.verificationStatus === 'VERIFIED');
+      
+      if (allVerified && response.data.length > 0) {
+        setVerificationStatus('approved');
+      } else if (hasRejected) {
+        setVerificationStatus('rejected');
+      } else if (response.data.length > 0) {
+        setVerificationStatus('pending');
+      }
+    }
+  };
+
+  /**
    * Fetches existing documents and rehydrates the form
    */
   useEffect(() => {
@@ -61,76 +137,7 @@ export const VerificationPage = () => {
       try {
         setLoading(true);
         const response = await FileUploadService.getDocuments();
-        
-        if (response.data && Array.isArray(response.data)) {
-          const documentsMap: Record<string, DocumentInfo> = {};
-          
-          response.data.forEach((doc: DocumentInfo) => {
-            // Map API documentType to form field names
-            if (doc.documentType === 'BUSINESS_LICENSE' || doc.documentType === DocumentType.BUSINESS_REGISTRATION) {
-              documentsMap.businessLicense = doc;
-              // Set file status to success if document exists
-              setFileStatuses((prev) => ({ ...prev, businessLicense: 'success' }));
-              // Create a FileUploadResponse-like object for display
-              setUploadedFiles((prev) => ({
-                ...prev,
-                businessLicense: {
-                  url: doc.filePath,
-                  path: doc.filePath,
-                  bucket: '',
-                  fileName: doc.fileName,
-                  fileSize: doc.fileSize,
-                  contentType: doc.contentType,
-                  documentType: DocumentType.BUSINESS_REGISTRATION,
-                },
-              }));
-            } else if (doc.documentType === DocumentType.TAX_IDENTIFICATION || doc.documentType === 'TAX_IDENTIFICATION') {
-              documentsMap.taxDocument = doc;
-              setFileStatuses((prev) => ({ ...prev, taxDocument: 'success' }));
-              setUploadedFiles((prev) => ({
-                ...prev,
-                taxDocument: {
-                  url: doc.filePath,
-                  path: doc.filePath,
-                  bucket: '',
-                  fileName: doc.fileName,
-                  fileSize: doc.fileSize,
-                  contentType: doc.contentType,
-                  documentType: DocumentType.TAX_IDENTIFICATION,
-                },
-              }));
-            } else if (doc.documentType === DocumentType.ADDITIONAL_DOCUMENT || doc.documentType === 'ADDITIONAL_DOCUMENT') {
-              documentsMap.additionalDocument = doc;
-              setFileStatuses((prev) => ({ ...prev, additionalDocument: 'success' }));
-              setUploadedFiles((prev) => ({
-                ...prev,
-                additionalDocument: {
-                  url: doc.filePath,
-                  path: doc.filePath,
-                  bucket: '',
-                  fileName: doc.fileName,
-                  fileSize: doc.fileSize,
-                  contentType: doc.contentType,
-                  documentType: DocumentType.ADDITIONAL_DOCUMENT,
-                },
-              }));
-            }
-          });
-          
-          setExistingDocuments(documentsMap);
-          
-          // Update verification status based on documents
-          const hasRejected = response.data.some((doc: DocumentInfo) => doc.verificationStatus === 'REJECTED');
-          const allVerified = response.data.every((doc: DocumentInfo) => doc.verificationStatus === 'VERIFIED');
-          
-          if (allVerified && response.data.length > 0) {
-            setVerificationStatus('approved');
-          } else if (hasRejected) {
-            setVerificationStatus('rejected');
-          } else if (response.data.length > 0) {
-            setVerificationStatus('pending');
-          }
-        }
+        processDocuments(response);
       } catch (err) {
         // Reset the flag on error so it can retry if needed
         hasFetchedDocuments.current = false;
@@ -144,6 +151,20 @@ export const VerificationPage = () => {
 
     fetchDocuments();
   }, []);
+
+  /**
+   * Refetches documents from the API and updates the component state
+   */
+  const refetchDocuments = async () => {
+    try {
+      const response = await FileUploadService.getDocuments();
+      processDocuments(response);
+    } catch (err) {
+      // Silently fail - don't show error if documents can't be fetched
+      // The uploaded files are already in uploadedFiles state
+      console.error('Failed to refetch documents:', err);
+    }
+  };
 
   /**
    * Formats file size to human-readable format.
@@ -207,6 +228,24 @@ export const VerificationPage = () => {
       delete newFiles[field];
       return newFiles;
     });
+    // Clear rejected status from existing documents when a new file is selected
+    const wasRejected = existingDocuments[field]?.verificationStatus === 'REJECTED';
+    setExistingDocuments((prev) => {
+      const newDocuments = { ...prev };
+      delete newDocuments[field];
+      return newDocuments;
+    });
+    // Reset verification status to pending if a rejected file was replaced and no other rejected files remain
+    if (wasRejected && verificationStatus === 'rejected') {
+      const remainingDocuments = { ...existingDocuments };
+      delete remainingDocuments[field];
+      const hasOtherRejected = Object.values(remainingDocuments).some(
+        (doc) => doc?.verificationStatus === 'REJECTED'
+      );
+      if (!hasOtherRejected) {
+        setVerificationStatus('pending');
+      }
+    }
   };
 
   const handleRetryUpload = async (field: string) => {
@@ -234,6 +273,13 @@ export const VerificationPage = () => {
 
         setUploadedFiles((prev) => ({ ...prev, [field]: response.data }));
         setFileStatuses((prev) => ({ ...prev, [field]: 'success' }));
+        // Clear formData and progress when upload succeeds
+        setFormData((prev) => ({ ...prev, [field]: null }));
+        setUploadProgress((prev) => {
+          const newProgress = { ...prev };
+          delete newProgress[field];
+          return newProgress;
+        });
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'File upload failed';
         setFieldErrors((prev) => ({
@@ -279,6 +325,24 @@ export const VerificationPage = () => {
       delete newFiles.additionalDocument;
       return newFiles;
     });
+    // Clear rejected status from existing documents when a new file is selected
+    const wasRejected = existingDocuments.additionalDocument?.verificationStatus === 'REJECTED';
+    setExistingDocuments((prev) => {
+      const newDocuments = { ...prev };
+      delete newDocuments.additionalDocument;
+      return newDocuments;
+    });
+    // Reset verification status to pending if a rejected file was replaced and no other rejected files remain
+    if (wasRejected && verificationStatus === 'rejected') {
+      const remainingDocuments = { ...existingDocuments };
+      delete remainingDocuments.additionalDocument;
+      const hasOtherRejected = Object.values(remainingDocuments).some(
+        (doc) => doc?.verificationStatus === 'REJECTED'
+      );
+      if (!hasOtherRejected) {
+        setVerificationStatus('pending');
+      }
+    }
   };
 
   const removeFile = (field: 'businessLicense' | 'taxDocument') => {
@@ -350,6 +414,13 @@ export const VerificationPage = () => {
 
       setUploadedFiles((prev) => ({ ...prev, additionalDocument: response.data }));
       setFileStatuses((prev) => ({ ...prev, additionalDocument: 'success' }));
+      // Clear formData and progress when upload succeeds
+      setFormData((prev) => ({ ...prev, additionalDocument: null }));
+      setUploadProgress((prev) => {
+        const newProgress = { ...prev };
+        delete newProgress.additionalDocument;
+        return newProgress;
+      });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'File upload failed';
       setFieldErrors((prev) => ({
@@ -367,32 +438,60 @@ export const VerificationPage = () => {
     setIsSuccessMessageError(false);
     setFieldErrors({});
 
-    // Validate using Zod schema
-    const result = verificationSchema.safeParse(formData);
+    // Check if all required files exist (either in formData or existingDocuments)
+    const hasBusinessLicense = formData.businessLicense || existingDocuments.businessLicense;
+    const hasTaxDocument = formData.taxDocument || existingDocuments.taxDocument;
 
-    if (!result.success) {
-      // Extract errors from Zod
-      const errors: Record<string, string> = {};
-      result.error.issues.forEach((issue) => {
-        const path = issue.path[0] as string;
-        if (path) {
-          errors[path] = issue.message;
-        }
-      });
-      setFieldErrors(errors);
+    if (!hasBusinessLicense || !hasTaxDocument) {
+      setError('Please select all required documents before submitting.');
       return;
     }
 
-    // Check if all required files are selected
-    if (!formData.businessLicense || !formData.taxDocument) {
-      setError('Please select all required documents before submitting.');
+    // Validate only new files using Zod schema (skip validation for already uploaded files)
+    // Only validate files that are in formData (new files), not ones in existingDocuments
+    const errors: Record<string, string> = {};
+
+    // Validate each field individually if it's a new file (in formData)
+    // Skip validation for files that exist in existingDocuments
+    if (formData.businessLicense) {
+      const fieldSchema = verificationSchema.shape.businessLicense;
+      const result = fieldSchema.safeParse(formData.businessLicense);
+      if (!result.success) {
+        errors.businessLicense = result.error.issues[0]?.message || 'Invalid file';
+      }
+    }
+
+    if (formData.taxDocument) {
+      const fieldSchema = verificationSchema.shape.taxDocument;
+      const result = fieldSchema.safeParse(formData.taxDocument);
+      if (!result.success) {
+        errors.taxDocument = result.error.issues[0]?.message || 'Invalid file';
+      }
+    }
+
+    if (formData.additionalDocument) {
+      const fieldSchema = verificationSchema.shape.additionalDocument;
+      if (fieldSchema) {
+        const result = fieldSchema.safeParse(formData.additionalDocument);
+        if (!result.success) {
+          errors.additionalDocument = result.error.issues[0]?.message || 'Invalid file';
+        }
+      }
+    }
+
+    // If there are validation errors, set them and return
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
 
     setLoading(true);
 
     try {
-      // Set all files to uploading status
+      // Check if there are any new files to upload
+      const hasNewFiles = formData.businessLicense || formData.taxDocument || formData.additionalDocument;
+
+      // Set all files to uploading status (only for new files)
       setFileStatuses((prev) => {
         const newStatuses = { ...prev };
         if (formData.businessLicense) newStatuses.businessLicense = 'uploading';
@@ -410,6 +509,7 @@ export const VerificationPage = () => {
       });
 
       // Single batch upload call - sends all 3 parameters in one API call
+      // Only upload files that are in formData (new files), not already uploaded ones
       const response = await FileUploadService.uploadBatch(
         {
           businessLicense: formData.businessLicense || undefined,
@@ -433,50 +533,87 @@ export const VerificationPage = () => {
       const uploadResults: Record<string, FileUploadResponse> = {};
       const uploadedFilesArray = response.data.uploadedFiles || [];
 
-      // Map files by their documentType field
-      uploadedFilesArray.forEach((fileResponse: any) => {
-        // Access documentType field - API returns it as a string
-        const docType = fileResponse.documentType as string | undefined;
-        
-        // Check if file upload actually succeeded (has filePath/path and no error message)
-        const hasFilePath = (fileResponse.filePath !== null && fileResponse.filePath !== undefined) ||
-                           (fileResponse.path !== null && fileResponse.path !== undefined);
-        const hasErrorMessage = fileResponse.message?.toLowerCase().includes('failed') || false;
-        const isSuccess = hasFilePath && !hasErrorMessage;
-        
-        // Handle BUSINESS_LICENSE (API) vs BUSINESS_REGISTRATION (code) mismatch
-        if (docType === 'BUSINESS_LICENSE' || docType === DocumentType.BUSINESS_REGISTRATION) {
-          uploadResults.businessLicense = fileResponse as FileUploadResponse;
-          setUploadedFiles((prev) => ({ ...prev, businessLicense: fileResponse as FileUploadResponse }));
-          setFileStatuses((prev) => ({ ...prev, businessLicense: isSuccess ? 'success' : 'error' }));
-          if (!isSuccess) {
-            setFieldErrors((prev) => ({
-              ...prev,
-              businessLicense: fileResponse.message || 'File upload failed',
-            }));
+        // Map files by their documentType field
+        uploadedFilesArray.forEach((fileResponse: any) => {
+          // Access documentType field - API returns it as a string
+          const docType = fileResponse.documentType as string | undefined;
+          
+          // Check if file upload actually succeeded (has filePath/path and no error message)
+          const hasFilePath = (fileResponse.filePath !== null && fileResponse.filePath !== undefined) ||
+                             (fileResponse.path !== null && fileResponse.path !== undefined);
+          const hasErrorMessage = fileResponse.message?.toLowerCase().includes('failed') || false;
+          const isSuccess = hasFilePath && !hasErrorMessage;
+          
+          // Handle BUSINESS_LICENSE (API) vs BUSINESS_REGISTRATION (code) mismatch
+          if (docType === 'BUSINESS_LICENSE' || docType === DocumentType.BUSINESS_REGISTRATION) {
+            uploadResults.businessLicense = fileResponse as FileUploadResponse;
+            setUploadedFiles((prev) => ({ ...prev, businessLicense: fileResponse as FileUploadResponse }));
+            setFileStatuses((prev) => ({ ...prev, businessLicense: isSuccess ? 'success' : 'error' }));
+            if (isSuccess) {
+              // Clear formData and progress when upload succeeds
+              setFormData((prev) => ({ ...prev, businessLicense: null }));
+              setUploadProgress((prev) => {
+                const newProgress = { ...prev };
+                delete newProgress.businessLicense;
+                return newProgress;
+              });
+            } else {
+              setFieldErrors((prev) => ({
+                ...prev,
+                businessLicense: fileResponse.message || 'File upload failed',
+              }));
+            }
+          } else if (docType === DocumentType.TAX_IDENTIFICATION || docType === 'TAX_IDENTIFICATION') {
+            uploadResults.taxDocument = fileResponse as FileUploadResponse;
+            setUploadedFiles((prev) => ({ ...prev, taxDocument: fileResponse as FileUploadResponse }));
+            setFileStatuses((prev) => ({ ...prev, taxDocument: isSuccess ? 'success' : 'error' }));
+            if (isSuccess) {
+              // Clear formData and progress when upload succeeds
+              setFormData((prev) => ({ ...prev, taxDocument: null }));
+              setUploadProgress((prev) => {
+                const newProgress = { ...prev };
+                delete newProgress.taxDocument;
+                return newProgress;
+              });
+            } else {
+              setFieldErrors((prev) => ({
+                ...prev,
+                taxDocument: fileResponse.message || 'File upload failed',
+              }));
+            }
+          } else if (docType === DocumentType.ADDITIONAL_DOCUMENT || docType === 'ADDITIONAL_DOCUMENT') {
+            uploadResults.additionalDocument = fileResponse as FileUploadResponse;
+            setUploadedFiles((prev) => ({ ...prev, additionalDocument: fileResponse as FileUploadResponse }));
+            setFileStatuses((prev) => ({ ...prev, additionalDocument: isSuccess ? 'success' : 'error' }));
+            if (isSuccess) {
+              // Clear formData and progress when upload succeeds
+              setFormData((prev) => ({ ...prev, additionalDocument: null }));
+              setUploadProgress((prev) => {
+                const newProgress = { ...prev };
+                delete newProgress.additionalDocument;
+                return newProgress;
+              });
+            } else {
+              setFieldErrors((prev) => ({
+                ...prev,
+                additionalDocument: fileResponse.message || 'File upload failed',
+              }));
+            }
           }
-        } else if (docType === DocumentType.TAX_IDENTIFICATION || docType === 'TAX_IDENTIFICATION') {
-          uploadResults.taxDocument = fileResponse as FileUploadResponse;
-          setUploadedFiles((prev) => ({ ...prev, taxDocument: fileResponse as FileUploadResponse }));
-          setFileStatuses((prev) => ({ ...prev, taxDocument: isSuccess ? 'success' : 'error' }));
-          if (!isSuccess) {
-            setFieldErrors((prev) => ({
-              ...prev,
-              taxDocument: fileResponse.message || 'File upload failed',
-            }));
-          }
-        } else if (docType === DocumentType.ADDITIONAL_DOCUMENT || docType === 'ADDITIONAL_DOCUMENT') {
-          uploadResults.additionalDocument = fileResponse as FileUploadResponse;
-          setUploadedFiles((prev) => ({ ...prev, additionalDocument: fileResponse as FileUploadResponse }));
-          setFileStatuses((prev) => ({ ...prev, additionalDocument: isSuccess ? 'success' : 'error' }));
-          if (!isSuccess) {
-            setFieldErrors((prev) => ({
-              ...prev,
-              additionalDocument: fileResponse.message || 'File upload failed',
-            }));
-          }
-        }
-      });
+        });
+
+      // Handle case where no new files were uploaded (all files already exist)
+      if (!hasNewFiles) {
+        // All files are already uploaded, show success message
+        clearError();
+        setVerificationStatus('pending');
+        setSuccessMessage('Verification submitted successfully! Your documents are under review.');
+        setIsSuccessMessageError(false);
+        // Refetch documents to ensure we have the latest verification status
+        await refetchDocuments();
+        setLoading(false);
+        return;
+      }
 
       // Check if any uploads failed - treat as error if failedUploads > 0 or not all files succeeded
       const failedUploads = response.data.failedUploads ?? 0;
@@ -515,6 +652,9 @@ export const VerificationPage = () => {
       const successMsg = messageText || 'Verification submitted successfully! Your documents are under review.';
       setSuccessMessage(successMsg);
       setIsSuccessMessageError(messageIndicatesFailure);
+      
+      // Refetch documents to get complete DocumentInfo with verificationStatus
+      await refetchDocuments();
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to submit verification';
       setError(errorMessage);
@@ -653,7 +793,7 @@ export const VerificationPage = () => {
       )}
 
       {verificationStatus === 'rejected' && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+        <div className="bg-red-100 border border-red-200 rounded-xl p-4">
           <p className="text-sm text-red-800">
             Your verification was rejected. Please review your documents and submit again.
           </p>
@@ -783,7 +923,7 @@ export const VerificationPage = () => {
               {fieldErrors.businessLicense && (
                 <p className="mt-1.5 text-sm text-red-500">{fieldErrors.businessLicense}</p>
               )}
-              {(formData.businessLicense || existingDocuments.businessLicense) && (
+              {(formData.businessLicense || existingDocuments.businessLicense || uploadedFiles.businessLicense) && (
                 <div className="mt-4">
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-[#282f39] border border-[#403c34]">
                     <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
@@ -805,19 +945,24 @@ export const VerificationPage = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <p className="text-sm font-medium text-white truncate">
-                          {formData.businessLicense?.name || existingDocuments.businessLicense?.originalFileName || existingDocuments.businessLicense?.fileName}
+                          {formData.businessLicense?.name || existingDocuments.businessLicense?.originalFileName || existingDocuments.businessLicense?.fileName || uploadedFiles.businessLicense?.fileName}
                         </p>
                         {existingDocuments.businessLicense && getDocumentStatusBadge(existingDocuments.businessLicense.verificationStatus)}
+                        {!existingDocuments.businessLicense && fileStatuses.businessLicense === 'success' && uploadedFiles.businessLicense && (
+                          <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold text-amber-400 bg-[#343536] border border-amber-400">
+                            Uploaded
+                          </span>
+                        )}
                       </div>
                       <p className="text-xs text-gray-400">
-                        {formData.businessLicense ? formatFileSize(formData.businessLicense.size) : existingDocuments.businessLicense ? formatFileSize(existingDocuments.businessLicense.fileSize) : ''}
+                        {formData.businessLicense ? formatFileSize(formData.businessLicense.size) : existingDocuments.businessLicense ? formatFileSize(existingDocuments.businessLicense.fileSize) : uploadedFiles.businessLicense ? formatFileSize(uploadedFiles.businessLicense.fileSize || 0) : ''}
                       </p>
                       {existingDocuments.businessLicense?.rejectionReason && (
                         <p className="mt-1 text-xs text-red-400">
                           {existingDocuments.businessLicense.rejectionReason}
                         </p>
                       )}
-                      {fileStatuses.businessLicense === 'uploading' && (
+                      {fileStatuses.businessLicense === 'uploading' && uploadProgress.businessLicense !== undefined && (
                         <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
                           <div
                             className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
@@ -835,7 +980,7 @@ export const VerificationPage = () => {
                         </button>
                       )}
                     </div>
-                    {formData.businessLicense && (
+                    {formData.businessLicense && fileStatuses.businessLicense !== 'success' && (
                       <button
                         type="button"
                         onClick={() => removeFile('businessLicense')}
@@ -899,7 +1044,7 @@ export const VerificationPage = () => {
               {fieldErrors.taxDocument && (
                 <p className="mt-1.5 text-sm text-red-500">{fieldErrors.taxDocument}</p>
               )}
-              {(formData.taxDocument || existingDocuments.taxDocument) && (
+              {(formData.taxDocument || existingDocuments.taxDocument || uploadedFiles.taxDocument) && (
                 <div className="mt-4 mb-4">
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-[#282f39] border border-[#403c34]">
                     <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
@@ -921,19 +1066,24 @@ export const VerificationPage = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <p className="text-sm font-medium text-white truncate">
-                          {formData.taxDocument?.name || existingDocuments.taxDocument?.originalFileName || existingDocuments.taxDocument?.fileName}
+                          {formData.taxDocument?.name || existingDocuments.taxDocument?.originalFileName || existingDocuments.taxDocument?.fileName || uploadedFiles.taxDocument?.fileName}
                         </p>
                         {existingDocuments.taxDocument && getDocumentStatusBadge(existingDocuments.taxDocument.verificationStatus)}
+                        {!existingDocuments.taxDocument && fileStatuses.taxDocument === 'success' && uploadedFiles.taxDocument && (
+                          <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold text-amber-400 bg-[#343536] border border-amber-400">
+                            Uploaded
+                          </span>
+                        )}
                       </div>
                       <p className="text-xs text-gray-400">
-                        {formData.taxDocument ? formatFileSize(formData.taxDocument.size) : existingDocuments.taxDocument ? formatFileSize(existingDocuments.taxDocument.fileSize) : ''}
+                        {formData.taxDocument ? formatFileSize(formData.taxDocument.size) : existingDocuments.taxDocument ? formatFileSize(existingDocuments.taxDocument.fileSize) : uploadedFiles.taxDocument ? formatFileSize(uploadedFiles.taxDocument.fileSize || 0) : ''}
                       </p>
                       {existingDocuments.taxDocument?.rejectionReason && (
                         <p className="mt-1 text-xs text-red-400">
                           {existingDocuments.taxDocument.rejectionReason}
                         </p>
                       )}
-                      {fileStatuses.taxDocument === 'uploading' && (
+                      {fileStatuses.taxDocument === 'uploading' && uploadProgress.taxDocument !== undefined && (
                         <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
                           <div
                             className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
@@ -951,7 +1101,7 @@ export const VerificationPage = () => {
                         </button>
                       )}
                     </div>
-                    {formData.taxDocument && (
+                    {formData.taxDocument && fileStatuses.taxDocument !== 'success' && (
                       <button
                         type="button"
                         onClick={() => removeFile('taxDocument')}
@@ -1025,7 +1175,7 @@ export const VerificationPage = () => {
               {fieldErrors.additionalDocument && (
                 <p className="mt-1.5 text-sm text-red-500">{fieldErrors.additionalDocument}</p>
               )}
-              {(formData.additionalDocument || existingDocuments.additionalDocument) && (
+              {(formData.additionalDocument || existingDocuments.additionalDocument || uploadedFiles.additionalDocument) && (
                 <div className="mt-4">
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-[#282f39] border border-[#403c34]">
                     <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
@@ -1047,19 +1197,24 @@ export const VerificationPage = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <p className="text-sm font-medium text-white truncate">
-                          {formData.additionalDocument?.name || existingDocuments.additionalDocument?.originalFileName || existingDocuments.additionalDocument?.fileName}
+                          {formData.additionalDocument?.name || existingDocuments.additionalDocument?.originalFileName || existingDocuments.additionalDocument?.fileName || uploadedFiles.additionalDocument?.fileName}
                         </p>
                         {existingDocuments.additionalDocument && getDocumentStatusBadge(existingDocuments.additionalDocument.verificationStatus)}
+                        {!existingDocuments.additionalDocument && fileStatuses.additionalDocument === 'success' && uploadedFiles.additionalDocument && (
+                          <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold text-amber-400 bg-[#343536] border border-amber-400">
+                            Uploaded
+                          </span>
+                        )}
                       </div>
                       <p className="text-xs text-gray-400">
-                        {formData.additionalDocument ? formatFileSize(formData.additionalDocument.size) : existingDocuments.additionalDocument ? formatFileSize(existingDocuments.additionalDocument.fileSize) : ''}
+                        {formData.additionalDocument ? formatFileSize(formData.additionalDocument.size) : existingDocuments.additionalDocument ? formatFileSize(existingDocuments.additionalDocument.fileSize) : uploadedFiles.additionalDocument ? formatFileSize(uploadedFiles.additionalDocument.fileSize || 0) : ''}
                       </p>
                       {existingDocuments.additionalDocument?.rejectionReason && (
                         <p className="mt-1 text-xs text-red-400">
                           {existingDocuments.additionalDocument.rejectionReason}
                         </p>
                       )}
-                      {fileStatuses.additionalDocument === 'uploading' && (
+                      {fileStatuses.additionalDocument === 'uploading' && uploadProgress.additionalDocument !== undefined && (
                         <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
                           <div
                             className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
@@ -1077,7 +1232,7 @@ export const VerificationPage = () => {
                         </button>
                       )}
                     </div>
-                    {formData.additionalDocument && (
+                    {formData.additionalDocument && fileStatuses.additionalDocument !== 'success' && (
                       <button
                         type="button"
                         onClick={removeAdditionalFile}
