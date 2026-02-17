@@ -729,7 +729,7 @@ export const VerificationPage = () => {
       )}
 
       {verificationStatus === 'rejected' && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+        <div className="bg-red-100 border border-red-200 rounded-xl p-4">
           <p className="text-sm text-red-800">
             Your verification was rejected. Please review your documents and submit again.
           </p>
