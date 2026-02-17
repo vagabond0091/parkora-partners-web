@@ -146,6 +146,87 @@ export const VerificationPage = () => {
   }, []);
 
   /**
+   * Refetches documents from the API and updates the component state
+   */
+  const refetchDocuments = async () => {
+    try {
+      const response = await FileUploadService.getDocuments();
+      
+      if (response.data && Array.isArray(response.data)) {
+        const documentsMap: Record<string, DocumentInfo> = {};
+        
+        response.data.forEach((doc: DocumentInfo) => {
+          // Map API documentType to form field names
+          if (doc.documentType === 'BUSINESS_LICENSE' || doc.documentType === DocumentType.BUSINESS_REGISTRATION) {
+            documentsMap.businessLicense = doc;
+            setFileStatuses((prev) => ({ ...prev, businessLicense: 'success' }));
+            setUploadedFiles((prev) => ({
+              ...prev,
+              businessLicense: {
+                url: doc.filePath,
+                path: doc.filePath,
+                bucket: '',
+                fileName: doc.fileName,
+                fileSize: doc.fileSize,
+                contentType: doc.contentType,
+                documentType: DocumentType.BUSINESS_REGISTRATION,
+              },
+            }));
+          } else if (doc.documentType === DocumentType.TAX_IDENTIFICATION || doc.documentType === 'TAX_IDENTIFICATION') {
+            documentsMap.taxDocument = doc;
+            setFileStatuses((prev) => ({ ...prev, taxDocument: 'success' }));
+            setUploadedFiles((prev) => ({
+              ...prev,
+              taxDocument: {
+                url: doc.filePath,
+                path: doc.filePath,
+                bucket: '',
+                fileName: doc.fileName,
+                fileSize: doc.fileSize,
+                contentType: doc.contentType,
+                documentType: DocumentType.TAX_IDENTIFICATION,
+              },
+            }));
+          } else if (doc.documentType === DocumentType.ADDITIONAL_DOCUMENT || doc.documentType === 'ADDITIONAL_DOCUMENT') {
+            documentsMap.additionalDocument = doc;
+            setFileStatuses((prev) => ({ ...prev, additionalDocument: 'success' }));
+            setUploadedFiles((prev) => ({
+              ...prev,
+              additionalDocument: {
+                url: doc.filePath,
+                path: doc.filePath,
+                bucket: '',
+                fileName: doc.fileName,
+                fileSize: doc.fileSize,
+                contentType: doc.contentType,
+                documentType: DocumentType.ADDITIONAL_DOCUMENT,
+              },
+            }));
+          }
+        });
+        
+        setExistingDocuments(documentsMap);
+        
+        // Update verification status based on documents
+        const hasRejected = response.data.some((doc: DocumentInfo) => doc.verificationStatus === 'REJECTED');
+        const allVerified = response.data.every((doc: DocumentInfo) => doc.verificationStatus === 'VERIFIED');
+        
+        if (allVerified && response.data.length > 0) {
+          setVerificationStatus('approved');
+        } else if (hasRejected) {
+          setVerificationStatus('rejected');
+        } else if (response.data.length > 0) {
+          setVerificationStatus('pending');
+        }
+      }
+    } catch (err) {
+      // Silently fail - don't show error if documents can't be fetched
+      // The uploaded files are already in uploadedFiles state
+      console.error('Failed to refetch documents:', err);
+    }
+  };
+
+  /**
    * Formats file size to human-readable format.
    * @param bytes - File size in bytes
    * @returns Formatted file size string
@@ -588,6 +669,8 @@ export const VerificationPage = () => {
         setVerificationStatus('pending');
         setSuccessMessage('Verification submitted successfully! Your documents are under review.');
         setIsSuccessMessageError(false);
+        // Refetch documents to ensure we have the latest verification status
+        await refetchDocuments();
         setLoading(false);
         return;
       }
@@ -629,6 +712,9 @@ export const VerificationPage = () => {
       const successMsg = messageText || 'Verification submitted successfully! Your documents are under review.';
       setSuccessMessage(successMsg);
       setIsSuccessMessageError(messageIndicatesFailure);
+      
+      // Refetch documents to get complete DocumentInfo with verificationStatus
+      await refetchDocuments();
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to submit verification';
       setError(errorMessage);
@@ -922,7 +1008,7 @@ export const VerificationPage = () => {
                           {formData.businessLicense?.name || existingDocuments.businessLicense?.originalFileName || existingDocuments.businessLicense?.fileName || uploadedFiles.businessLicense?.fileName}
                         </p>
                         {existingDocuments.businessLicense && getDocumentStatusBadge(existingDocuments.businessLicense.verificationStatus)}
-                        {!existingDocuments.businessLicense && fileStatuses.businessLicense === 'success' && (
+                        {!existingDocuments.businessLicense && fileStatuses.businessLicense === 'success' && uploadedFiles.businessLicense && (
                           <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold text-amber-400 bg-[#343536] border border-amber-400">
                             Uploaded
                           </span>
@@ -936,7 +1022,7 @@ export const VerificationPage = () => {
                           {existingDocuments.businessLicense.rejectionReason}
                         </p>
                       )}
-                      {fileStatuses.businessLicense === 'uploading' && (
+                      {fileStatuses.businessLicense === 'uploading' && uploadProgress.businessLicense !== undefined && (
                         <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
                           <div
                             className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
@@ -954,7 +1040,7 @@ export const VerificationPage = () => {
                         </button>
                       )}
                     </div>
-                    {formData.businessLicense && (
+                    {formData.businessLicense && fileStatuses.businessLicense !== 'success' && (
                       <button
                         type="button"
                         onClick={() => removeFile('businessLicense')}
@@ -1043,7 +1129,7 @@ export const VerificationPage = () => {
                           {formData.taxDocument?.name || existingDocuments.taxDocument?.originalFileName || existingDocuments.taxDocument?.fileName || uploadedFiles.taxDocument?.fileName}
                         </p>
                         {existingDocuments.taxDocument && getDocumentStatusBadge(existingDocuments.taxDocument.verificationStatus)}
-                        {!existingDocuments.taxDocument && fileStatuses.taxDocument === 'success' && (
+                        {!existingDocuments.taxDocument && fileStatuses.taxDocument === 'success' && uploadedFiles.taxDocument && (
                           <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold text-amber-400 bg-[#343536] border border-amber-400">
                             Uploaded
                           </span>
@@ -1057,7 +1143,7 @@ export const VerificationPage = () => {
                           {existingDocuments.taxDocument.rejectionReason}
                         </p>
                       )}
-                      {fileStatuses.taxDocument === 'uploading' && (
+                      {fileStatuses.taxDocument === 'uploading' && uploadProgress.taxDocument !== undefined && (
                         <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
                           <div
                             className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
@@ -1075,7 +1161,7 @@ export const VerificationPage = () => {
                         </button>
                       )}
                     </div>
-                    {formData.taxDocument && (
+                    {formData.taxDocument && fileStatuses.taxDocument !== 'success' && (
                       <button
                         type="button"
                         onClick={() => removeFile('taxDocument')}
@@ -1174,7 +1260,7 @@ export const VerificationPage = () => {
                           {formData.additionalDocument?.name || existingDocuments.additionalDocument?.originalFileName || existingDocuments.additionalDocument?.fileName || uploadedFiles.additionalDocument?.fileName}
                         </p>
                         {existingDocuments.additionalDocument && getDocumentStatusBadge(existingDocuments.additionalDocument.verificationStatus)}
-                        {!existingDocuments.additionalDocument && fileStatuses.additionalDocument === 'success' && (
+                        {!existingDocuments.additionalDocument && fileStatuses.additionalDocument === 'success' && uploadedFiles.additionalDocument && (
                           <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold text-amber-400 bg-[#343536] border border-amber-400">
                             Uploaded
                           </span>
@@ -1188,7 +1274,7 @@ export const VerificationPage = () => {
                           {existingDocuments.additionalDocument.rejectionReason}
                         </p>
                       )}
-                      {fileStatuses.additionalDocument === 'uploading' && (
+                      {fileStatuses.additionalDocument === 'uploading' && uploadProgress.additionalDocument !== undefined && (
                         <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
                           <div
                             className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
@@ -1206,7 +1292,7 @@ export const VerificationPage = () => {
                         </button>
                       )}
                     </div>
-                    {formData.additionalDocument && (
+                    {formData.additionalDocument && fileStatuses.additionalDocument !== 'success' && (
                       <button
                         type="button"
                         onClick={removeAdditionalFile}
