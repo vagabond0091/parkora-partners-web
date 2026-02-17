@@ -48,6 +48,82 @@ export const VerificationPage = () => {
   }, [error, successMessage]);
 
   /**
+   * Processes documents from API response and updates component state
+   * @param response - The API response containing documents
+   */
+  const processDocuments = (response: any) => {
+    if (response.data && Array.isArray(response.data)) {
+      const documentsMap: Record<string, DocumentInfo> = {};
+      
+      response.data.forEach((doc: DocumentInfo) => {
+        // Map API documentType to form field names
+        if (doc.documentType === 'BUSINESS_LICENSE' || doc.documentType === DocumentType.BUSINESS_REGISTRATION) {
+          documentsMap.businessLicense = doc;
+          // Set file status to success if document exists
+          setFileStatuses((prev) => ({ ...prev, businessLicense: 'success' }));
+          // Create a FileUploadResponse-like object for display
+          setUploadedFiles((prev) => ({
+            ...prev,
+            businessLicense: {
+              url: doc.filePath,
+              path: doc.filePath,
+              bucket: '',
+              fileName: doc.fileName,
+              fileSize: doc.fileSize,
+              contentType: doc.contentType,
+              documentType: DocumentType.BUSINESS_REGISTRATION,
+            },
+          }));
+        } else if (doc.documentType === DocumentType.TAX_IDENTIFICATION || doc.documentType === 'TAX_IDENTIFICATION') {
+          documentsMap.taxDocument = doc;
+          setFileStatuses((prev) => ({ ...prev, taxDocument: 'success' }));
+          setUploadedFiles((prev) => ({
+            ...prev,
+            taxDocument: {
+              url: doc.filePath,
+              path: doc.filePath,
+              bucket: '',
+              fileName: doc.fileName,
+              fileSize: doc.fileSize,
+              contentType: doc.contentType,
+              documentType: DocumentType.TAX_IDENTIFICATION,
+            },
+          }));
+        } else if (doc.documentType === DocumentType.ADDITIONAL_DOCUMENT || doc.documentType === 'ADDITIONAL_DOCUMENT') {
+          documentsMap.additionalDocument = doc;
+          setFileStatuses((prev) => ({ ...prev, additionalDocument: 'success' }));
+          setUploadedFiles((prev) => ({
+            ...prev,
+            additionalDocument: {
+              url: doc.filePath,
+              path: doc.filePath,
+              bucket: '',
+              fileName: doc.fileName,
+              fileSize: doc.fileSize,
+              contentType: doc.contentType,
+              documentType: DocumentType.ADDITIONAL_DOCUMENT,
+            },
+          }));
+        }
+      });
+      
+      setExistingDocuments(documentsMap);
+      
+      // Update verification status based on documents
+      const hasRejected = response.data.some((doc: DocumentInfo) => doc.verificationStatus === 'REJECTED');
+      const allVerified = response.data.every((doc: DocumentInfo) => doc.verificationStatus === 'VERIFIED');
+      
+      if (allVerified && response.data.length > 0) {
+        setVerificationStatus('approved');
+      } else if (hasRejected) {
+        setVerificationStatus('rejected');
+      } else if (response.data.length > 0) {
+        setVerificationStatus('pending');
+      }
+    }
+  };
+
+  /**
    * Fetches existing documents and rehydrates the form
    */
   useEffect(() => {
@@ -61,76 +137,7 @@ export const VerificationPage = () => {
       try {
         setLoading(true);
         const response = await FileUploadService.getDocuments();
-        
-        if (response.data && Array.isArray(response.data)) {
-          const documentsMap: Record<string, DocumentInfo> = {};
-          
-          response.data.forEach((doc: DocumentInfo) => {
-            // Map API documentType to form field names
-            if (doc.documentType === 'BUSINESS_LICENSE' || doc.documentType === DocumentType.BUSINESS_REGISTRATION) {
-              documentsMap.businessLicense = doc;
-              // Set file status to success if document exists
-              setFileStatuses((prev) => ({ ...prev, businessLicense: 'success' }));
-              // Create a FileUploadResponse-like object for display
-              setUploadedFiles((prev) => ({
-                ...prev,
-                businessLicense: {
-                  url: doc.filePath,
-                  path: doc.filePath,
-                  bucket: '',
-                  fileName: doc.fileName,
-                  fileSize: doc.fileSize,
-                  contentType: doc.contentType,
-                  documentType: DocumentType.BUSINESS_REGISTRATION,
-                },
-              }));
-            } else if (doc.documentType === DocumentType.TAX_IDENTIFICATION || doc.documentType === 'TAX_IDENTIFICATION') {
-              documentsMap.taxDocument = doc;
-              setFileStatuses((prev) => ({ ...prev, taxDocument: 'success' }));
-              setUploadedFiles((prev) => ({
-                ...prev,
-                taxDocument: {
-                  url: doc.filePath,
-                  path: doc.filePath,
-                  bucket: '',
-                  fileName: doc.fileName,
-                  fileSize: doc.fileSize,
-                  contentType: doc.contentType,
-                  documentType: DocumentType.TAX_IDENTIFICATION,
-                },
-              }));
-            } else if (doc.documentType === DocumentType.ADDITIONAL_DOCUMENT || doc.documentType === 'ADDITIONAL_DOCUMENT') {
-              documentsMap.additionalDocument = doc;
-              setFileStatuses((prev) => ({ ...prev, additionalDocument: 'success' }));
-              setUploadedFiles((prev) => ({
-                ...prev,
-                additionalDocument: {
-                  url: doc.filePath,
-                  path: doc.filePath,
-                  bucket: '',
-                  fileName: doc.fileName,
-                  fileSize: doc.fileSize,
-                  contentType: doc.contentType,
-                  documentType: DocumentType.ADDITIONAL_DOCUMENT,
-                },
-              }));
-            }
-          });
-          
-          setExistingDocuments(documentsMap);
-          
-          // Update verification status based on documents
-          const hasRejected = response.data.some((doc: DocumentInfo) => doc.verificationStatus === 'REJECTED');
-          const allVerified = response.data.every((doc: DocumentInfo) => doc.verificationStatus === 'VERIFIED');
-          
-          if (allVerified && response.data.length > 0) {
-            setVerificationStatus('approved');
-          } else if (hasRejected) {
-            setVerificationStatus('rejected');
-          } else if (response.data.length > 0) {
-            setVerificationStatus('pending');
-          }
-        }
+        processDocuments(response);
       } catch (err) {
         // Reset the flag on error so it can retry if needed
         hasFetchedDocuments.current = false;
@@ -151,74 +158,7 @@ export const VerificationPage = () => {
   const refetchDocuments = async () => {
     try {
       const response = await FileUploadService.getDocuments();
-      
-      if (response.data && Array.isArray(response.data)) {
-        const documentsMap: Record<string, DocumentInfo> = {};
-        
-        response.data.forEach((doc: DocumentInfo) => {
-          // Map API documentType to form field names
-          if (doc.documentType === 'BUSINESS_LICENSE' || doc.documentType === DocumentType.BUSINESS_REGISTRATION) {
-            documentsMap.businessLicense = doc;
-            setFileStatuses((prev) => ({ ...prev, businessLicense: 'success' }));
-            setUploadedFiles((prev) => ({
-              ...prev,
-              businessLicense: {
-                url: doc.filePath,
-                path: doc.filePath,
-                bucket: '',
-                fileName: doc.fileName,
-                fileSize: doc.fileSize,
-                contentType: doc.contentType,
-                documentType: DocumentType.BUSINESS_REGISTRATION,
-              },
-            }));
-          } else if (doc.documentType === DocumentType.TAX_IDENTIFICATION || doc.documentType === 'TAX_IDENTIFICATION') {
-            documentsMap.taxDocument = doc;
-            setFileStatuses((prev) => ({ ...prev, taxDocument: 'success' }));
-            setUploadedFiles((prev) => ({
-              ...prev,
-              taxDocument: {
-                url: doc.filePath,
-                path: doc.filePath,
-                bucket: '',
-                fileName: doc.fileName,
-                fileSize: doc.fileSize,
-                contentType: doc.contentType,
-                documentType: DocumentType.TAX_IDENTIFICATION,
-              },
-            }));
-          } else if (doc.documentType === DocumentType.ADDITIONAL_DOCUMENT || doc.documentType === 'ADDITIONAL_DOCUMENT') {
-            documentsMap.additionalDocument = doc;
-            setFileStatuses((prev) => ({ ...prev, additionalDocument: 'success' }));
-            setUploadedFiles((prev) => ({
-              ...prev,
-              additionalDocument: {
-                url: doc.filePath,
-                path: doc.filePath,
-                bucket: '',
-                fileName: doc.fileName,
-                fileSize: doc.fileSize,
-                contentType: doc.contentType,
-                documentType: DocumentType.ADDITIONAL_DOCUMENT,
-              },
-            }));
-          }
-        });
-        
-        setExistingDocuments(documentsMap);
-        
-        // Update verification status based on documents
-        const hasRejected = response.data.some((doc: DocumentInfo) => doc.verificationStatus === 'REJECTED');
-        const allVerified = response.data.every((doc: DocumentInfo) => doc.verificationStatus === 'VERIFIED');
-        
-        if (allVerified && response.data.length > 0) {
-          setVerificationStatus('approved');
-        } else if (hasRejected) {
-          setVerificationStatus('rejected');
-        } else if (response.data.length > 0) {
-          setVerificationStatus('pending');
-        }
-      }
+      processDocuments(response);
     } catch (err) {
       // Silently fail - don't show error if documents can't be fetched
       // The uploaded files are already in uploadedFiles state
