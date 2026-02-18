@@ -40,7 +40,11 @@ export const LoginPage = () => {
       };
       
       setUser(user, token);
-      navigate(ROUTES.DASHBOARD);
+      
+      // Redirect based on user role
+      const isAdmin = user.roles?.some((role) => role.toLowerCase() === 'admin');
+      const redirectPath = isAdmin ? ROUTES.ADMIN_DASHBOARD : ROUTES.DASHBOARD;
+      navigate(redirectPath);
     } catch (err) {
       // Error message is already extracted from backend response in AuthService
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
