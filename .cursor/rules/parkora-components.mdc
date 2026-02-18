@@ -261,6 +261,74 @@ export const LoginForm = () => {
 };
 ```
 
+## Separating Configuration Data
+
+When components contain configuration data, navigation items, or data structures that can grow independently, **always separate them into dedicated files**.
+
+### When to Separate
+
+| Signal | Action |
+|--------|--------|
+| Navigation items for different user roles | Separate into `[role]NavItems.tsx` files |
+| Configuration arrays that can grow | Move to separate `[name]Config.tsx` or `[name]Items.tsx` |
+| Data structures with different domains | One file per domain/role |
+| Multiple related but independent arrays | Separate files for each |
+
+### Correct - Separated Navigation Items
+
+```tsx
+// components/layout/Sidebar/partnersNavItems.tsx
+import type { SidebarNavItem } from '@/types/components/sidebar.types';
+import { ROUTES } from '@/routes/routePaths';
+
+export const partnersNavItems: SidebarNavItem[] = [
+  { label: 'Dashboard', path: ROUTES.DASHBOARD, icon: <DashboardIcon /> },
+  { label: 'Analytics', path: ROUTES.DASHBOARD_ANALYTICS, icon: <AnalyticsIcon /> },
+  // ... more items
+];
+```
+
+```tsx
+// components/layout/Sidebar/adminNavItems.tsx
+import type { SidebarNavItem } from '@/types/components/sidebar.types';
+import { ROUTES } from '@/routes/routePaths';
+
+export const adminNavItems: SidebarNavItem[] = [
+  { label: 'Admin', path: ROUTES.ADMIN_DASHBOARD, icon: <AdminIcon /> },
+  // ... more items that can grow independently
+];
+```
+
+```tsx
+// components/layout/Sidebar/SidebarNav.tsx
+import { partnersNavItems } from './partnersNavItems';
+import { adminNavItems } from './adminNavItems';
+
+export const SidebarNav = () => {
+  const isAdmin = user?.roles?.some((role) => role.toLowerCase() === 'admin');
+  const navItems = isAdmin ? adminNavItems : partnersNavItems;
+  // ... render logic
+};
+```
+
+### Forbidden - Combined in Component
+
+```tsx
+// Don't keep all navigation items in the component file
+export const SidebarNav = () => {
+  const partnersNavItems = [/* ... */];
+  const adminNavItems = [/* ... */];
+  // ... component logic
+};
+```
+
+### Benefits
+
+1. **Independent growth** - Each file can grow without affecting others
+2. **Easier maintenance** - Changes to one role's items don't touch others
+3. **Better organization** - Clear separation of concerns
+4. **Reduced merge conflicts** - Different developers can work on different files
+
 ## Rules Summary
 
 1. **Folder per component** - Each component has its own folder
@@ -270,3 +338,4 @@ export const LoginForm = () => {
 5. **Composition over props** - Use children and compound patterns
 6. **No business logic in common** - Keep reusable components pure
 7. **PascalCase everywhere** - Files, folders, components
+8. **Separate configuration data** - Move navigation items, config arrays, and data structures to separate files when they can grow independently
