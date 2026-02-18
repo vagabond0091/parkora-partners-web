@@ -261,6 +261,130 @@ export const LoginForm = () => {
 };
 ```
 
+## Separating Configuration Data
+
+**This rule applies to ALL components, not just navigation.** When any component contains configuration data, arrays, options, or data structures that can grow independently or belong to different domains/roles, **always separate them into dedicated files**.
+
+### When to Separate
+
+| Signal | Action |
+|--------|--------|
+| Configuration arrays that can grow | Move to separate `[name]Config.tsx` or `[name]Items.tsx` |
+| Data structures for different user roles | Separate into `[role][Name].tsx` files |
+| Data structures with different domains | One file per domain/role |
+| Multiple related but independent arrays | Separate files for each |
+| Large static data arrays | Move to dedicated data files |
+| Menu items, options, or lists | Extract to separate files |
+
+### Correct - Separated Configuration (All Components)
+
+#### Example 1: Navigation Items
+
+```tsx
+// components/layout/Sidebar/partnersNavItems.tsx
+import type { SidebarNavItem } from '@/types/components/sidebar.types';
+import { ROUTES } from '@/routes/routePaths';
+
+export const partnersNavItems: SidebarNavItem[] = [
+  { label: 'Dashboard', path: ROUTES.DASHBOARD, icon: <DashboardIcon /> },
+  { label: 'Analytics', path: ROUTES.DASHBOARD_ANALYTICS, icon: <AnalyticsIcon /> },
+];
+```
+
+```tsx
+// components/layout/Sidebar/adminNavItems.tsx
+export const adminNavItems: SidebarNavItem[] = [
+  { label: 'Admin', path: ROUTES.ADMIN_DASHBOARD, icon: <AdminIcon /> },
+];
+```
+
+```tsx
+// components/layout/Sidebar/SidebarNav.tsx
+import { partnersNavItems } from './partnersNavItems';
+import { adminNavItems } from './adminNavItems';
+
+export const SidebarNav = () => {
+  const navItems = isAdmin ? adminNavItems : partnersNavItems;
+  // ... render logic
+};
+```
+
+#### Example 2: Form Options
+
+```tsx
+// components/features/verification/verificationStatusOptions.tsx
+export const verificationStatusOptions = [
+  { value: 'pending', label: 'Pending' },
+  { value: 'approved', label: 'Approved' },
+  { value: 'rejected', label: 'Rejected' },
+];
+```
+
+```tsx
+// components/features/verification/VerificationForm.tsx
+import { verificationStatusOptions } from './verificationStatusOptions';
+
+export const VerificationForm = () => {
+  return (
+    <select>
+      {verificationStatusOptions.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  );
+};
+```
+
+#### Example 3: Feature Configuration
+
+```tsx
+// components/dashboard/partnersFeatures.tsx
+export const partnersFeatures = [
+  { id: 'analytics', enabled: true },
+  { id: 'reports', enabled: true },
+];
+```
+
+```tsx
+// components/dashboard/adminFeatures.tsx
+export const adminFeatures = [
+  { id: 'user-management', enabled: true },
+  { id: 'system-settings', enabled: true },
+];
+```
+
+### Forbidden - Combined in Component
+
+```tsx
+// Don't keep configuration data in ANY component file
+export const SidebarNav = () => {
+  const partnersNavItems = [/* ... */];
+  const adminNavItems = [/* ... */];
+  // ... component logic
+};
+
+export const VerificationForm = () => {
+  const statusOptions = [/* ... */]; // Should be in separate file
+  // ... component logic
+};
+
+export const Dashboard = () => {
+  const features = [/* ... */]; // Should be in separate file
+  // ... component logic
+};
+```
+
+### Benefits
+
+1. **Independent growth** - Each file can grow without affecting others
+2. **Easier maintenance** - Changes to configuration don't require touching component logic
+3. **Better organization** - Clear separation of data and presentation
+4. **Reduced merge conflicts** - Different developers can work on different files
+5. **Reusability** - Configuration data can be imported by multiple components
+6. **Testability** - Configuration can be tested independently
+
 ## Rules Summary
 
 1. **Folder per component** - Each component has its own folder
@@ -270,3 +394,4 @@ export const LoginForm = () => {
 5. **Composition over props** - Use children and compound patterns
 6. **No business logic in common** - Keep reusable components pure
 7. **PascalCase everywhere** - Files, folders, components
+8. **Separate configuration data** - **Applies to ALL components.** Always move configuration arrays, data structures, menu items, options, and static data to separate files when they can grow independently or belong to different domains/roles

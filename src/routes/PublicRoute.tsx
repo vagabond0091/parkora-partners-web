@@ -8,7 +8,10 @@ export const PublicRoute = () => {
 
   // Only redirect if both authenticated AND user object exists
   if (isAuthenticated && user) {
-    return <Navigate to={ROUTES.DASHBOARD} replace />;
+    // Redirect based on user role
+    const isAdmin = user.roles?.some((role) => role.toLowerCase() === 'admin');
+    const redirectPath = isAdmin ? ROUTES.ADMIN_DASHBOARD : ROUTES.DASHBOARD;
+    return <Navigate to={redirectPath} replace />;
   }
 
   return <Outlet />;

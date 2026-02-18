@@ -26,6 +26,20 @@ export const ProtectedRoute = () => {
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
 
+  // Check if accessing admin dashboard and verify admin role
+  const requiresAdminRole = location.pathname === ROUTES.ADMIN_DASHBOARD;
+
+  if (requiresAdminRole) {
+    const hasAccess = user.roles?.some(
+      (role) => role.toLowerCase() === 'admin'
+    );
+
+    if (!hasAccess) {
+      // Redirect to access denied page if user doesn't have required role
+      return <Navigate to={ROUTES.ACCESS_DENIED} replace />;
+    }
+  }
+
   // Check if accessing dashboard or verification page and verify role
   const requiresPartnersRole = 
     location.pathname === ROUTES.DASHBOARD || 
