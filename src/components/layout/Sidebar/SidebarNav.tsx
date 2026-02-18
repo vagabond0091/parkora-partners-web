@@ -6,7 +6,7 @@ import { ROUTES } from '@/routes/routePaths';
 /**
  * Navigation items configuration for the sidebar.
  */
-const baseNavItems = [
+const partnersNavItems = [
   {
     label: 'Dashboard',
     path: ROUTES.DASHBOARD,
@@ -131,7 +131,7 @@ export const SidebarNav = () => {
 
   const isAdmin = user?.roles?.some((role) => role.toLowerCase() === 'admin');
 
-  const navItems = isAdmin ? [...baseNavItems, adminNavItem] : baseNavItems;
+  const navItems = isAdmin ? [...partnersNavItems, adminNavItem] : partnersNavItems;
 
   return (
     <nav className="flex-1 overflow-y-auto p-4">
