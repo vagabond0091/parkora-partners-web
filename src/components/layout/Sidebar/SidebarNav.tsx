@@ -131,7 +131,7 @@ export const SidebarNav = () => {
 
   const isAdmin = user?.roles?.some((role) => role.toLowerCase() === 'admin');
 
-  const navItems = isAdmin ? [...partnersNavItems, adminNavItem] : partnersNavItems;
+  const navItems = isAdmin ? [adminNavItem] : partnersNavItems;
 
   return (
     <nav className="flex-1 overflow-y-auto p-4">
