@@ -8,9 +8,9 @@ export const VerificationManagementPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="w-full">
+    <div className="-mx-8 -mt-8">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6 bg-[#172032] px-6 py-6 rounded-lg">
+      <div className="flex items-start justify-between mb-6 bg-[#172032] px-8 py-6 w-[calc(100%+4rem)]">
         <div>
           <h1 className="text-2xl font-bold text-white mb-1">Verification Management</h1>
           <p className="text-sm text-gray-400">Manage and review partner onboarding documents</p>
