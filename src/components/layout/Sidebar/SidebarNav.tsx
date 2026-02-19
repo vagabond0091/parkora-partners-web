@@ -14,10 +14,16 @@ export const SidebarNav = () => {
   const { user } = useAuthStore();
 
   const isActive = (path: string) => {
+    // Exact match for root dashboard
     if (path === ROUTES.DASHBOARD) {
       return location.pathname === path;
     }
-    return location.pathname.startsWith(path);
+    // Exact match for admin dashboard to prevent matching child routes
+    if (path === ROUTES.ADMIN_DASHBOARD) {
+      return location.pathname === path;
+    }
+    // For other routes, check if pathname starts with the path followed by '/' or end of string
+    return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
   const isAdmin = user?.roles?.some((role) => role.toLowerCase() === 'admin');
