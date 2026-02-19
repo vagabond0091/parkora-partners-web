@@ -10,10 +10,10 @@ export const VerificationManagementPage = () => {
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6 bg-[#172032] px-8 py-6 -mx-8 -mt-8 w-[calc(100%+4rem)]">
+      <div className="flex items-start justify-between mb-4 bg-[#172032] px-8 py-4.5 -mx-8 -mt-8 w-[calc(100%+4rem)]">
         <div>
-          <h1 className="text-2xl font-bold text-white mb-1">Verification Management</h1>
-          <p className="text-sm text-gray-400">Manage and review partner onboarding documents</p>
+          <h1 className="text-xl font-bold text-white">Verification Management</h1>
+          <p className="text-xs text-gray-400">Manage and review partner onboarding documents</p>
         </div>
         <div className="relative">
           <svg
