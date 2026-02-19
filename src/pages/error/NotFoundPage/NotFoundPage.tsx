@@ -21,18 +21,18 @@ export const NotFoundPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-2xl mx-4 my-8 text-center">
+      <div className="w-full max-w-lg mx-4 my-8 text-center">
         {/* 404 Number */}
-        <div className="mb-8">
-          <h1 className="text-[120px] md:text-[150px] font-extrabold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent leading-none tracking-tight">
+        <div className="mb-6">
+          <h1 className="text-6xl md:text-7xl font-extrabold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent leading-none tracking-tight">
             404
           </h1>
         </div>
 
         {/* Illustration */}
-        <div className="mb-8 flex justify-center">
+        <div className="mb-6 flex justify-center">
           <svg
-            className="w-64 h-64 md:w-80 md:h-80 text-gray-300"
+            className="w-32 h-32 md:w-40 md:h-40 text-gray-300"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -47,14 +47,14 @@ export const NotFoundPage = () => {
         </div>
 
         {/* Error Message */}
-        <div className="mb-10 space-y-3">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+        <div className="mb-8 space-y-2">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">
             Oops! Page Not Found
           </h2>
-          <p className="text-lg text-gray-600 max-w-md mx-auto">
+          <p className="text-sm md:text-base text-gray-600 max-w-sm mx-auto">
             The page you're looking for seems to have wandered off into the digital void.
             <br />
-            <span className="text-gray-500 text-base">Let's get you back on track.</span>
+            <span className="text-gray-500 text-sm">Let's get you back on track.</span>
           </p>
         </div>
 

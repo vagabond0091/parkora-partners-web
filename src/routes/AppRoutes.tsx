@@ -6,6 +6,7 @@ import { AnalyticsPage } from '@/pages/dashboard/AnalyticsPage/AnalyticsPage';
 import { SettingsPage } from '@/pages/dashboard/SettingsPage/SettingsPage';
 import { VerificationPage } from '@/pages/dashboard/VerificationPage/VerificationPage';
 import { AdminDashboard } from '@/pages/dashboard/AdminDashboard/AdminDashboard';
+import { VerificationManagementPage } from '@/pages/dashboard/VerificationManagementPage/VerificationManagementPage';
 import { NotFoundPage } from '@/pages/error/NotFoundPage/NotFoundPage';
 import { AccessDeniedPage } from '@/pages/error/AccessDeniedPage/AccessDeniedPage';
 import { ProtectedRoute } from './ProtectedRoute';
@@ -31,6 +32,7 @@ export const AppRoutes = () => {
             <Route path={ROUTES.DASHBOARD_SETTINGS} element={<SettingsPage />} />
             <Route path={ROUTES.DASHBOARD_VERIFICATION} element={<VerificationPage />} />
             <Route path={ROUTES.ADMIN_DASHBOARD} element={<AdminDashboard />} />
+            <Route path={ROUTES.ADMIN_PENDING_VERIFICATIONS} element={<VerificationManagementPage />} />
           </Route>
         </Route>
 
