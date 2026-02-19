@@ -10,7 +10,7 @@ export const VerificationManagementPage = () => {
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex items-start justify-between mb-6 bg-[#172032] px-6 py-6 rounded-lg">
         <div>
           <h1 className="text-2xl font-bold text-white mb-1">Verification Management</h1>
           <p className="text-sm text-gray-400">Manage and review partner onboarding documents</p>
