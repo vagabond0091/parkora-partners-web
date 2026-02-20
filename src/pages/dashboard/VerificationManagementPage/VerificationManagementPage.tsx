@@ -8,7 +8,7 @@ import type { Partner } from '@/types/pages/verificationManagement.types';
  */
 export const VerificationManagementPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPartner, setSelectedPartner] = useState<string>('1');
+  const [selectedPartner, setSelectedPartner] = useState<string | null>(null);
 
   /**
    * Mock partner data.
