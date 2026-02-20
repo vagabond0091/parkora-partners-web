@@ -137,10 +137,10 @@ export const VerificationManagementPage = () => {
                 key={partner.id}
                 onClick={() => setSelectedPartner(partner.id)}
                 className={clsx(
-                  'cursor-pointer transition-colors',
+                  'cursor-pointer transition-colors bg-[#0f172a]',
                   selectedPartner === partner.id
-                    ? 'bg-purple-500/10 hover:bg-purple-500/15'
-                    : 'hover:bg-gray-800/50'
+                    ? 'bg-purple-500/20 hover:bg-purple-500/25'
+                    : 'hover:bg-[#1a2332]'
                 )}
               >
                 <td className="px-6 py-3">
