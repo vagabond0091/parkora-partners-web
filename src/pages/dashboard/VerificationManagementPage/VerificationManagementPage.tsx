@@ -129,6 +129,7 @@ export const VerificationManagementPage = () => {
               <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
                 STATUS
               </th>
+              <th className="px-6 py-3 w-12"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800">
@@ -137,7 +138,7 @@ export const VerificationManagementPage = () => {
                 key={partner.id}
                 onClick={() => setSelectedPartner(partner.id)}
                 className={clsx(
-                  'cursor-pointer transition-colors bg-[#0f172a] border-t border-b border-gray-800',
+                  'group cursor-pointer transition-colors bg-[#0f172a] border-t border-b border-gray-800',
                   selectedPartner === partner.id
                     ? 'bg-[#1b2335] hover:bg-[#1b2335]'
                     : 'hover:bg-[#1a2332]'
@@ -163,9 +164,26 @@ export const VerificationManagementPage = () => {
                 <td className="px-6 py-3">
                   <div className="flex items-center gap-2">
                     <div className={clsx('w-2 h-2 rounded-full', getStatusDotColor(partner.status))}></div>
-                    <span className={clsx('text-xs font-medium', getStatusTextColor(partner.status))}>
+                    <span className={clsx('text-[10px] font-bold', getStatusTextColor(partner.status))}>
                       {partner.status}
                     </span>
+                  </div>
+                </td>
+                <td className="px-6 py-3">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg
+                      className="w-5 h-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
                   </div>
                 </td>
               </tr>
