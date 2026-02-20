@@ -1,17 +1,6 @@
 import { useState } from 'react';
 import { clsx } from 'clsx';
-
-/**
- * Partner data type.
- */
-interface Partner {
-  id: string;
-  name: string;
-  partnerId: string;
-  submissionDate: string;
-  type: 'Enterprise' | 'Standard';
-  status: 'UNDER REVIEW' | 'PENDING' | 'APPROVED' | 'REJECTED';
-}
+import type { Partner } from '@/types/pages/verificationManagement.types';
 
 /**
  * Verification Management page component.
