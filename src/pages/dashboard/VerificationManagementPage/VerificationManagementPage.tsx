@@ -139,7 +139,7 @@ export const VerificationManagementPage = () => {
                 className={clsx(
                   'cursor-pointer transition-colors bg-[#0f172a]',
                   selectedPartner === partner.id
-                    ? 'bg-purple-500/20 hover:bg-purple-500/25'
+                    ? 'bg-[#1b2335] hover:bg-[#1b2335]'
                     : 'hover:bg-[#1a2332]'
                 )}
               >
