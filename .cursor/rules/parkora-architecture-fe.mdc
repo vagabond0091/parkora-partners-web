@@ -1,6 +1,6 @@
 ---
 description: Core frontend architecture  for Parkora Partners Web 
-globs: src/**
+globs:  src/**/*.tsx, src/**/*.ts
 ---
 
 # Parkora Frontend Architecture Rules
