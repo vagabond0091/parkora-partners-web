@@ -137,7 +137,7 @@ export const VerificationManagementPage = () => {
                 key={partner.id}
                 onClick={() => setSelectedPartner(partner.id)}
                 className={clsx(
-                  'cursor-pointer transition-colors bg-[#0f172a]',
+                  'cursor-pointer transition-colors bg-[#0f172a] border-t border-b border-gray-800',
                   selectedPartner === partner.id
                     ? 'bg-[#1b2335] hover:bg-[#1b2335]'
                     : 'hover:bg-[#1a2332]'
