@@ -117,16 +117,16 @@ export const VerificationManagementPage = () => {
         <table className="w-full">
           <thead className="bg-[#172032] border-b border-gray-800">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
                 PARTNER NAME
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
                 SUBMISSION DATE
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
                 TYPE
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
                 STATUS
               </th>
             </tr>
@@ -143,27 +143,27 @@ export const VerificationManagementPage = () => {
                     : 'hover:bg-gray-800/50'
                 )}
               >
-                <td className="px-6 py-4">
+                <td className="px-6 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#1e293b] flex items-center justify-center text-sm font-semibold text-white">
+                    <div className="w-9 h-9 rounded-full bg-[#1e293b] flex items-center justify-center text-xs font-semibold text-white">
                       {getInitials(partner.name)}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-white">{partner.name}</p>
-                      <p className="text-xs text-gray-400">ID: {partner.partnerId}</p>
+                      <p className="text-xs font-medium text-white">{partner.name}</p>
+                      <p className="text-[10px] text-gray-400">ID: {partner.partnerId}</p>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4">
-                  <p className="text-sm text-gray-400">{partner.submissionDate}</p>
+                <td className="px-6 py-3">
+                  <p className="text-xs text-gray-400">{partner.submissionDate}</p>
                 </td>
-                <td className="px-6 py-4">
-                  <p className="text-sm text-gray-400">{partner.type}</p>
+                <td className="px-6 py-3">
+                  <p className="text-xs text-gray-400">{partner.type}</p>
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-3">
                   <div className="flex items-center gap-2">
                     <div className={clsx('w-2 h-2 rounded-full', getStatusDotColor(partner.status))}></div>
-                    <span className={clsx('text-sm font-medium', getStatusTextColor(partner.status))}>
+                    <span className={clsx('text-xs font-medium', getStatusTextColor(partner.status))}>
                       {partner.status}
                     </span>
                   </div>
