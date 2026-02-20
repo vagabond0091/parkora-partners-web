@@ -145,7 +145,7 @@ export const VerificationManagementPage = () => {
               >
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-sm font-semibold text-white">
+                    <div className="w-10 h-10 rounded-full bg-[#1e293b] flex items-center justify-center text-sm font-semibold text-white">
                       {getInitials(partner.name)}
                     </div>
                     <div>
