@@ -128,6 +128,21 @@ ApiUtils.ts
     └── parking.types.ts   # ParkingService types
     ```
 
+## Pages Rules
+
+- **All page types must be in `types/` folder**
+  - Page-specific interfaces, types, and data models must be defined in `src/types/pages/`
+  - Organize by page name: `src/types/pages/verificationManagement.types.ts`, `src/types/pages/dashboard.types.ts`, etc.
+  - Pages should only import types, never define them inline
+  - Components, pages, and services should never define interfaces or types directly in their files
+  - Example structure:
+    ```
+    src/types/pages/
+    ├── verificationManagement.types.ts  # VerificationManagementPage types
+    ├── dashboard.types.ts               # DashboardPage types
+    └── partnerList.types.ts             # PartnerListPage types
+    ```
+
 ## DRY Principle - Code Duplication Rules
 
 - **Extract duplicate logic immediately**  
