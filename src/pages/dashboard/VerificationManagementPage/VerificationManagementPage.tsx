@@ -8,7 +8,7 @@ import type { Partner } from '@/types/pages/verificationManagement.types';
  */
 export const VerificationManagementPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPartner, setSelectedPartner] = useState<string>('1');
+  const [selectedPartner, setSelectedPartner] = useState<string | null>(null);
 
   /**
    * Mock partner data.
@@ -129,6 +129,7 @@ export const VerificationManagementPage = () => {
               <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
                 STATUS
               </th>
+              <th className="px-6 py-3 w-12"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800">
@@ -137,10 +138,10 @@ export const VerificationManagementPage = () => {
                 key={partner.id}
                 onClick={() => setSelectedPartner(partner.id)}
                 className={clsx(
-                  'cursor-pointer transition-colors',
+                  'group cursor-pointer transition-colors bg-[#0f172a] border-t border-b border-gray-800',
                   selectedPartner === partner.id
-                    ? 'bg-purple-500/10 hover:bg-purple-500/15'
-                    : 'hover:bg-gray-800/50'
+                    ? 'bg-[#1b2335] hover:bg-[#1b2335]'
+                    : 'hover:bg-[#1a2332]'
                 )}
               >
                 <td className="px-6 py-3">
@@ -163,9 +164,31 @@ export const VerificationManagementPage = () => {
                 <td className="px-6 py-3">
                   <div className="flex items-center gap-2">
                     <div className={clsx('w-2 h-2 rounded-full', getStatusDotColor(partner.status))}></div>
-                    <span className={clsx('text-xs font-medium', getStatusTextColor(partner.status))}>
+                    <span className={clsx('text-[10px] font-bold', getStatusTextColor(partner.status))}>
                       {partner.status}
                     </span>
+                  </div>
+                </td>
+                <td className="px-6 py-3">
+                  <div className={clsx(
+                    'transition-opacity',
+                    selectedPartner === partner.id
+                      ? 'opacity-100'
+                      : 'opacity-0 group-hover:opacity-100'
+                  )}>
+                    <svg
+                      className="w-5 h-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
                   </div>
                 </td>
               </tr>
