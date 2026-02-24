@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { z } from 'zod';
 import { clsx } from 'clsx';
 import { Country, State, City } from 'country-state-city';
@@ -776,12 +776,12 @@ export const RegisterPage = () => {
           {/* Sign in link */}
           <p className="mt-8 text-center text-sm text-gray-500">
             Already have an account?{' '}
-            <a
-              href={ROUTES.LOGIN}
+            <Link
+              to={ROUTES.LOGIN}
               className="font-medium text-purple-600 hover:text-purple-700 transition-colors"
             >
               Sign in
-            </a>
+            </Link>
           </p>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Input } from '@/components/common/Input/Input';
 import { Button } from '@/components/common/Button/Button';
 import { useAuthStore } from '@/stores/authStore';
@@ -159,12 +159,12 @@ export const LoginPage = () => {
                 />
                 <span className="text-sm text-gray-600">Remember me</span>
               </label>
-              <a
-                href="/forgot-password"
+              <Link
+                to={ROUTES.FORGOT_PASSWORD}
                 className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
               >
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             {/* Sign In Button */}
@@ -199,12 +199,12 @@ export const LoginPage = () => {
           {/* Sign up link */}
           <p className="mt-8 text-center text-sm text-gray-500">
             Don't have an account?{' '}
-            <a
-              href="/register"
+            <Link
+              to={ROUTES.REGISTER}
               className="font-medium text-purple-600 hover:text-purple-700 transition-colors"
             >
               Sign up
-            </a>
+            </Link>
           </p>
         </div>
       </div>
