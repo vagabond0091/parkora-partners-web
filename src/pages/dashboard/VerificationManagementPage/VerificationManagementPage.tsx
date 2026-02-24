@@ -124,7 +124,7 @@ export const VerificationManagementPage = () => {
                 SUBMISSION DATE
               </th>
               <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
-                TYPE t
+                TYPE
               </th>
               <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
                 STATUS
