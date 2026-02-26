@@ -81,7 +81,7 @@ export const NotFoundPage = () => {
               </svg>
             }
           >
-            Go Back Home
+            Go Back
           </Button>
         </div>
       </div>
