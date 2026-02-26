@@ -13,7 +13,7 @@ export const NotFoundPage = () => {
 
   const handleGoHome = () => {
     if (isAuthenticated) {
-      navigate(ROUTES.DASHBOARD);
+      navigate(-1);
     } else {
       navigate(ROUTES.LOGIN);
     }
