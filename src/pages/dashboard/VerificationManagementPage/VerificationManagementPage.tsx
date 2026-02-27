@@ -38,7 +38,7 @@ export const VerificationManagementPage = () => {
   ];
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPartner, setSelectedPartner] = useState<string | null>(partners[0]?.id ?? null);
+  const [selectedPartner, setSelectedPartner] = useState<string | null>(null);
 
   /**
    * Get initials from partner name.
@@ -115,7 +115,7 @@ export const VerificationManagementPage = () => {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
-        <div className="lg:flex-3">
+        <div className="lg:flex-1 transition-all duration-300 ease-out">
           <div className="bg-[#1a1a2e] rounded-xl border border-gray-800 overflow-hidden">
             <table className="w-full">
               <thead className="bg-[#172032] border-b border-gray-800">
@@ -205,8 +205,10 @@ export const VerificationManagementPage = () => {
 
         <div
           className={clsx(
-            'lg:flex-2 bg-[#111827] rounded-xl border border-gray-800 p-6 transform transition-all duration-300 ease-out',
-            selectedPartnerData ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'
+            'lg:flex-none bg-[#111827] rounded-xl border border-gray-800 p-6 overflow-hidden transform transition-all duration-300 ease-out',
+            selectedPartnerData
+              ? 'lg:w-96 translate-x-0 opacity-100'
+              : 'lg:w-0 translate-x-full opacity-0 pointer-events-none'
           )}
         >
           {selectedPartnerData ? (
