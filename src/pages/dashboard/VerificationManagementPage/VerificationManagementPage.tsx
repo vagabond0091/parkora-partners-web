@@ -159,7 +159,9 @@ export const VerificationManagementPage = () => {
                   <p className="text-xs text-gray-400">{partner.submissionDate}</p>
                 </td>
                 <td className="px-6 py-3">
-                  <p className="text-xs text-gray-400">{partner.type}</p>
+                  <span className="inline-flex px-2 py-1 rounded-full bg-[#272f40] text-[10px] font-medium text-gray-200">
+                    {partner.type}
+                  </span>
                 </td>
                 <td className="px-6 py-3">
                   <div className="flex items-center gap-2">
