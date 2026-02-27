@@ -138,7 +138,11 @@ export const VerificationManagementPage = () => {
                 {partners.map((partner) => (
                   <tr
                     key={partner.id}
-                    onClick={() => setSelectedPartner(partner.id)}
+                    onClick={() =>
+                      setSelectedPartner((currentSelectedPartner) =>
+                        currentSelectedPartner === partner.id ? null : partner.id
+                      )
+                    }
                     className={clsx(
                       'group cursor-pointer transition-colors bg-[#0f172a] border-t border-b border-gray-800',
                       selectedPartner === partner.id
