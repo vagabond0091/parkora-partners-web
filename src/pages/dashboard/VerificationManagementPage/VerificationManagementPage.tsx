@@ -205,8 +205,8 @@ export const VerificationManagementPage = () => {
 
       <div
         className={clsx(
-          'mt-6 bg-[#111827] rounded-xl border border-gray-800 p-6 overflow-hidden transform transition-all duration-300 ease-out',
-          'lg:mt-0 lg:absolute lg:-top-8 lg:-right-8 lg:bottom-0 lg:w-96',
+          'mt-6 bg-[#111827] rounded-xl border border-gray-800 p-6 transform transition-all duration-300 ease-out',
+          'lg:mt-0 lg:absolute lg:-top-8 lg:-right-8 lg:bottom-0 lg:w-96 lg:overflow-y-auto lg:pr-4',
           selectedPartnerData
             ? 'opacity-100 translate-x-0 pointer-events-auto'
             : 'opacity-0 translate-x-full pointer-events-none'
@@ -214,14 +214,14 @@ export const VerificationManagementPage = () => {
       >
         {selectedPartnerData ? (
           <>
-            <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center justify-between mb-4 border-b border-gray-800 pb-3">
               <div>
-                <p className="text-sm font-semibold text-white">Verification Details</p>
+                <p className="text-[13px] font-semibold text-white">Verification Details</p>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedPartner(null)}
-                className="text-gray-400 hover:text-gray-200 transition-colors"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:text-gray-200 hover:bg-[#1f2937] transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-[#111827]"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
