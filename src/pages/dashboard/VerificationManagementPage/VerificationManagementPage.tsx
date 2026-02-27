@@ -83,7 +83,7 @@ export const VerificationManagementPage = () => {
   const selectedPartnerData = partners.find((partnerItem) => partnerItem.id === selectedPartner);
 
   return (
-    <div className="relative w-full min-h-screen">
+    <div className="relative w-full h-screen ">
       <div className={clsx('w-full', selectedPartnerData && 'lg:pr-96')}>
         <div className="flex items-start justify-between mb-4 bg-[#172032] px-8 py-4.5 -mx-8 -mt-8 w-[calc(100%+4rem)]">
           <div>
@@ -205,8 +205,8 @@ export const VerificationManagementPage = () => {
 
       <div
         className={clsx(
-          'mt-6 bg-[#111827] rounded-xl border border-gray-800 p-6 transform transition-all duration-300 ease-out',
-          'lg:mt-0 lg:absolute lg:-top-8 lg:-right-8 lg:bottom-0 lg:w-96 lg:overflow-y-auto lg:pr-4',
+          'mt-6 bg-[#111827] rounded-xl border border-gray-800 p-6 overflow-hidden transform transition-all duration-300 ease-out',
+          'lg:mt-0 lg:absolute lg:-top-8 lg:-right-8 lg:bottom-0 lg:w-96',
           selectedPartnerData
             ? 'opacity-100 translate-x-0 pointer-events-auto'
             : 'opacity-0 translate-x-full pointer-events-none'
@@ -214,7 +214,7 @@ export const VerificationManagementPage = () => {
       >
         {selectedPartnerData ? (
           <>
-            <div className="flex items-center justify-between mb-4 border-b border-gray-800 pb-3">
+            <div className="flex items-center justify-between mb-5 border-b border-gray-800 pt-5 mt-5 pb-5">
               <div>
                 <p className="text-[13px] font-semibold text-white">Verification Details</p>
               </div>
