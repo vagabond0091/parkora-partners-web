@@ -206,7 +206,7 @@ export const VerificationManagementPage = () => {
       <div
         className={clsx(
           'mt-6 bg-[#111827] rounded-xl border border-gray-800 p-6 overflow-hidden transform transition-all duration-300 ease-out flex flex-col',
-          'lg:mt-0 lg:absolute lg:-top-8 lg:-right-8 lg:bottom-0 lg:w-96',
+          'lg:mt-0 lg:absolute lg:-top-8 lg:-right-8 lg:-bottom-16 lg:w-96',
           selectedPartnerData
             ? 'opacity-100 translate-x-0 pointer-events-auto'
             : 'opacity-0 translate-x-full pointer-events-none'
