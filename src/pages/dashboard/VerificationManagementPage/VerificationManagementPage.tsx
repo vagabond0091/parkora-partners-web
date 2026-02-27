@@ -83,39 +83,38 @@ export const VerificationManagementPage = () => {
   const selectedPartnerData = partners.find((partnerItem) => partnerItem.id === selectedPartner);
 
   return (
-    <div className="w-full">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4 bg-[#172032] px-8 py-4.5 -mx-8 -mt-8 w-[calc(100%+4rem)]">
-        <div>
-          <h1 className="text-xl font-bold text-white">Verification Management</h1>
-          <p className="text-xs text-gray-400">Manage and review partner onboarding documents</p>
-        </div>
-        <div className="relative">
-          <svg
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+    <div className="relative w-full h-full">
+      <div className={clsx('w-full', selectedPartnerData && 'lg:pr-96')}>
+        <div className="flex items-start justify-between mb-4 bg-[#172032] px-8 py-4.5 -mx-8 -mt-8 w-[calc(100%+4rem)]">
+          <div>
+            <h1 className="text-xl font-bold text-white">Verification Management</h1>
+            <p className="text-xs text-gray-400">Manage and review partner onboarding documents</p>
+          </div>
+          <div className="relative">
+            <svg
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search partners..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-70 pl-10 pr-4 py-2 bg-[#232b3d] border border-gray-700 rounded-lg text-[#464d5d] text-xs placeholder:text-xs placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#6d28d9] focus:border-transparent"
             />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search partners..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-70 pl-10 pr-4 py-2 bg-[#232b3d] border border-gray-700 rounded-lg text-[#464d5d] text-xs placeholder:text-xs placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#6d28d9] focus:border-transparent"
-          />
+          </div>
         </div>
-      </div>
 
-      <div className="flex flex-col lg:flex-row gap-6">
-        <div className="lg:flex-1 transition-all duration-300 ease-out">
+        <div className="flex flex-col gap-6">
           <div className="bg-[#1a1a2e] rounded-xl border border-gray-800 overflow-hidden">
             <table className="w-full">
               <thead className="bg-[#172032] border-b border-gray-800">
@@ -139,7 +138,11 @@ export const VerificationManagementPage = () => {
                 {partners.map((partner) => (
                   <tr
                     key={partner.id}
-                    onClick={() => setSelectedPartner(partner.id)}
+                    onClick={() =>
+                      setSelectedPartner((currentSelectedPartner) =>
+                        currentSelectedPartner === partner.id ? null : partner.id
+                      )
+                    }
                     className={clsx(
                       'group cursor-pointer transition-colors bg-[#0f172a] border-t border-b border-gray-800',
                       selectedPartner === partner.id
@@ -202,33 +205,36 @@ export const VerificationManagementPage = () => {
             </table>
           </div>
         </div>
+      </div>
 
-        <div
-          className={clsx(
-            'lg:flex-none bg-[#111827] rounded-xl border border-gray-800 p-6 overflow-hidden transform transition-all duration-300 ease-out',
-            selectedPartnerData
-              ? 'lg:w-96 translate-x-0 opacity-100'
-              : 'lg:w-0 translate-x-full opacity-0 pointer-events-none'
-          )}
-        >
-          {selectedPartnerData ? (
-            <>
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <p className="text-sm font-semibold text-white">Verification Details</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedPartner(null)}
-                  className="text-gray-400 hover:text-gray-200 transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+      <div
+        className={clsx(
+          'mt-6 bg-[#111827] rounded-xl border border-gray-800 p-6 overflow-hidden transform transition-all duration-300 ease-out flex flex-col',
+          'lg:mt-0 lg:absolute lg:-top-8 lg:-right-8 lg:-bottom-16 lg:w-96',
+          selectedPartnerData
+            ? 'opacity-100 translate-x-0 pointer-events-auto'
+            : 'opacity-0 translate-x-full pointer-events-none'
+        )}
+      >
+        {selectedPartnerData ? (
+          <>
+            <div className="flex items-center justify-between border-b border-gray-800 pb-4">
+              <div>
+                <p className="text-[13px] font-semibold text-white">Verification Details</p>
               </div>
+              <button
+                type="button"
+                onClick={() => setSelectedPartner(null)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:text-gray-200 hover:bg-[#1f2937] transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-[#111827]"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
-              <div className="flex items-center gap-4 mb-6">
+            <div className="flex-1 overflow-y-auto pt-4 pr-1 space-y-4">
+              <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-[#1e293b] flex items-center justify-center text-sm font-semibold text-white">
                   {getInitials(selectedPartnerData.name)}
                 </div>
@@ -293,14 +299,57 @@ export const VerificationManagementPage = () => {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2}
-                            d="M9 12h6m-6 4h6M9 8h.01M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 00-2-2H7a2 2 0 00-2 2v0"
+                            d="M9 12h6m-6 4h6M9 8h.01M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"
                           />
                         </svg>
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-white">Ownership Proof</p>
+                        <p className="text-sm font-semibold text-white">Tax Identification</p>
                         <p className="text-[11px] text-gray-400">
-                          Notarized deed or property management agreement.
+                          Government-issued tax identification document (e.g., EIN certificate).
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors"
+                    >
+                      VIEW FILE
+                    </button>
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      className="flex-1 h-9 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
+                    >
+                      VERIFY
+                    </button>
+                    <button
+                      type="button"
+                      className="flex-1 h-9 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
+                    >
+                      FLAG
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-[#1f2937] flex items-center justify-center">
+                        <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12h6m-6 4h6M9 8h.01M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">Additional Documents</p>
+                        <p className="text-[11px] text-gray-400">
+                          Supplementary compliance or operational documents as required.
                         </p>
                       </div>
                     </div>
@@ -327,28 +376,28 @@ export const VerificationManagementPage = () => {
                   </div>
                 </div>
               </div>
-
-              <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                <button
-                  type="button"
-                  className="flex-1 h-11 rounded-lg bg-[#7f1d1d] text-sm font-semibold text-red-100 hover:bg-[#991b1b] transition-colors"
-                >
-                  Reject Application
-                </button>
-                <button
-                  type="button"
-                  className="flex-1 h-11 rounded-lg bg-[#7f13ec] text-sm font-semibold text-white hover:bg-[#6a0fd6] transition-colors"
-                >
-                  Approve Partner
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="h-full flex items-center justify-center">
-              <p className="text-xs text-gray-500">Select a partner to view verification details.</p>
             </div>
-          )}
-        </div>
+
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                className="flex-1 h-11 rounded-lg bg-[#7f1d1d] text-sm font-semibold text-red-100 hover:bg-[#991b1b] transition-colors"
+              >
+                Reject Application
+              </button>
+              <button
+                type="button"
+                className="flex-1 h-11 rounded-lg bg-[#7f13ec] text-sm font-semibold text-white hover:bg-[#6a0fd6] transition-colors"
+              >
+                Approve Partner
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <p className="text-xs text-gray-500">Select a partner to view verification details.</p>
+          </div>
+        )}
       </div>
     </div>
   );
