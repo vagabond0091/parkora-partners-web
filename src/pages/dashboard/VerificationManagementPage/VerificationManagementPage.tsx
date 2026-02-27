@@ -205,7 +205,7 @@ export const VerificationManagementPage = () => {
 
       <div
         className={clsx(
-          'mt-6 bg-[#111827] rounded-xl border border-gray-800 p-6 overflow-hidden transform transition-all duration-300 ease-out',
+          'mt-6 bg-[#111827] rounded-xl border border-gray-800 p-6 overflow-hidden transform transition-all duration-300 ease-out flex flex-col',
           'lg:mt-0 lg:absolute lg:-top-8 lg:-right-8 lg:bottom-0 lg:w-96',
           selectedPartnerData
             ? 'opacity-100 translate-x-0 pointer-events-auto'
@@ -214,7 +214,7 @@ export const VerificationManagementPage = () => {
       >
         {selectedPartnerData ? (
           <>
-            <div className="flex items-center justify-between mb-5 border-b border-gray-800 pt-5 mt-5 pb-5">
+            <div className="flex items-center justify-between border-b border-gray-800 pb-4">
               <div>
                 <p className="text-[13px] font-semibold text-white">Verification Details</p>
               </div>
@@ -229,102 +229,104 @@ export const VerificationManagementPage = () => {
               </button>
             </div>
 
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 rounded-full bg-[#1e293b] flex items-center justify-center text-sm font-semibold text-white">
-                {getInitials(selectedPartnerData.name)}
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-white">{selectedPartnerData.name}</p>
-                <p className="text-[11px] text-gray-400">
-                  Submitted {selectedPartnerData.submissionDate} • {selectedPartnerData.partnerId}
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
-                <div className="flex items-start justify-between gap-3 mb-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-[#1f2937] flex items-center justify-center">
-                      <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12h6m-6 4h6M9 8h.01M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-white">Business License</p>
-                      <p className="text-[11px] text-gray-400">
-                        Official license issued by state regulatory department.
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    className="text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors"
-                  >
-                    VIEW FILE
-                  </button>
+            <div className="flex-1 overflow-y-auto pt-4 pr-1 space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-[#1e293b] flex items-center justify-center text-sm font-semibold text-white">
+                  {getInitials(selectedPartnerData.name)}
                 </div>
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    className="flex-1 h-9 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
-                  >
-                    VERIFY
-                  </button>
-                  <button
-                    type="button"
-                    className="flex-1 h-9 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
-                  >
-                    FLAG
-                  </button>
+                <div>
+                  <p className="text-sm font-semibold text-white">{selectedPartnerData.name}</p>
+                  <p className="text-[11px] text-gray-400">
+                    Submitted {selectedPartnerData.submissionDate} • {selectedPartnerData.partnerId}
+                  </p>
                 </div>
               </div>
 
-              <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
-                <div className="flex items-start justify-between gap-3 mb-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-[#1f2937] flex items-center justify-center">
-                      <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12h6m-6 4h6M9 8h.01M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 00-2-2H7a2 2 0 00-2 2v0"
-                        />
-                      </svg>
+              <div className="space-y-4">
+                <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-[#1f2937] flex items-center justify-center">
+                        <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12h6m-6 4h6M9 8h.01M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">Business License</p>
+                        <p className="text-[11px] text-gray-400">
+                          Official license issued by state regulatory department.
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-semibold text-white">Ownership Proof</p>
-                      <p className="text-[11px] text-gray-400">
-                        Notarized deed or property management agreement.
-                      </p>
-                    </div>
+                    <button
+                      type="button"
+                      className="text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors"
+                    >
+                      VIEW FILE
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    className="text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors"
-                  >
-                    VIEW FILE
-                  </button>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      className="flex-1 h-9 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
+                    >
+                      VERIFY
+                    </button>
+                    <button
+                      type="button"
+                      className="flex-1 h-9 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
+                    >
+                      FLAG
+                    </button>
+                  </div>
                 </div>
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    className="flex-1 h-9 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
-                  >
-                    VERIFY
-                  </button>
-                  <button
-                    type="button"
-                    className="flex-1 h-9 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
-                  >
-                    FLAG
-                  </button>
+
+                <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-[#1f2937] flex items-center justify-center">
+                        <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12h6m-6 4h6M9 8h.01M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 00-2-2H7a2 2 0 00-2 2v0"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">Ownership Proof</p>
+                        <p className="text-[11px] text-gray-400">
+                          Notarized deed or property management agreement.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors"
+                    >
+                      VIEW FILE
+                    </button>
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      className="flex-1 h-9 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
+                    >
+                      VERIFY
+                    </button>
+                    <button
+                      type="button"
+                      className="flex-1 h-9 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
+                    >
+                      FLAG
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -345,7 +347,7 @@ export const VerificationManagementPage = () => {
             </div>
           </>
         ) : (
-          <div className="h-full flex items-center justify-center">
+          <div className="flex-1 flex items-center justify-center">
             <p className="text-xs text-gray-500">Select a partner to view verification details.</p>
           </div>
         )}
