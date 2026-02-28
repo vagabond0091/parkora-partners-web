@@ -110,7 +110,10 @@ export const VerificationManagementPage = () => {
               placeholder="Search partners..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-70 pl-10 pr-4 py-2 bg-[#232b3d] border border-gray-700 rounded-lg text-[#464d5d] text-xs placeholder:text-xs placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#6d28d9] focus:border-transparent"
+              className={clsx(
+                'pl-10 pr-4 py-2 bg-[#232b3d] border border-gray-700 rounded-lg text-[#464d5d] text-xs placeholder:text-xs placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#6d28d9] focus:border-transparent transition-all duration-300',
+                selectedPartnerData ? 'w-60' : 'w-70'
+              )}
             />
           </div>
         </div>
@@ -252,7 +255,7 @@ export const VerificationManagementPage = () => {
                 <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#1f2937] flex items-center justify-center">
+                      <div className="w-9 h-9 flex items-center justify-center">
                         <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
                             strokeLinecap="round"
@@ -295,7 +298,7 @@ export const VerificationManagementPage = () => {
                 <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#1f2937] flex items-center justify-center">
+                      <div className="w-9 h-9 flex items-center justify-center">
                         <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
                             strokeLinecap="round"
@@ -338,7 +341,7 @@ export const VerificationManagementPage = () => {
                 <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#1f2937] flex items-center justify-center">
+                      <div className="w-9 h-9 flex items-center justify-center">
                         <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
                             strokeLinecap="round"
