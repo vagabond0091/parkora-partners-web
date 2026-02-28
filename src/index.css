@@ -16,66 +16,6 @@
   }
 }
 
-/* Custom Scrollbar - Outside @layer base for maximum specificity */
-* {
-  /* For Firefox */
-  scrollbar-width: thin;
-  scrollbar-color: #9ca3af transparent;
-}
-
-/* For Webkit (Chrome, Edge, Safari) - Global scrollbar styling */
-::-webkit-scrollbar,
-*::-webkit-scrollbar {
-  width: 6px !important;
-  height: 6px !important;
-}
-
-/* Hide scrollbar buttons completely */
-::-webkit-scrollbar-button,
-*::-webkit-scrollbar-button {
-  width: 0px !important;
-  height: 0px !important;
-  display: none !important;
-  background: transparent !important;
-  -webkit-appearance: none !important;
-  appearance: none !important;
-}
-
-::-webkit-scrollbar-button:start:decrement,
-::-webkit-scrollbar-button:end:increment,
-::-webkit-scrollbar-button:vertical:start:increment,
-::-webkit-scrollbar-button:vertical:end:decrement,
-::-webkit-scrollbar-button:horizontal:start:increment,
-::-webkit-scrollbar-button:horizontal:end:decrement,
-*::-webkit-scrollbar-button:start:decrement,
-*::-webkit-scrollbar-button:end:increment,
-*::-webkit-scrollbar-button:vertical:start:increment,
-*::-webkit-scrollbar-button:vertical:end:decrement,
-*::-webkit-scrollbar-button:horizontal:start:increment,
-*::-webkit-scrollbar-button:horizontal:end:decrement {
-  display: none !important;
-  width: 0px !important;
-  height: 0px !important;
-  -webkit-appearance: none !important;
-  appearance: none !important;
-}
-
-::-webkit-scrollbar-track,
-*::-webkit-scrollbar-track {
-  background: transparent !important;
-}
-
-::-webkit-scrollbar-thumb,
-*::-webkit-scrollbar-thumb {
-  background-color: #9ca3af !important;
-  border-radius: 9999px !important;
-}
-
-::-webkit-scrollbar-thumb:hover,
-*::-webkit-scrollbar-thumb:hover {
-  background-color: #6b7280 !important;
-}
-
 /* SimpleBar Custom Styles */
 .simplebar-scrollbar::before {
   background-color: #9ca3af !important;
