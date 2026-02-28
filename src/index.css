@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
+@import "simplebar-react/dist/simplebar.min.css";
 
 @layer base {
   html {
@@ -13,4 +14,35 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold tracking-tight;
   }
+}
+
+/* SimpleBar Custom Styles */
+.simplebar-scrollbar::before {
+  background-color: #272f40 !important;
+  border-radius: 9999px !important;
+}
+
+.simplebar-scrollbar:hover::before {
+  background-color: #3a4555 !important;
+}
+
+.simplebar-scrollbar.simplebar-visible:before {
+  opacity: 1 !important;
+}
+
+.simplebar-track {
+  background: transparent !important;
+}
+
+.simplebar-scrollbar {
+  width: 6px !important;
+  right: 0 !important;
+}
+
+.simplebar-content-wrapper {
+  overflow: auto;
+}
+
+.simplebar-content {
+  padding-right: 0 !important;
 }
