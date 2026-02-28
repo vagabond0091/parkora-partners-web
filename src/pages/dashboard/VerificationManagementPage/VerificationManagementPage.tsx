@@ -255,7 +255,7 @@ export const VerificationManagementPage = () => {
                 <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#1f2937] flex items-center justify-center">
+                      <div className="w-9 h-9 flex items-center justify-center">
                         <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
                             strokeLinecap="round"
@@ -298,7 +298,7 @@ export const VerificationManagementPage = () => {
                 <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#1f2937] flex items-center justify-center">
+                      <div className="w-9 h-9 flex items-center justify-center">
                         <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
                             strokeLinecap="round"
@@ -341,7 +341,7 @@ export const VerificationManagementPage = () => {
                 <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#1f2937] flex items-center justify-center">
+                      <div className="w-9 h-9 flex items-center justify-center">
                         <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
                             strokeLinecap="round"
