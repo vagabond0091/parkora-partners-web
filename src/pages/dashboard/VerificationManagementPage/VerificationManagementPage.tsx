@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { clsx } from 'clsx';
+import SimpleBar from 'simplebar-react';
 import type { Partner } from '@/types/pages/verificationManagement.types';
 
 /**
@@ -233,20 +234,21 @@ export const VerificationManagementPage = () => {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto pt-4 pr-1 space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#1e293b] flex items-center justify-center text-sm font-semibold text-white">
-                  {getInitials(selectedPartnerData.name)}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white">{selectedPartnerData.name}</p>
-                  <p className="text-[11px] text-gray-400">
-                    Submitted {selectedPartnerData.submissionDate} • {selectedPartnerData.partnerId}
-                  </p>
-                </div>
-              </div>
-
+            <SimpleBar className="flex-1 min-h-0 pt-4 pr-1">
               <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-[#1e293b] flex items-center justify-center text-sm font-semibold text-white">
+                    {getInitials(selectedPartnerData.name)}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white">{selectedPartnerData.name}</p>
+                    <p className="text-[11px] text-gray-400">
+                      Submitted {selectedPartnerData.submissionDate} • {selectedPartnerData.partnerId}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
                 <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-start gap-3">
@@ -375,8 +377,9 @@ export const VerificationManagementPage = () => {
                     </button>
                   </div>
                 </div>
+                </div>
               </div>
-            </div>
+            </SimpleBar>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <button
