@@ -220,7 +220,7 @@ export const VerificationManagementPage = () => {
           <>
             <div className="flex items-center justify-between border-b border-gray-800 pt-9 pb-4">
               <div>
-                <p className="text-[13px] font-semibold text-white">Verification Details</p>
+                <p className="text-base font-bold text-white">Verification Details</p>
               </div>
               <button
                 type="button"
