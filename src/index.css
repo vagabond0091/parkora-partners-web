@@ -18,12 +18,12 @@
 
 /* SimpleBar Custom Styles */
 .simplebar-scrollbar::before {
-  background-color: #9ca3af !important;
+  background-color: #272f40 !important;
   border-radius: 9999px !important;
 }
 
 .simplebar-scrollbar:hover::before {
-  background-color: #6b7280 !important;
+  background-color: #3a4555 !important;
 }
 
 .simplebar-scrollbar.simplebar-visible:before {
