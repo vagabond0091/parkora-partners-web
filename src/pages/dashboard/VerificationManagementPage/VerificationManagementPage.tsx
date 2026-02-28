@@ -112,7 +112,7 @@ export const VerificationManagementPage = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className={clsx(
                 'pl-10 pr-4 py-2 bg-[#232b3d] border border-gray-700 rounded-lg text-[#464d5d] text-xs placeholder:text-xs placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#6d28d9] focus:border-transparent transition-all duration-300',
-                selectedPartnerData ? 'w-56' : 'w-70'
+                selectedPartnerData ? 'w-60' : 'w-70'
               )}
             />
           </div>
