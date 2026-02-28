@@ -234,8 +234,8 @@ export const VerificationManagementPage = () => {
               </button>
             </div>
 
-            <SimpleBar className="flex-1 min-h-0 pt-4 pr-1">
-              <div className="space-y-4">
+            <SimpleBar className="flex-1 min-h-0 pt-4 -mr-6 pr-6">
+              <div className="space-y-4 pr-6">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-[#1e293b] flex items-center justify-center text-sm font-semibold text-white">
                     {getInitials(selectedPartnerData.name)}
