@@ -219,7 +219,7 @@ export const VerificationManagementPage = () => {
       >
         {selectedPartnerData ? (
           <>
-            <div className="flex items-center justify-between border-b border-gray-800 pt-9 pb-4 -mx-6 px-6">
+            <div className="flex items-center justify-between border-b border-gray-800 pt-7.5 pb-4 mt-2 -mx-6 px-6">
               <div>
                 <p className="text-base font-bold text-white">Verification Details</p>
               </div>
