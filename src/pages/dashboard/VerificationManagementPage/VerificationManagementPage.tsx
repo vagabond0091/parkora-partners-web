@@ -278,19 +278,21 @@ export const VerificationManagementPage = () => {
               </div>
             </SimpleBar>
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-800 -mx-6 px-6 ">
-              <button
-                type="button"
-                className="flex-1 h-9 rounded-lg bg-[#7f1d1d] text-sm font-semibold text-red-100 hover:bg-[#991b1b] transition-colors"
-              >
-                Reject Application
-              </button>
-              <button
-                type="button"
-                className="flex-1 h-9 rounded-lg bg-[#7f13ec] text-sm font-semibold text-white hover:bg-[#6a0fd6] transition-colors"
-              >
-                Approve Partner
-              </button>
+            <div className="pt-4 border-t border-gray-800 -mx-6 px-6">
+              <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                <button
+                  type="button"
+                  className="flex-1 h-9 rounded-lg bg-[#7f1d1d] text-sm font-semibold text-red-100 hover:bg-[#991b1b] transition-colors"
+                >
+                  Reject Application
+                </button>
+                <button
+                  type="button"
+                  className="flex-1 h-9 rounded-lg bg-[#7f13ec] text-sm font-semibold text-white hover:bg-[#6a0fd6] transition-colors"
+                >
+                  Approve Partner
+                </button>
+              </div>
             </div>
           </>
         ) : (
