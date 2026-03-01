@@ -238,7 +238,7 @@ export const VerificationManagementPage = () => {
               </button>
             </div>
 
-            <SimpleBar className="flex-1 min-h-0 pt-4 -mr-6 pr-6">
+            <SimpleBar className="flex-1 min-h-0 pt-4 -mx-6 px-6">
               <div className="space-y-4 pr-6">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-[#1e293b] flex items-center justify-center text-sm font-semibold text-white">
@@ -252,7 +252,7 @@ export const VerificationManagementPage = () => {
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4 pb-6">
                   <VerificationDocumentCard
                     title="Business License"
                     description="Official license issued by state regulatory department."
@@ -278,7 +278,7 @@ export const VerificationManagementPage = () => {
               </div>
             </SimpleBar>
 
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-800 -mx-6 px-6 ">
               <button
                 type="button"
                 className="flex-1 h-9 rounded-lg bg-[#7f1d1d] text-sm font-semibold text-red-100 hover:bg-[#991b1b] transition-colors"
