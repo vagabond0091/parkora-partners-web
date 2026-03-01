@@ -54,12 +54,76 @@ src/
 
 ## When to Extract a Reusable Component
 
+**CRITICAL: Always extract duplicate markup/styles immediately - don't wait for user requests.**
+
 | Signal | Action |
 |--------|--------|
+| **Same markup/styling appears 2+ times** | **Extract to component immediately** |
 | Used in 3+ places | Move to `common/` |
 | Generic UI element | Move to `common/` |
 | Has no business logic | Move to `common/` |
 | Used only in one feature | Keep in `features/[domain]/` |
+
+### Proactive Component Extraction
+
+**Always scan for duplicate markup and styling patterns before writing new code or when reviewing existing code.**
+
+1. **Before writing**: Check if similar markup/styling already exists
+2. **While coding**: If you find yourself copying markup/styles, extract immediately
+3. **After writing**: Review the file for duplicate patterns and extract them
+4. **Don't wait**: Extract components proactively, not after user requests
+
+### Examples
+
+#### Correct - Extract Immediately
+
+```tsx
+// ❌ Bad - Duplicate markup (appears 2+ times)
+<div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
+  <div className="flex items-center justify-between gap-4">
+    <p className="text-sm font-bold text-white">Business License</p>
+    <button>VIEW FILE</button>
+  </div>
+  <p className="text-[11px] text-gray-400">Description...</p>
+</div>
+
+<div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
+  <div className="flex items-center justify-between gap-4">
+    <p className="text-sm font-bold text-white">Tax Identification</p>
+    <button>VIEW FILE</button>
+  </div>
+  <p className="text-[11px] text-gray-400">Description...</p>
+</div>
+
+// ✅ Good - Extracted to component
+<VerificationDocumentCard
+  title="Business License"
+  description="Description..."
+/>
+<VerificationDocumentCard
+  title="Tax Identification"
+  description="Description..."
+/>
+```
+
+#### Correct - Extract Even with Minor Variations
+
+```tsx
+// ❌ Bad - Similar markup with minor differences
+<div className="card">
+  <h3 className="text-lg font-bold">{title1}</h3>
+  <p>{description1}</p>
+</div>
+
+<div className="card">
+  <h3 className="text-lg font-bold">{title2}</h3>
+  <p>{description2}</p>
+</div>
+
+// ✅ Good - Extract and parameterize differences
+<Card title={title1} description={description1} />
+<Card title={title2} description={description2} />
+```
 
 ## Standard Component Structure
 
