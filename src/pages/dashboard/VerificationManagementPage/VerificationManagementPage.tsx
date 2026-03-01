@@ -282,7 +282,7 @@ export const VerificationManagementPage = () => {
               <div className="flex flex-col sm:flex-row gap-3 mt-4">
                 <button
                   type="button"
-                  className="flex-1 h-9 rounded-lg bg-[#7f1d1d] text-sm font-semibold text-red-100 hover:bg-[#991b1b] transition-colors"
+                  className="flex-1 h-9 rounded-lg bg-[#3f1d2b] text-sm font-semibold text-red-100 hover:bg-[#7f1d1d] transition-colors relative z-10"
                 >
                   Reject Application
                 </button>
