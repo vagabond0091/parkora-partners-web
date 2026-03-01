@@ -229,9 +229,9 @@ export const VerificationManagementPage = () => {
               <button
                 type="button"
                 onClick={() => setSelectedPartner(null)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:text-gray-200 hover:bg-[#1f2937] transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-[#111827]"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:text-gray-200 hover:bg-[#1f2937] transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-[#111827]"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -282,13 +282,13 @@ export const VerificationManagementPage = () => {
                   <div className="flex gap-3">
                     <button
                       type="button"
-                      className="flex-1 h-9 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
+                      className="flex-1 h-8 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
                     >
                       VERIFY
                     </button>
                     <button
                       type="button"
-                      className="flex-1 h-9 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
+                      className="flex-1 h-8 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
                     >
                       FLAG
                     </button>
@@ -325,13 +325,13 @@ export const VerificationManagementPage = () => {
                   <div className="flex gap-3">
                     <button
                       type="button"
-                      className="flex-1 h-9 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
+                      className="flex-1 h-8 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
                     >
                       VERIFY
                     </button>
                     <button
                       type="button"
-                      className="flex-1 h-9 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
+                      className="flex-1 h-8 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
                     >
                       FLAG
                     </button>
@@ -368,13 +368,13 @@ export const VerificationManagementPage = () => {
                   <div className="flex gap-3">
                     <button
                       type="button"
-                      className="flex-1 h-9 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
+                      className="flex-1 h-8 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
                     >
                       VERIFY
                     </button>
                     <button
                       type="button"
-                      className="flex-1 h-9 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
+                      className="flex-1 h-8 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
                     >
                       FLAG
                     </button>
@@ -387,13 +387,13 @@ export const VerificationManagementPage = () => {
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <button
                 type="button"
-                className="flex-1 h-11 rounded-lg bg-[#7f1d1d] text-sm font-semibold text-red-100 hover:bg-[#991b1b] transition-colors"
+                className="flex-1 h-9 rounded-lg bg-[#7f1d1d] text-sm font-semibold text-red-100 hover:bg-[#991b1b] transition-colors"
               >
                 Reject Application
               </button>
               <button
                 type="button"
-                className="flex-1 h-11 rounded-lg bg-[#7f13ec] text-sm font-semibold text-white hover:bg-[#6a0fd6] transition-colors"
+                className="flex-1 h-9 rounded-lg bg-[#7f13ec] text-sm font-semibold text-white hover:bg-[#6a0fd6] transition-colors"
               >
                 Approve Partner
               </button>
