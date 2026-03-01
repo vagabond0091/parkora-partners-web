@@ -281,16 +281,16 @@ export const VerificationManagementPage = () => {
                       Official license issued by state regulatory department.
                     </p>
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex gap-2">
                     <button
                       type="button"
-                      className="flex-1 h-8 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
+                      className="flex-1 h-7 rounded-lg bg-[#064e3b] text-[10px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
                     >
                       VERIFY
                     </button>
                     <button
                       type="button"
-                      className="flex-1 h-8 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
+                      className="flex-1 h-7 rounded-lg bg-[#3f1d2b] text-[10px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
                     >
                       FLAG
                     </button>
@@ -326,16 +326,16 @@ export const VerificationManagementPage = () => {
                       Government-issued tax identification document (e.g., EIN certificate).
                     </p>
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex gap-2">
                     <button
                       type="button"
-                      className="flex-1 h-8 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
+                      className="flex-1 h-7 rounded-lg bg-[#064e3b] text-[10px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
                     >
                       VERIFY
                     </button>
                     <button
                       type="button"
-                      className="flex-1 h-8 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
+                      className="flex-1 h-7 rounded-lg bg-[#3f1d2b] text-[10px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
                     >
                       FLAG
                     </button>
@@ -371,16 +371,16 @@ export const VerificationManagementPage = () => {
                       Supplementary compliance or operational documents as required.
                     </p>
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex gap-2">
                     <button
                       type="button"
-                      className="flex-1 h-8 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
+                      className="flex-1 h-7 rounded-lg bg-[#064e3b] text-[10px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
                     >
                       VERIFY
                     </button>
                     <button
                       type="button"
-                      className="flex-1 h-8 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
+                      className="flex-1 h-7 rounded-lg bg-[#3f1d2b] text-[10px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
                     >
                       FLAG
                     </button>
