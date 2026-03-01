@@ -253,8 +253,8 @@ export const VerificationManagementPage = () => {
 
                 <div className="space-y-4">
                 <div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3 flex-1">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 flex-1">
                       <div className="shrink-0 w-10 h-10 flex items-center justify-center">
                         <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -298,8 +298,8 @@ export const VerificationManagementPage = () => {
                 </div>
 
                 <div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3 flex-1">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 flex-1">
                       <div className="shrink-0 w-10 h-10 flex items-center justify-center">
                         <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -343,8 +343,8 @@ export const VerificationManagementPage = () => {
                 </div>
 
                 <div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3 flex-1">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 flex-1">
                       <div className="shrink-0 w-10 h-10 flex items-center justify-center">
                         <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
