@@ -253,10 +253,10 @@ export const VerificationManagementPage = () => {
 
                 <div className="space-y-4">
                 <div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 flex items-center justify-center">
-                        <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <div className="flex items-start gap-3 flex-1">
+                      <div className="shrink-0 w-10 h-10 flex items-center justify-center">
+                        <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -265,8 +265,8 @@ export const VerificationManagementPage = () => {
                           />
                         </svg>
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white">Business License</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-white mb-1">Business License</p>
                         <p className="text-[11px] text-gray-400">
                           Official license issued by state regulatory department.
                         </p>
@@ -274,7 +274,7 @@ export const VerificationManagementPage = () => {
                     </div>
                     <button
                       type="button"
-                      className="text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors"
+                      className="shrink-0 text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors uppercase"
                     >
                       VIEW FILE
                     </button>
@@ -296,10 +296,10 @@ export const VerificationManagementPage = () => {
                 </div>
 
                 <div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 flex items-center justify-center">
-                        <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <div className="flex items-start gap-3 flex-1">
+                      <div className="shrink-0 w-10 h-10 flex items-center justify-center">
+                        <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -308,8 +308,8 @@ export const VerificationManagementPage = () => {
                           />
                         </svg>
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white">Tax Identification</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-white mb-1">Tax Identification</p>
                         <p className="text-[11px] text-gray-400">
                           Government-issued tax identification document (e.g., EIN certificate).
                         </p>
@@ -317,7 +317,7 @@ export const VerificationManagementPage = () => {
                     </div>
                     <button
                       type="button"
-                      className="text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors"
+                      className="shrink-0 text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors uppercase"
                     >
                       VIEW FILE
                     </button>
@@ -339,10 +339,10 @@ export const VerificationManagementPage = () => {
                 </div>
 
                 <div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 flex items-center justify-center">
-                        <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <div className="flex items-start gap-3 flex-1">
+                      <div className="shrink-0 w-10 h-10 flex items-center justify-center">
+                        <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -351,8 +351,8 @@ export const VerificationManagementPage = () => {
                           />
                         </svg>
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white">Additional Documents</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-white mb-1">Additional Documents</p>
                         <p className="text-[11px] text-gray-400">
                           Supplementary compliance or operational documents as required.
                         </p>
@@ -360,7 +360,7 @@ export const VerificationManagementPage = () => {
                     </div>
                     <button
                       type="button"
-                      className="text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors"
+                      className="shrink-0 text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors uppercase"
                     >
                       VIEW FILE
                     </button>
