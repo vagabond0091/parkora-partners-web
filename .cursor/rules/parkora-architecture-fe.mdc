@@ -9,6 +9,8 @@ globs: src/**/*.tsx, src/**/*.ts
 
 1. **Single Responsibility**: Each component, hook, store has one clear purpose
 2. **DRY (Don't Repeat Yourself)**: Always check for duplicate code patterns before writing new code. If the same logic appears in 2+ places, extract it into a shared function/component/hook immediately. Refactor proactively - don't wait for user requests.
+   - **Component Extraction**: If you see the same markup/styling pattern appearing 2+ times, extract it into a reusable component immediately. This applies to JSX structure, className patterns, and styling combinations.
+   - **Proactive Refactoring**: Scan files for duplicate patterns and extract them automatically - don't wait for explicit user requests.
 3. **Composition Over Complexity**: Break down complex logic into smaller, reusable pieces
 4. **Type Safety First**: TypeScript interfaces for all props, state, and return types — no `any`
 5. **Predictable State**: Zustand for global state, useState for UI-only concerns

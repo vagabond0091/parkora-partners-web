@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { clsx } from 'clsx';
 import SimpleBar from 'simplebar-react';
 import type { Partner } from '@/types/pages/verificationManagement.types';
+import { VerificationDocumentCard } from '@/components/common/VerificationDocumentCard/VerificationDocumentCard';
 
 /**
  * Verification Management page component.
@@ -252,134 +253,27 @@ export const VerificationManagementPage = () => {
                 </div>
 
                 <div className="space-y-4">
-                <div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 flex items-center justify-center">
-                        <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12h6m-6 4h6M9 8h.01M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white">Business License</p>
-                        <p className="text-[11px] text-gray-400">
-                          Official license issued by state regulatory department.
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      className="text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors"
-                    >
-                      VIEW FILE
-                    </button>
-                  </div>
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      className="flex-1 h-8 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
-                    >
-                      VERIFY
-                    </button>
-                    <button
-                      type="button"
-                      className="flex-1 h-8 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
-                    >
-                      FLAG
-                    </button>
-                  </div>
-                </div>
-
-                <div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 flex items-center justify-center">
-                        <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12h6m-6 4h6M9 8h.01M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white">Tax Identification</p>
-                        <p className="text-[11px] text-gray-400">
-                          Government-issued tax identification document (e.g., EIN certificate).
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      className="text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors"
-                    >
-                      VIEW FILE
-                    </button>
-                  </div>
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      className="flex-1 h-8 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
-                    >
-                      VERIFY
-                    </button>
-                    <button
-                      type="button"
-                      className="flex-1 h-8 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
-                    >
-                      FLAG
-                    </button>
-                  </div>
-                </div>
-
-                <div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 flex items-center justify-center">
-                        <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12h6m-6 4h6M9 8h.01M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white">Additional Documents</p>
-                        <p className="text-[11px] text-gray-400">
-                          Supplementary compliance or operational documents as required.
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      className="text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors"
-                    >
-                      VIEW FILE
-                    </button>
-                  </div>
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      className="flex-1 h-8 rounded-lg bg-[#064e3b] text-[11px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
-                    >
-                      VERIFY
-                    </button>
-                    <button
-                      type="button"
-                      className="flex-1 h-8 rounded-lg bg-[#3f1d2b] text-[11px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
-                    >
-                      FLAG
-                    </button>
-                  </div>
-                </div>
+                  <VerificationDocumentCard
+                    title="Business License"
+                    description="Official license issued by state regulatory department."
+                    onViewFile={() => {}}
+                    onVerify={() => {}}
+                    onFlag={() => {}}
+                  />
+                  <VerificationDocumentCard
+                    title="Tax Identification"
+                    description="Government-issued tax identification document (e.g., EIN certificate)."
+                    onViewFile={() => {}}
+                    onVerify={() => {}}
+                    onFlag={() => {}}
+                  />
+                  <VerificationDocumentCard
+                    title="Additional Documents"
+                    description="Supplementary compliance or operational documents as required."
+                    onViewFile={() => {}}
+                    onVerify={() => {}}
+                    onFlag={() => {}}
+                  />
                 </div>
               </div>
             </SimpleBar>
