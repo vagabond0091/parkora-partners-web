@@ -252,7 +252,7 @@ export const VerificationManagementPage = () => {
                 </div>
 
                 <div className="space-y-4">
-                <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
+                <div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-start gap-3">
                       <div className="w-9 h-9 flex items-center justify-center">
@@ -295,7 +295,7 @@ export const VerificationManagementPage = () => {
                   </div>
                 </div>
 
-                <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
+                <div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-start gap-3">
                       <div className="w-9 h-9 flex items-center justify-center">
@@ -338,7 +338,7 @@ export const VerificationManagementPage = () => {
                   </div>
                 </div>
 
-                <div className="bg-[#111827] rounded-xl border border-gray-800 px-5 py-4">
+                <div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-start gap-3">
                       <div className="w-9 h-9 flex items-center justify-center">
