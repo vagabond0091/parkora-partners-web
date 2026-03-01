@@ -276,7 +276,7 @@ export const VerificationManagementPage = () => {
                       VIEW FILE
                     </button>
                   </div>
-                  <div className="mt-2 mb-4 pl-[10px]">
+                  <div className="mb-4 pl-[10px]">
                     <p className="text-[11px] text-gray-400">
                       Official license issued by state regulatory department.
                     </p>
@@ -321,7 +321,7 @@ export const VerificationManagementPage = () => {
                       VIEW FILE
                     </button>
                   </div>
-                  <div className="mt-2 mb-4 pl-[10px]">
+                  <div className="mb-4 pl-[10px]">
                     <p className="text-[11px] text-gray-400">
                       Government-issued tax identification document (e.g., EIN certificate).
                     </p>
@@ -366,7 +366,7 @@ export const VerificationManagementPage = () => {
                       VIEW FILE
                     </button>
                   </div>
-                  <div className="mt-2 mb-4 pl-[10px]">
+                  <div className="mb-4 pl-[10px]">
                     <p className="text-[11px] text-gray-400">
                       Supplementary compliance or operational documents as required.
                     </p>
