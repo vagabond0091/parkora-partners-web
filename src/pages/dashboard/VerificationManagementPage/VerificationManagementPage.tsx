@@ -3,6 +3,8 @@ import { clsx } from 'clsx';
 import SimpleBar from 'simplebar-react';
 import type { Partner } from '@/types/pages/verificationManagement.types';
 import { VerificationDocumentCard } from '@/components/common/VerificationDocumentCard/VerificationDocumentCard';
+import { Modal } from '@/components/common/Modal/Modal';
+import { TextArea } from '@/components/common/TextArea/TextArea';
 
 /**
  * Verification Management page component.
@@ -41,6 +43,29 @@ export const VerificationManagementPage = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPartner, setSelectedPartner] = useState<string | null>(null);
+
+  const [actionModal, setActionModal] = useState<{
+    isOpen: boolean;
+    type: 'verify' | 'flag' | null;
+    documentTitle: string;
+  }>({ isOpen: false, type: null, documentTitle: '' });
+  const [actionNote, setActionNote] = useState('');
+
+  const handleOpenActionModal = (type: 'verify' | 'flag', documentTitle: string) => {
+    setActionModal({ isOpen: true, type, documentTitle });
+    setActionNote('');
+  };
+
+  const handleCloseActionModal = () => {
+    setActionModal({ isOpen: false, type: null, documentTitle: '' });
+    setActionNote('');
+  };
+
+  const handleSubmitAction = () => {
+    // Handle submission logic here
+    console.log(`Action: ${actionModal.type}, Document: ${actionModal.documentTitle}, Note: ${actionNote}`);
+    handleCloseActionModal();
+  };
 
   /**
    * Get initials from partner name.
@@ -257,22 +282,22 @@ export const VerificationManagementPage = () => {
                     title="Business License"
                     description="Official license issued by state regulatory department."
                     onViewFile={() => {}}
-                    onVerify={() => {}}
-                    onFlag={() => {}}
+                    onVerify={() => handleOpenActionModal('verify', 'Business License')}
+                    onFlag={() => handleOpenActionModal('flag', 'Business License')}
                   />
                   <VerificationDocumentCard
                     title="Tax Identification"
                     description="Government-issued tax identification document (e.g., EIN certificate)."
                     onViewFile={() => {}}
-                    onVerify={() => {}}
-                    onFlag={() => {}}
+                    onVerify={() => handleOpenActionModal('verify', 'Tax Identification')}
+                    onFlag={() => handleOpenActionModal('flag', 'Tax Identification')}
                   />
                   <VerificationDocumentCard
                     title="Additional Documents"
                     description="Supplementary compliance or operational documents as required."
                     onViewFile={() => {}}
-                    onVerify={() => {}}
-                    onFlag={() => {}}
+                    onVerify={() => handleOpenActionModal('verify', 'Additional Documents')}
+                    onFlag={() => handleOpenActionModal('flag', 'Additional Documents')}
                   />
                 </div>
               </div>
@@ -301,6 +326,56 @@ export const VerificationManagementPage = () => {
           </div>
         )}
       </div>
+
+      <Modal isOpen={actionModal.isOpen} onClose={handleCloseActionModal}>
+        <Modal.Title onClose={handleCloseActionModal}>
+          {actionModal.type === 'verify' ? 'Verify Document' : 'Flag Document'}
+        </Modal.Title>
+        <Modal.Content>
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm text-gray-400">
+                You are about to {actionModal.type === 'verify' ? 'verify' : 'flag'} the{' '}
+                <span className="font-semibold text-white">{actionModal.documentTitle}</span>.
+              </p>
+            </div>
+            <TextArea
+              label="Notes / Reason"
+              placeholder={
+                actionModal.type === 'verify'
+                  ? 'Add any internal notes about this verification (optional)'
+                  : 'Please provide a reason for flagging this document'
+              }
+              value={actionNote}
+              onChange={(e) => setActionNote(e.target.value)}
+              required={actionModal.type === 'flag'}
+            />
+          </div>
+        </Modal.Content>
+        <Modal.Actions>
+          <button
+            type="button"
+            onClick={handleCloseActionModal}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmitAction}
+            disabled={actionModal.type === 'flag' && !actionNote.trim()}
+            className={clsx(
+              'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+              actionModal.type === 'verify'
+                ? 'bg-[#064e3b] text-green-100 hover:bg-[#047857]'
+                : 'bg-[#3f1d2b] text-red-100 hover:bg-[#7f1d1d]',
+              actionModal.type === 'flag' && !actionNote.trim() && 'opacity-50 cursor-not-allowed'
+            )}
+          >
+            {actionModal.type === 'verify' ? 'Confirm Verification' : 'Flag Document'}
+          </button>
+        </Modal.Actions>
+      </Modal>
     </div>
   );
 };
