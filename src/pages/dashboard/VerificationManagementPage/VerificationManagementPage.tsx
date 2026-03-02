@@ -343,12 +343,12 @@ export const VerificationManagementPage = () => {
               label="Notes / Reason"
               placeholder={
                 actionModal.type === 'verify'
-                  ? 'Add any internal notes about this verification (optional)'
+                  ? 'Please provide notes about this verification'
                   : 'Please provide a reason for flagging this document'
               }
               value={actionNote}
               onChange={(e) => setActionNote(e.target.value)}
-              required={actionModal.type === 'flag'}
+              required={true}
             />
           </div>
         </Modal.Content>
@@ -363,13 +363,13 @@ export const VerificationManagementPage = () => {
           <button
             type="button"
             onClick={handleSubmitAction}
-            disabled={actionModal.type === 'flag' && !actionNote.trim()}
+            disabled={!actionNote.trim()}
             className={clsx(
               'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
               actionModal.type === 'verify'
                 ? 'bg-[#064e3b] text-green-100 hover:bg-[#047857]'
                 : 'bg-[#3f1d2b] text-red-100 hover:bg-[#7f1d1d]',
-              actionModal.type === 'flag' && !actionNote.trim() && 'opacity-50 cursor-not-allowed'
+              !actionNote.trim() && 'opacity-50 cursor-not-allowed'
             )}
           >
             {actionModal.type === 'verify' ? 'Confirm Verification' : 'Flag Document'}
