@@ -34,11 +34,45 @@ export const VerificationDocumentCard = ({
           onClick={onViewFile}
           className="shrink-0 text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors uppercase"
         >
-          VIEW FILE
+          DOWNLOAD FILE
         </button>
       </div>
       <div className="mb-4 pl-[10px]">
         <p className="text-[11px] text-gray-400">{description}</p>
+        {title === 'Business License' && (
+          <div className="mt-2">
+            <p className="text-[11px] font-semibold text-gray-300 mb-1">Instruction:</p>
+            <p className="text-[11px] text-gray-400">
+              Cross-reference the business license at{' '}
+              <a
+                href="https://checkwithsec.sec.gov.ph/check-with-sec/index"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-purple-400 hover:text-purple-300 underline transition-colors"
+              >
+                SEC Check with SEC
+              </a>
+              .
+            </p>
+          </div>
+        )}
+        {title === 'Tax Identification' && (
+          <div className="mt-2">
+            <p className="text-[11px] font-semibold text-gray-300 mb-1">Instruction:</p>
+            <p className="text-[11px] text-gray-400">
+              Cross-reference the tax identification ID at{' '}
+              <a
+                href="https://orus.bir.gov.ph/search/tinverification"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-purple-400 hover:text-purple-300 underline transition-colors"
+              >
+                BIR TIN Verification
+              </a>
+              .
+            </p>
+          </div>
+        )}
       </div>
       <div className="flex gap-2">
         <button
