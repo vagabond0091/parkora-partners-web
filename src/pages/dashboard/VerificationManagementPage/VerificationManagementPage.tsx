@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { clsx } from 'clsx';
 import SimpleBar from 'simplebar-react';
 import type { Partner } from '@/types/pages/verificationManagement.types';
 import type { TableColumn } from '@/types/components/table.types';
 import { Table } from '@/components/common/Table/Table';
+import { CompanyService } from '@/services/CompanyService';
 import { VerificationDocumentCard } from '@/components/common/VerificationDocumentCard/VerificationDocumentCard';
 import { Modal } from '@/components/common/Modal/Modal';
 import { TextArea } from '@/components/common/TextArea/TextArea';
@@ -13,38 +14,14 @@ import { TextArea } from '@/components/common/TextArea/TextArea';
  * Allows admins to manage and review partner onboarding documents.
  */
 export const VerificationManagementPage = () => {
-  /**
-   * Mock partner data.
-   */
-  const partners: Partner[] = [
-    {
-      id: '1',
-      name: 'Urban Resorts LLC',
-      partnerId: 'PRK-90210',
-      submissionDate: 'Oct 24, 2023',
-      type: 'Enterprise',
-      status: 'UNDER REVIEW',
-    },
-    {
-      id: '2',
-      name: 'City Parking Solutions',
-      partnerId: 'PRK-88231',
-      submissionDate: 'Oct 23, 2023',
-      type: 'Standard',
-      status: 'PENDING',
-    },
-    {
-      id: '3',
-      name: 'North Hill Properties',
-      partnerId: 'PRK-12093',
-      submissionDate: 'Oct 22, 2023',
-      type: 'Standard',
-      status: 'PENDING',
-    },
-  ];
-
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPartner, setSelectedPartner] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [partners, setPartners] = useState<Partner[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [actionModal, setActionModal] = useState<{
     isOpen: boolean;
@@ -68,6 +45,70 @@ export const VerificationManagementPage = () => {
     console.log(`Action: ${actionModal.type}, Document: ${actionModal.documentTitle}, Note: ${actionNote}`);
     handleCloseActionModal();
   };
+
+  /**
+   * Map API verification status to Partner status.
+   */
+  const mapVerificationStatus = (status: string): Partner['status'] => {
+    switch (status) {
+      case 'UNDER_REVIEW':
+        return 'UNDER REVIEW';
+      case 'PENDING':
+        return 'PENDING';
+      case 'APPROVED':
+        return 'APPROVED';
+      case 'REJECTED':
+        return 'REJECTED';
+      default:
+        return 'PENDING';
+    }
+  };
+
+  /**
+   * Fetch pending companies from API.
+   */
+  useEffect(() => {
+    const fetchPendingCompanies = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        const response = await CompanyService.getPendingCompanies({
+          page: currentPage - 1, // API uses 0-based indexing
+          size: pageSize,
+        });
+
+        if (response.data) {
+          // Map CompanyResponse to Partner
+          const mappedPartners: Partner[] = response.data.content.map((company) => ({
+            id: company.id,
+            name: company.name,
+            partnerId: `PRK-${company.id.slice(0, 8).toUpperCase()}`,
+            submissionDate: company.documents?.[0]?.uploadedAt 
+              ? new Date(company.documents[0].uploadedAt).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })
+              : 'N/A',
+            type: company.businessType === 'ENTERPRISE' ? 'Enterprise' : 'Standard',
+            status: mapVerificationStatus(company.verificationStatus),
+          }));
+
+          setPartners(mappedPartners);
+          setTotalItems(response.data.totalElements);
+        }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch companies';
+        setError(errorMessage);
+        console.error('Error fetching pending companies:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPendingCompanies();
+  }, [currentPage, pageSize]);
 
   /**
    * Get initials from partner name.
@@ -224,18 +265,43 @@ export const VerificationManagementPage = () => {
         </div>
 
         <div className="flex flex-col gap-6">
-          <Table<Partner>
-            data={partners}
-            columns={columns}
-            getRowKey={(row) => row.id}
-            onRowClick={(row) =>
-              setSelectedPartner((currentSelectedPartner) =>
-                currentSelectedPartner === row.id ? null : row.id
-              )
-            }
-            isRowSelected={(row) => selectedPartner === row.id}
-            emptyMessage="No partners found"
-          />
+          {isLoading ? (
+            <div className="bg-[#1a1a2e] rounded-xl border border-gray-800 p-12">
+              <div className="flex items-center justify-center">
+                <p className="text-sm text-gray-400">Loading companies...</p>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="bg-[#1a1a2e] rounded-xl border border-gray-800 p-12">
+              <div className="flex items-center justify-center">
+                <p className="text-sm text-red-400">Error: {error}</p>
+              </div>
+            </div>
+          ) : (
+            <Table<Partner>
+              data={partners}
+              columns={columns}
+              getRowKey={(row) => row.id}
+              onRowClick={(row) =>
+                setSelectedPartner((currentSelectedPartner) =>
+                  currentSelectedPartner === row.id ? null : row.id
+                )
+              }
+              isRowSelected={(row) => selectedPartner === row.id}
+              emptyMessage="No partners found"
+              pagination={{
+                currentPage,
+                pageSize,
+                totalItems,
+                onPageChange: setCurrentPage,
+                onPageSizeChange: (newPageSize) => {
+                  setPageSize(newPageSize);
+                  setCurrentPage(1);
+                },
+                enabled: true,
+              }}
+            />
+          )}
         </div>
       </div>
 
