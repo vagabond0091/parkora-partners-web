@@ -39,6 +39,20 @@ export const VerificationDocumentCard = ({
       </div>
       <div className="mb-4 pl-[10px]">
         <p className="text-[11px] text-gray-400">{description}</p>
+        {title === 'Tax Identification' && (
+          <p className="text-[11px] text-gray-400 mt-2">
+            Cross-reference the tax identification ID at{' '}
+            <a
+              href="https://orus.bir.gov.ph/search/tinverification"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-purple-400 hover:text-purple-300 underline transition-colors"
+            >
+              BIR TIN Verification
+            </a>
+            .
+          </p>
+        )}
       </div>
       <div className="flex gap-2">
         <button
