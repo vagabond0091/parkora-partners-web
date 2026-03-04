@@ -34,7 +34,7 @@ export const VerificationDocumentCard = ({
           onClick={onViewFile}
           className="shrink-0 text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors uppercase"
         >
-          VIEW FILE
+          DOWNLOAD FILE
         </button>
       </div>
       <div className="mb-4 pl-[10px]">
