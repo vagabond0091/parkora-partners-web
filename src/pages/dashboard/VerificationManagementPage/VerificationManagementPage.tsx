@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { clsx } from 'clsx';
 import SimpleBar from 'simplebar-react';
 import type { Partner } from '@/types/pages/verificationManagement.types';
+import type { TableColumn } from '@/types/components/table.types';
+import { Table } from '@/components/common/Table/Table';
 import { VerificationDocumentCard } from '@/components/common/VerificationDocumentCard/VerificationDocumentCard';
 import { Modal } from '@/components/common/Modal/Modal';
 import { TextArea } from '@/components/common/TextArea/TextArea';
@@ -109,6 +111,83 @@ export const VerificationManagementPage = () => {
 
   const selectedPartnerData = partners.find((partnerItem) => partnerItem.id === selectedPartner);
 
+  /**
+   * Table column definitions.
+   */
+  const columns: TableColumn<Partner>[] = [
+    {
+      header: 'PARTNER NAME',
+      accessor: 'name',
+      render: (_, partner) => (
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-[#1e293b] flex items-center justify-center text-xs font-semibold text-white">
+            {getInitials(partner.name)}
+          </div>
+          <div>
+            <p className="text-xs font-medium text-white">{partner.name}</p>
+            <p className="text-[10px] text-gray-400">ID: {partner.partnerId}</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      header: 'SUBMISSION DATE',
+      accessor: 'submissionDate',
+      render: (value) => <p className="text-xs text-gray-400">{value as string}</p>,
+    },
+    {
+      header: 'TYPE',
+      accessor: 'type',
+      render: (value) => (
+        <span className="inline-flex px-2 py-1 rounded-full bg-[#272f40] text-[10px] font-medium text-gray-200">
+          {value as string}
+        </span>
+      ),
+    },
+    {
+      header: 'STATUS',
+      accessor: 'status',
+      render: (value) => {
+        const status = value as string;
+        return (
+          <div className="flex items-center gap-2">
+            <div className={clsx('w-2 h-2 rounded-full', getStatusDotColor(status))}></div>
+            <span className={clsx('text-[10px] font-bold', getStatusTextColor(status))}>
+              {status}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      header: '',
+      accessor: () => null,
+      width: '48px',
+      render: (_, partner) => (
+        <div
+          className={clsx(
+            'transition-opacity',
+            selectedPartner === partner.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+          )}
+        >
+          <svg
+            className="w-5 h-5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="relative w-full h-full">
       <div className={clsx('w-full', selectedPartnerData && 'lg:pr-96')}>
@@ -145,95 +224,18 @@ export const VerificationManagementPage = () => {
         </div>
 
         <div className="flex flex-col gap-6">
-          <div className="bg-[#1a1a2e] rounded-xl border border-gray-800 overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-[#172032] border-b border-gray-800">
-                <tr>
-                  <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
-                    PARTNER NAME
-                  </th>
-                  <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
-                    SUBMISSION DATE
-                  </th>
-                  <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
-                    TYPE
-                  </th>
-                  <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
-                    STATUS
-                  </th>
-                  <th className="px-6 py-3 w-12"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-800">
-                {partners.map((partner) => (
-                  <tr
-                    key={partner.id}
-                    onClick={() =>
-                      setSelectedPartner((currentSelectedPartner) =>
-                        currentSelectedPartner === partner.id ? null : partner.id
-                      )
-                    }
-                    className={clsx(
-                      'group cursor-pointer transition-colors bg-[#0f172a] border-t border-b border-gray-800',
-                      selectedPartner === partner.id
-                        ? 'bg-[#1b2335] hover:bg-[#1b2335]'
-                        : 'hover:bg-[#1a2332]'
-                    )}
-                  >
-                    <td className="px-6 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-[#1e293b] flex items-center justify-center text-xs font-semibold text-white">
-                          {getInitials(partner.name)}
-                        </div>
-                        <div>
-                          <p className="text-xs font-medium text-white">{partner.name}</p>
-                          <p className="text-[10px] text-gray-400">ID: {partner.partnerId}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-3">
-                      <p className="text-xs text-gray-400">{partner.submissionDate}</p>
-                    </td>
-                    <td className="px-6 py-3">
-                      <span className="inline-flex px-2 py-1 rounded-full bg-[#272f40] text-[10px] font-medium text-gray-200">
-                        {partner.type}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className={clsx('w-2 h-2 rounded-full', getStatusDotColor(partner.status))}></div>
-                        <span className={clsx('text-[10px] font-bold', getStatusTextColor(partner.status))}>
-                          {partner.status}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-3">
-                      <div
-                        className={clsx(
-                          'transition-opacity',
-                          selectedPartner === partner.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                        )}
-                      >
-                        <svg
-                          className="w-5 h-5 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 5l7 7-7 7"
-                          />
-                        </svg>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Table<Partner>
+            data={partners}
+            columns={columns}
+            getRowKey={(row) => row.id}
+            onRowClick={(row) =>
+              setSelectedPartner((currentSelectedPartner) =>
+                currentSelectedPartner === row.id ? null : row.id
+              )
+            }
+            isRowSelected={(row) => selectedPartner === row.id}
+            emptyMessage="No partners found"
+          />
         </div>
       </div>
 
