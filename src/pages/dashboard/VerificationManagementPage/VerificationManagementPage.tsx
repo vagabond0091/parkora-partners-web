@@ -45,6 +45,8 @@ export const VerificationManagementPage = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPartner, setSelectedPartner] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const [actionModal, setActionModal] = useState<{
     isOpen: boolean;
@@ -235,6 +237,16 @@ export const VerificationManagementPage = () => {
             }
             isRowSelected={(row) => selectedPartner === row.id}
             emptyMessage="No partners found"
+            pagination={{
+              currentPage,
+              pageSize,
+              onPageChange: setCurrentPage,
+              onPageSizeChange: (newPageSize) => {
+                setPageSize(newPageSize);
+                setCurrentPage(1);
+              },
+              enabled: true,
+            }}
           />
         </div>
       </div>

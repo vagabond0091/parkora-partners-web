@@ -32,6 +32,44 @@ export interface TableColumn<T> {
 }
 
 /**
+ * Pagination configuration for the Table component.
+ */
+export interface TablePagination {
+  /**
+   * Current page number (1-indexed).
+   */
+  currentPage: number;
+  /**
+   * Number of items per page.
+   */
+  pageSize: number;
+  /**
+   * Total number of items across all pages.
+   * Required for server-side pagination.
+   * If not provided, will use data.length for client-side pagination.
+   */
+  totalItems?: number;
+  /**
+   * Callback function called when page changes.
+   */
+  onPageChange: (page: number) => void;
+  /**
+   * Optional callback function called when page size changes.
+   */
+  onPageSizeChange?: (pageSize: number) => void;
+  /**
+   * Optional array of available page sizes.
+   * Defaults to [10, 25, 50, 100].
+   */
+  pageSizeOptions?: number[];
+  /**
+   * Whether pagination is enabled.
+   * Defaults to false.
+   */
+  enabled?: boolean;
+}
+
+/**
  * Props for the Table component.
  * @template T - The type of data items in the table
  */
@@ -69,4 +107,8 @@ export interface TableProps<T> {
    * Optional CSS classes for the table element.
    */
   tableClassName?: string;
+  /**
+   * Optional pagination configuration.
+   */
+  pagination?: TablePagination;
 }
