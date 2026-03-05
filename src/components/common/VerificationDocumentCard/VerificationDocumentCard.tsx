@@ -1,4 +1,5 @@
 import type { VerificationDocumentCardProps } from '@/types/components/verificationDocumentCard.types';
+import { Button } from '@/components/common/Button/Button';
 
 /**
  * Reusable card component for displaying verification documents.
@@ -29,13 +30,13 @@ export const VerificationDocumentCard = ({
             <p className="text-sm font-bold text-white">{title}</p>
           </div>
         </div>
-        <button
+        <Button
           type="button"
           onClick={onViewFile}
           className="shrink-0 text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors uppercase"
         >
           DOWNLOAD FILE
-        </button>
+        </Button>
       </div>
       <div className="mb-4 pl-[10px]">
         <p className="text-[11px] text-gray-400">{description}</p>
@@ -75,20 +76,20 @@ export const VerificationDocumentCard = ({
         )}
       </div>
       <div className="flex gap-2">
-        <button
+        <Button
           type="button"
           onClick={onVerify}
           className="flex-1 h-7 rounded-lg bg-[#064e3b] text-[10px] font-semibold text-green-100 hover:bg-[#047857] transition-colors"
         >
           VERIFY
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={onFlag}
           className="flex-1 h-7 rounded-lg bg-[#3f1d2b] text-[10px] font-semibold text-red-200 hover:bg-[#7f1d1d] transition-colors"
         >
           FLAG
-        </button>
+        </Button>
       </div>
     </div>
   );
