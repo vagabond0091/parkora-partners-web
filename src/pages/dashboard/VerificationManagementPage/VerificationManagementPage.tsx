@@ -7,6 +7,7 @@ import { Table } from '@/components/common/Table/Table';
 import { VerificationDocumentCard } from '@/components/common/VerificationDocumentCard/VerificationDocumentCard';
 import { Modal } from '@/components/common/Modal/Modal';
 import { TextArea } from '@/components/common/TextArea/TextArea';
+import { Button } from '@/components/common/Button/Button';
 import { usePendingCompanies } from '@/hooks/verification';
 
 /**
@@ -365,18 +366,18 @@ export const VerificationManagementPage = () => {
 
             <div className="pt-4 border-t border-gray-800 -mx-6 px-6">
               <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                <button
+                <Button
                   type="button"
                   className="flex-1 h-9 rounded-lg bg-[#3f1d2b] text-sm font-semibold text-red-100 hover:bg-[#7f1d1d] transition-colors relative z-10"
                 >
                   Reject Application
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
                   className="flex-1 h-9 rounded-lg bg-[#7f13ec] text-sm font-semibold text-white hover:bg-[#6a0fd6] transition-colors"
                 >
                   Approve Partner
-                </button>
+                </Button>
               </div>
             </div>
           </>
