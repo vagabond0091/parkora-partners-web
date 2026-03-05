@@ -414,14 +414,14 @@ export const VerificationManagementPage = () => {
           </div>
         </Modal.Content>
         <Modal.Actions>
-          <button
+          <Button
             type="button"
             onClick={handleCloseActionModal}
             className="px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={handleSubmitAction}
             disabled={!actionNote.trim()}
@@ -434,7 +434,7 @@ export const VerificationManagementPage = () => {
             )}
           >
             {actionModal.type === 'verify' ? 'Confirm Verification' : 'Flag Document'}
-          </button>
+          </Button>
         </Modal.Actions>
       </Modal>
     </div>
