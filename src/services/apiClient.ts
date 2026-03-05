@@ -155,7 +155,7 @@ export const apiClient = {
    * @param options - Optional body, headers, auth flag, and query params
    * @returns Parsed JSON response
    */
-  del: <T>(endpoint: string, options: RequestOptionsWithBody = {}): Promise<T> =>
+  delete: <T>(endpoint: string, options: RequestOptionsWithBody = {}): Promise<T> =>
     request<T>(buildUrl(endpoint, options.params), {
       method: 'DELETE',
       headers: buildHeaders(options),
