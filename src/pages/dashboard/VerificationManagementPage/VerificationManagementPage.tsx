@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { clsx } from 'clsx';
 import SimpleBar from 'simplebar-react';
 import type { Partner } from '@/types/pages/verificationManagement.types';
 import type { TableColumn } from '@/types/components/table.types';
 import { Table } from '@/components/common/Table/Table';
-import { CompanyService } from '@/services/CompanyService';
 import { VerificationDocumentCard } from '@/components/common/VerificationDocumentCard/VerificationDocumentCard';
 import { Modal } from '@/components/common/Modal/Modal';
 import { TextArea } from '@/components/common/TextArea/TextArea';
+import { usePendingCompanies } from '@/hooks/verification';
 
 /**
  * Verification Management page component.
@@ -18,10 +18,6 @@ export const VerificationManagementPage = () => {
   const [selectedPartner, setSelectedPartner] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [partners, setPartners] = useState<Partner[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const [actionModal, setActionModal] = useState<{
     isOpen: boolean;
@@ -47,6 +43,14 @@ export const VerificationManagementPage = () => {
   };
 
   /**
+   * Fetch pending companies using React Query hook.
+   */
+  const { data: companiesResponse, isLoading, error: queryError } = usePendingCompanies({
+    page: currentPage - 1, // API uses 0-based indexing
+    size: pageSize,
+  });
+
+  /**
    * Map API verification status to Partner status.
    */
   const mapVerificationStatus = (status: string): Partner['status'] => {
@@ -65,50 +69,38 @@ export const VerificationManagementPage = () => {
   };
 
   /**
-   * Fetch pending companies from API.
+   * Map API response to Partner format.
    */
-  useEffect(() => {
-    const fetchPendingCompanies = async () => {
-      setIsLoading(true);
-      setError(null);
-      
-      try {
-        const response = await CompanyService.getPendingCompanies({
-          page: currentPage - 1, // API uses 0-based indexing
-          size: pageSize,
-        });
+  const partners = useMemo<Partner[]>(() => {
+    if (!companiesResponse?.data) {
+      return [];
+    }
 
-        if (response.data) {
-          // Map CompanyResponse to Partner
-          const mappedPartners: Partner[] = response.data.content.map((company) => ({
-            id: company.id,
-            name: company.name,
-            partnerId: `PRK-${company.id.slice(0, 8).toUpperCase()}`,
-            submissionDate: company.documents?.[0]?.uploadedAt 
-              ? new Date(company.documents[0].uploadedAt).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                })
-              : 'N/A',
-            type: company.businessType === 'ENTERPRISE' ? 'Enterprise' : 'Standard',
-            status: mapVerificationStatus(company.verificationStatus),
-          }));
+    return companiesResponse.data.content.map((company) => ({
+      id: company.id,
+      name: company.name,
+      partnerId: `PRK-${company.id.slice(0, 8).toUpperCase()}`,
+      submissionDate: company.documents?.[0]?.uploadedAt
+        ? new Date(company.documents[0].uploadedAt).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          })
+        : 'N/A',
+      type: company.businessType === 'ENTERPRISE' ? 'Enterprise' : 'Standard',
+      status: mapVerificationStatus(company.verificationStatus),
+    }));
+  }, [companiesResponse]);
 
-          setPartners(mappedPartners);
-          setTotalItems(response.data.totalElements);
-        }
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch companies';
-        setError(errorMessage);
-        console.error('Error fetching pending companies:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  /**
+   * Extract total items from API response.
+   */
+  const totalItems = companiesResponse?.data?.totalElements ?? 0;
 
-    fetchPendingCompanies();
-  }, [currentPage, pageSize]);
+  /**
+   * Extract error message from query error.
+   */
+  const error = queryError instanceof Error ? queryError.message : queryError ? 'Failed to fetch companies' : null;
 
   /**
    * Get initials from partner name.
