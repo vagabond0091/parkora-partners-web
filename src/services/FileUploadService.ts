@@ -2,15 +2,31 @@ import { getApiUrl } from '@/config/env';
 import type { FileUploadRequest, FileUploadResponse, ApiResponse, BatchFileUploadRequest, BatchFileUploadResponse, DocumentsResponse } from '@/types/services/fileUpload.types';
 import { DocumentType } from '@/types/services/fileUpload.types';
 import { getAuthToken } from '@/utils/authUtils';
+import { apiClient } from './apiClient';
 
 const API_URL = getApiUrl();
+
+/**
+ * Parses error message from XHR response text.
+ * @param responseText - Raw XHR response text
+ * @param fallbackMessage - Default message when parsing fails
+ * @returns Extracted error message
+ */
+const parseXhrError = (responseText: string, fallbackMessage: string): string => {
+  try {
+    const errorData = JSON.parse(responseText);
+    return errorData?.message || fallbackMessage;
+  } catch {
+    return responseText || fallbackMessage;
+  }
+};
 
 /**
  * Service for handling file uploads to Supabase Storage
  */
 export const FileUploadService = {
   /**
-   * Uploads a file to Supabase Storage via the backend API
+   * Uploads a file to Supabase Storage via the backend API.
    * @param request - File upload request parameters
    * @param onProgress - Optional callback for upload progress (0-100)
    * @returns File upload response with file URL and metadata
@@ -24,7 +40,6 @@ export const FileUploadService = {
     formData.append('documentType', request.documentType);
 
     const token = getAuthToken();
-
     const xhr = new XMLHttpRequest();
 
     return new Promise((resolve, reject) => {
@@ -40,24 +55,11 @@ export const FileUploadService = {
           try {
             const response: ApiResponse<FileUploadResponse> = JSON.parse(xhr.responseText);
             resolve(response);
-          } catch (error) {
+          } catch {
             reject(new Error('Failed to parse response'));
           }
         } else {
-          let errorMessage = 'File upload failed';
-          
-          try {
-            const errorData = JSON.parse(xhr.responseText);
-            errorMessage = errorData?.message || errorMessage;
-          } catch {
-            try {
-              errorMessage = xhr.responseText || errorMessage;
-            } catch {
-              errorMessage = 'File upload failed';
-            }
-          }
-          
-          reject(new Error(errorMessage));
+          reject(new Error(parseXhrError(xhr.responseText, 'File upload failed')));
         }
       });
 
@@ -70,7 +72,7 @@ export const FileUploadService = {
       });
 
       xhr.open('POST', `${API_URL}/storage/upload`);
-      
+
       if (token) {
         xhr.setRequestHeader('Authorization', `Bearer ${token}`);
       }
@@ -80,7 +82,7 @@ export const FileUploadService = {
   },
 
   /**
-   * Uploads multiple files in a single API call
+   * Uploads multiple files in a single API call.
    * @param request - Batch file upload request with all files
    * @param onProgress - Optional callback for upload progress (0-100)
    * @returns Batch file upload response with all file URLs and metadata
@@ -91,19 +93,16 @@ export const FileUploadService = {
   ): Promise<ApiResponse<BatchFileUploadResponse>> => {
     const formData = new FormData();
 
-    // Append business license if present
     if (request.businessLicense) {
       formData.append('businessLicense', request.businessLicense);
       formData.append('businessLicenseDocumentType', DocumentType.BUSINESS_REGISTRATION);
     }
 
-    // Append tax document if present
     if (request.taxDocument) {
       formData.append('taxDocument', request.taxDocument);
       formData.append('taxDocumentDocumentType', DocumentType.TAX_IDENTIFICATION);
     }
 
-    // Append additional document if present
     if (request.additionalDocument) {
       formData.append('additionalDocument', request.additionalDocument);
       formData.append('additionalDocumentDocumentType', DocumentType.ADDITIONAL_DOCUMENT);
@@ -124,7 +123,6 @@ export const FileUploadService = {
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
             const response: BatchFileUploadResponse = JSON.parse(xhr.responseText);
-            // Wrap in ApiResponse for consistency with other endpoints
             const wrappedResponse: ApiResponse<BatchFileUploadResponse> = {
               data: response,
               errorCode: response.failedUploads > 0 ? 1 : 0,
@@ -132,24 +130,11 @@ export const FileUploadService = {
               status: response.failedUploads > 0 ? 'partial_success' : 'success',
             };
             resolve(wrappedResponse);
-          } catch (error) {
+          } catch {
             reject(new Error('Failed to parse response'));
           }
         } else {
-          let errorMessage = 'File upload failed';
-          
-          try {
-            const errorData = JSON.parse(xhr.responseText);
-            errorMessage = errorData?.message || errorMessage;
-          } catch {
-            try {
-              errorMessage = xhr.responseText || errorMessage;
-            } catch {
-              errorMessage = 'File upload failed';
-            }
-          }
-          
-          reject(new Error(errorMessage));
+          reject(new Error(parseXhrError(xhr.responseText, 'File upload failed')));
         }
       });
 
@@ -162,7 +147,7 @@ export const FileUploadService = {
       });
 
       xhr.open('POST', `${API_URL}/storage/upload`);
-      
+
       if (token) {
         xhr.setRequestHeader('Authorization', `Bearer ${token}`);
       }
@@ -172,42 +157,9 @@ export const FileUploadService = {
   },
 
   /**
-   * Fetches all documents for the current company
+   * Fetches all documents for the current company.
    * @returns Documents response with all company documents
    */
-  getDocuments: async (): Promise<DocumentsResponse> => {
-    const token = getAuthToken();
-    const response = await fetch(`${API_URL}/documents`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    });
-
-    if (!response.ok) {
-      let errorMessage = 'Failed to fetch documents';
-      
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData?.message || errorMessage;
-      } catch {
-        try {
-          const errorText = await response.text();
-          try {
-            const parsed = JSON.parse(errorText);
-            errorMessage = parsed.message || errorMessage;
-          } catch {
-            errorMessage = errorText || errorMessage;
-          }
-        } catch {
-          errorMessage = 'Failed to fetch documents';
-        }
-      }
-      
-      throw new Error(errorMessage);
-    }
-
-    return response.json();
-  },
+  getDocuments: (): Promise<DocumentsResponse> =>
+    apiClient.get<DocumentsResponse>('/documents'),
 };

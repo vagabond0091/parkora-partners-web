@@ -1252,7 +1252,7 @@ export const VerificationPage = () => {
             <Button
               type="submit"
               isLoading={isLoading}
-              className="!w-fit bg-[#6D28D9] text-white hover:bg-[#5B21B6] focus:ring-purple-500"
+              className="!w-fit px-6 py-3 rounded-xl font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 bg-[#6D28D9] text-white hover:bg-[#5B21B6]"
             >
               Submit for Verification
             </Button>

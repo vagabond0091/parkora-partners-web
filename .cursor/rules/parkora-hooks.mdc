@@ -1,0 +1,415 @@
+---
+description: Hook rules for Parkora Partners Web - React custom hook conventions
+globs: src/hooks/**/*.ts, src/hooks/**/*.tsx
+---
+
+# Parkora Hook Rules
+
+## Core Principles
+
+1. **Single responsibility** - One hook, one concern
+2. **`use` prefix** - All hooks must start with `use`
+3. **Encapsulate logic** - Extract reusable stateful logic from components into hooks
+4. **Type safe** - Full TypeScript typing for parameters and return values
+5. **Types in `types/`** - Hook-related types belong in `types/hooks/` folder
+6. **Composable** - Build complex hooks by composing simpler hooks
+7. **No UI** - Hooks must never return JSX; they return data and callbacks
+
+## Folder Structure
+
+```
+src/
+├── types/
+│   └── hooks/
+│       ├── index.ts
+│       ├── verification.hook.types.ts
+│       └── auth.hook.types.ts
+│
+├── hooks/
+│   ├── auth/                        # Auth domain hooks
+│   │   ├── index.ts                 # Barrel export
+│   │   ├── useLogin.ts
+│   │   ├── useLogout.ts
+│   │   └── authQueryKeys.ts
+│   │
+│   ├── verification/                # Verification domain hooks
+│   │   ├── index.ts
+│   │   ├── usePendingCompanies.ts
+│   │   └── verificationQueryKeys.ts
+│   │
+│   └── common/                      # Shared / cross-domain hooks
+│       ├── index.ts
+│       ├── useDebounce.ts
+│       └── usePagination.ts
+```
+
+## Hook Categories
+
+| Category | Prefix / Pattern | Location | Purpose |
+|----------|-----------------|----------|---------|
+| **Query** | `use[Entity]` / `use[Entity]List` | `hooks/[domain]/` | Fetch server data via React Query |
+| **Mutation** | `use[Action][Entity]` | `hooks/[domain]/` | Create, update, delete via React Query |
+| **UI** | `use[Behavior]` | `hooks/common/` | Manage UI-only state (toggle, modal, etc.) |
+| **Utility** | `use[Utility]` | `hooks/common/` | Cross-cutting concerns (debounce, media query, etc.) |
+
+## Naming Conventions
+
+| Element | Convention | Example |
+|---------|------------|---------|
+| Query hook | `use[Entity]` or `use[Entity]List` | `usePendingCompanies`, `useUserProfile` |
+| Mutation hook | `use[Action][Entity]` | `useCreateCompany`, `useUpdateProfile` |
+| UI hook | `use[Behavior]` | `useToggle`, `useModal`, `useDisclosure` |
+| Utility hook | `use[Utility]` | `useDebounce`, `useLocalStorage` |
+| Query key factory | `[domain]QueryKeys` | `verificationQueryKeys`, `authQueryKeys` |
+| Hook file | camelCase with `use` prefix | `usePendingCompanies.ts` |
+| Query key file | `[domain]QueryKeys.ts` | `verificationQueryKeys.ts` |
+| Barrel file | `index.ts` | Re-exports all hooks from the domain |
+
+## Query Key Factory Pattern
+
+Every domain **must** have a centralized query key factory. Never inline query keys.
+
+### Correct
+
+```tsx
+// hooks/verification/verificationQueryKeys.ts
+export const verificationQueryKeys = {
+  all: ['verification'] as const,
+
+  pendingCompanies: (params?: { page?: number; size?: number }) =>
+    [...verificationQueryKeys.all, 'pendingCompanies', params] as const,
+
+  companyDetail: (id: string) =>
+    [...verificationQueryKeys.all, 'companyDetail', id] as const,
+};
+```
+
+### Forbidden
+
+```tsx
+// Inline keys scattered across hooks
+useQuery({ queryKey: ['verification', 'pending', page] });
+useQuery({ queryKey: ['verification', 'pending', page] }); // Duplicated elsewhere
+```
+
+### Query Key Rules
+
+1. **Factory per domain** - One `[domain]QueryKeys.ts` per feature folder
+2. **Hierarchical keys** - Start with domain base, then narrow: `all → list → detail`
+3. **Include parameters** - Pass filters, pagination, and IDs into key functions
+4. **`as const`** - Always assert keys with `as const` for type safety
+5. **Centralized invalidation** - Use `queryKeys.all` to invalidate an entire domain
+
+## Query Hooks (TanStack React Query)
+
+### Standard Query Hook
+
+```tsx
+import { useQuery } from '@tanstack/react-query';
+import { CompanyService } from '@/services/CompanyService';
+import type { GetPendingCompaniesParams } from '@/types/services/company.types';
+import { verificationQueryKeys } from './verificationQueryKeys';
+
+/**
+ * Query hook for fetching pending companies with pagination.
+ * @param params - Pagination parameters (page and size)
+ * @returns Query result with pending companies data
+ */
+export const usePendingCompanies = (params: GetPendingCompaniesParams = {}) => {
+  const { page = 0, size = 10 } = params;
+
+  return useQuery({
+    queryKey: verificationQueryKeys.pendingCompanies({ page, size }),
+    queryFn: () => CompanyService.getPendingCompanies({ page, size }),
+  });
+};
+```
+
+### Query Hook Rules
+
+1. **One query per hook** - Each hook wraps a single `useQuery` call
+2. **Default parameters** - Provide sensible defaults for optional params
+3. **Delegate to services** - `queryFn` must call a service method, never `fetch`/`axios` directly
+4. **Use query key factory** - Always reference the domain's `queryKeys`
+5. **TSDoc required** - Document the hook's purpose, params, and return
+
+## Mutation Hooks (TanStack React Query)
+
+### Standard Mutation Hook
+
+```tsx
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { CompanyService } from '@/services/CompanyService';
+import type { ApproveCompanyParams } from '@/types/services/company.types';
+import { verificationQueryKeys } from './verificationQueryKeys';
+
+/**
+ * Mutation hook for approving a company's verification.
+ * Invalidates pending companies list on success.
+ * @returns Mutation object with mutate function and status
+ */
+export const useApproveCompany = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: ApproveCompanyParams) =>
+      CompanyService.approveCompany(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: verificationQueryKeys.all,
+      });
+    },
+  });
+};
+```
+
+### Mutation Hook Rules
+
+1. **One mutation per hook** - Each hook wraps a single `useMutation` call
+2. **Invalidate related queries** - Use `onSuccess` to invalidate stale query keys
+3. **Delegate to services** - `mutationFn` must call a service method
+4. **No UI side effects** - Toast notifications and navigation belong in the component, not the hook
+5. **Accept callbacks** - Allow the consumer to pass `onSuccess`, `onError` overrides when needed
+
+### Mutation with Consumer Callbacks
+
+```tsx
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { UseMutationOptions } from '@tanstack/react-query';
+import { CompanyService } from '@/services/CompanyService';
+import type { RejectCompanyParams } from '@/types/services/company.types';
+import { verificationQueryKeys } from './verificationQueryKeys';
+
+/**
+ * Mutation hook for rejecting a company's verification.
+ * @param options - Optional React Query mutation callbacks
+ * @returns Mutation object with mutate function and status
+ */
+export const useRejectCompany = (
+  options?: UseMutationOptions<void, Error, RejectCompanyParams>,
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: RejectCompanyParams) =>
+      CompanyService.rejectCompany(params),
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({
+        queryKey: verificationQueryKeys.all,
+      });
+      options?.onSuccess?.(...args);
+    },
+    ...options,
+  });
+};
+```
+
+## UI Hooks
+
+For encapsulating reusable UI state patterns (toggles, modals, disclosure, etc.).
+
+### Correct
+
+```tsx
+// hooks/common/useToggle.ts
+import { useCallback, useState } from 'react';
+
+/**
+ * Manages a boolean toggle state.
+ * @param initialValue - Initial toggle state
+ * @returns Tuple of [value, toggle, setValue]
+ */
+export const useToggle = (initialValue = false) => {
+  const [value, setValue] = useState(initialValue);
+  const toggle = useCallback(() => setValue((prev) => !prev), []);
+
+  return [value, toggle, setValue] as const;
+};
+```
+
+### Forbidden
+
+```tsx
+// Returning JSX from a hook
+export const useModal = () => {
+  const [open, setOpen] = useState(false);
+  const ModalComponent = () => <div>{open && <Modal />}</div>; // NO!
+  return { ModalComponent, setOpen };
+};
+```
+
+## Barrel Exports
+
+Every domain folder **must** have an `index.ts` that re-exports all public hooks and query key factories.
+
+### Correct
+
+```tsx
+// hooks/verification/index.ts
+export { usePendingCompanies } from './usePendingCompanies';
+export { useApproveCompany } from './useApproveCompany';
+export { verificationQueryKeys } from './verificationQueryKeys';
+```
+
+### Usage in Components
+
+```tsx
+// Import from barrel — never from deep paths
+import { usePendingCompanies, useApproveCompany } from '@/hooks/verification';
+```
+
+### Forbidden
+
+```tsx
+// Deep imports bypassing barrel
+import { usePendingCompanies } from '@/hooks/verification/usePendingCompanies';
+```
+
+## Hook Composition
+
+Build complex hooks by composing smaller hooks. Never duplicate logic across hooks.
+
+### Correct
+
+```tsx
+// hooks/verification/useVerificationManagement.ts
+import { usePendingCompanies } from './usePendingCompanies';
+import { useApproveCompany } from './useApproveCompany';
+import { useRejectCompany } from './useRejectCompany';
+
+/**
+ * Orchestrates verification management by composing domain hooks.
+ * @param params - Pagination parameters
+ * @returns Combined query and mutation state for verification management
+ */
+export const useVerificationManagement = (params?: { page?: number; size?: number }) => {
+  const companiesQuery = usePendingCompanies(params);
+  const approveMutation = useApproveCompany();
+  const rejectMutation = useRejectCompany();
+
+  return {
+    companies: companiesQuery.data,
+    isLoading: companiesQuery.isLoading,
+    approve: approveMutation.mutate,
+    reject: rejectMutation.mutate,
+    isApproving: approveMutation.isPending,
+    isRejecting: rejectMutation.isPending,
+  };
+};
+```
+
+### Forbidden
+
+```tsx
+// Duplicating query/mutation logic instead of composing
+export const useVerificationManagement = () => {
+  const queryClient = useQueryClient();
+
+  const { data } = useQuery({ ... }); // Duplicated from usePendingCompanies
+  const approve = useMutation({ ... }); // Duplicated from useApproveCompany
+
+  return { data, approve };
+};
+```
+
+## Type Safety
+
+### Hook Parameter & Return Types
+
+```tsx
+// types/hooks/verification.hook.types.ts
+export interface UseVerificationManagementReturn {
+  companies: PendingCompany[] | undefined;
+  isLoading: boolean;
+  approve: (params: ApproveCompanyParams) => void;
+  reject: (params: RejectCompanyParams) => void;
+  isApproving: boolean;
+  isRejecting: boolean;
+}
+```
+
+### Rules
+
+1. **Explicit return types on composed hooks** - When a hook returns a custom object, define its return type in `types/hooks/`
+2. **No `any`** - Never use `any` in hook parameters or return types
+3. **Infer when obvious** - Simple hooks wrapping `useQuery`/`useMutation` can rely on TanStack's inferred types
+
+## Anti-Patterns
+
+### Forbidden: API calls inside hooks
+
+```tsx
+// NO - Use services layer
+export const useUsers = () => {
+  return useQuery({
+    queryKey: ['users'],
+    queryFn: () => fetch('/api/users').then((res) => res.json()), // NO!
+  });
+};
+```
+
+### Forbidden: Business logic in hooks
+
+```tsx
+// NO - Hooks orchestrate, services contain business logic
+export const useProcessPayment = () => {
+  const calculateTax = (amount: number) => amount * 0.1; // NO!
+  const applyDiscount = (amount: number, code: string) => { ... }; // NO!
+  // ...
+};
+```
+
+### Forbidden: Overly broad hooks
+
+```tsx
+// NO - Violates single responsibility
+export const useEverything = () => {
+  const users = useQuery({ ... });
+  const products = useQuery({ ... });
+  const orders = useQuery({ ... });
+  const settings = useQuery({ ... });
+  // Combines unrelated domains
+};
+```
+
+### Forbidden: Defining types inside hook files
+
+```tsx
+// NO - Types belong in types/hooks/
+export interface UserData { ... }  // Should be in types/
+export const useUser = () => { ... };
+```
+
+## When to Create a Custom Hook
+
+| Signal | Action |
+|--------|--------|
+| Component fetches server data | Create a query hook |
+| Component mutates server data | Create a mutation hook |
+| Same stateful logic in 2+ components | Extract to a shared hook |
+| Complex `useState` + `useEffect` combo | Extract to a descriptive hook |
+| Component has > 15 lines of hook logic | Extract to reduce component complexity |
+
+## When NOT to Create a Custom Hook
+
+| Signal | Action |
+|--------|--------|
+| Simple one-liner `useState` | Keep inline in the component |
+| Logic used only once and is trivial | Keep inline in the component |
+| Pure computation with no state/effects | Use a utility function instead |
+| Global state management | Use a Zustand store instead |
+
+## Rules Summary
+
+1. **`use` prefix** - All hooks start with `use`
+2. **One concern per hook** - Single responsibility
+3. **Organize by domain** - `hooks/[domain]/` with barrel `index.ts`
+4. **Query key factories** - Centralized, hierarchical, parameterized keys
+5. **Delegate to services** - `queryFn`/`mutationFn` call service methods, never raw HTTP
+6. **Invalidate on mutation** - Use `onSuccess` to keep caches fresh
+7. **Compose, don't duplicate** - Build complex hooks from simpler hooks
+8. **Types in `types/hooks/`** - Never define types inline in hook files
+9. **TSDoc on every hook** - Document purpose, params, and return
+10. **Barrel imports only** - Import from `@/hooks/[domain]`, not deep paths
+11. **No JSX** - Hooks return data and callbacks, never markup
+12. **No UI side effects** - Toast, navigation, and modals stay in components
