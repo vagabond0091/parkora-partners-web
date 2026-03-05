@@ -171,7 +171,7 @@ export const LoginPage = () => {
             <Button
               type="submit"
               isLoading={isLoading}
-              className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white hover:from-orange-600 hover:via-pink-600 hover:to-purple-700 focus:ring-purple-500"
+              className="w-full px-6 py-3 rounded-xl font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white hover:from-orange-600 hover:via-pink-600 hover:to-purple-700"
             >
               Sign In
             </Button>
@@ -190,7 +190,7 @@ export const LoginPage = () => {
             <Button
               type="button"
               leftIcon={<GoogleIcon />}
-              className="border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-200"
+              className="w-full px-6 py-3 rounded-xl font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2"
             >
               Sign in with Google
             </Button>
