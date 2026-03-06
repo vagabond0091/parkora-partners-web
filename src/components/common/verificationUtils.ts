@@ -1,7 +1,12 @@
 /**
- * Get initials from partner name.
- * @param name - The partner name
+ * Gets initials from a name.
+ * @param name - The name to extract initials from
  * @returns Initials (max 2 characters)
+ * @example
+ * ```ts
+ * getInitials('John Doe'); // 'JD'
+ * getInitials('Alice'); // 'AL'
+ * ```
  */
 export const getInitials = (name: string): string => {
   return name
@@ -13,9 +18,14 @@ export const getInitials = (name: string): string => {
 };
 
 /**
- * Get status dot color class.
+ * Gets status dot color class for verification status.
  * @param status - The verification status
  * @returns Tailwind CSS class for dot color
+ * @example
+ * ```ts
+ * getStatusDotColor('UNDER REVIEW'); // 'bg-orange-400'
+ * getStatusDotColor('PENDING'); // 'bg-blue-400'
+ * ```
  */
 export const getStatusDotColor = (status: string): string => {
   switch (status) {
@@ -29,9 +39,14 @@ export const getStatusDotColor = (status: string): string => {
 };
 
 /**
- * Get status text color class.
+ * Gets status text color class for verification status.
  * @param status - The verification status
  * @returns Tailwind CSS class for text color
+ * @example
+ * ```ts
+ * getStatusTextColor('UNDER REVIEW'); // 'text-orange-400'
+ * getStatusTextColor('PENDING'); // 'text-blue-400'
+ * ```
  */
 export const getStatusTextColor = (status: string): string => {
   switch (status) {

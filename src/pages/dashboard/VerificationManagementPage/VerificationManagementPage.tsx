@@ -9,7 +9,7 @@ import { TextArea } from '@/components/common/TextArea/TextArea';
 import { Button } from '@/components/common/Button/Button';
 import { usePendingCompanies } from '@/hooks/verification';
 import { createVerificationTableColumns } from './verificationTableColumns';
-import { getInitials } from './verificationTableUtils';
+import { getInitials } from '@/components/common/verificationUtils';
 
 /**
  * Verification Management page component.
