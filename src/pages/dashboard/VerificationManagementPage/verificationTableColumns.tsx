@@ -1,7 +1,7 @@
 import { clsx } from 'clsx';
 import type { Partner } from '@/types/pages/verificationManagement.types';
 import type { TableColumn } from '@/types/components/table.types';
-import { getInitials, getStatusDotColor, getStatusTextColor } from '@/components/common/verificationUtils';
+import { getInitials, getStatusDotColor, getStatusTextColor } from '@/components/common/Verification/verificationUtils';
 
 /**
  * Creates table column definitions for verification management.
