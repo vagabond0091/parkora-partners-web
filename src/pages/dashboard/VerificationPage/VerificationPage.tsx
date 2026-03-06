@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/common/Button/Button';
+import { FileUploadCard } from '@/components/common/FileUploadCard/FileUploadCard';
 import { useAppStatusStore } from '@/stores/appStatusStore';
 import { verificationSchema } from '@/validation/verification.validation';
 import { FileUploadService } from '@/services/FileUploadService';
@@ -874,376 +875,68 @@ export const VerificationPage = () => {
           <div className="bg-[#0f172a] rounded-2xl shadow-sm p-8 space-y-6">
             <h2 className="text-lg font-semibold text-white">Required Documents</h2>
             
-            <div>
-              <label className="block text-sm font-medium text-white mb-1.5">
-                Upload Business License <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <label className={`flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center transition-colors group ${
-                  isInputDisabled('businessLicense') 
-                    ? 'opacity-50 cursor-not-allowed' 
-                    : 'cursor-pointer hover:border-[#475569]'
-                }`}>
-                  <svg
-                    className={`h-8 w-8 text-[#475569] mb-3 transition-colors ${
-                      isInputDisabled('businessLicense') 
-                        ? '' 
-                        : 'group-hover:text-[#6D28D9]'
-                    }`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    />
-                  </svg>
-                  <div>
-                    <span className="text-sm text-white">
-                      Click to upload</span>
-                    <span className="text-sm text-[#475569]"> or drag and drop</span>
-                  </div>
-                  <span className="mt-1 text-xs font-light text-[#475569]">
-                    PDF, JPEG, or PNG (max 10MB)
-                  </span>
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    data-field="businessLicense"
-                    onChange={(e) => handleFileChange('businessLicense', e.target.files)}
-                    disabled={isInputDisabled('businessLicense')}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
-                  />
-                </label>
-              </div>
-              {fieldErrors.businessLicense && (
-                <p className="mt-1.5 text-sm text-red-500">{fieldErrors.businessLicense}</p>
-              )}
-              {(formData.businessLicense || existingDocuments.businessLicense || uploadedFiles.businessLicense) && (
-                <div className="mt-4">
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-[#282f39] border border-[#403c34]">
-                    <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                      <svg
-                        className="h-5 w-5 text-gray-600"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        />
-                      </svg>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="text-sm font-medium text-white truncate">
-                          {formData.businessLicense?.name || existingDocuments.businessLicense?.originalFileName || existingDocuments.businessLicense?.fileName || uploadedFiles.businessLicense?.fileName}
-                        </p>
-                        {existingDocuments.businessLicense && getDocumentStatusBadge(existingDocuments.businessLicense.verificationStatus)}
-                        {!existingDocuments.businessLicense && fileStatuses.businessLicense === 'success' && uploadedFiles.businessLicense && (
-                          <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold text-amber-400 bg-[#343536] border border-amber-400">
-                            Uploaded
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-400">
-                        {formData.businessLicense ? formatFileSize(formData.businessLicense.size) : existingDocuments.businessLicense ? formatFileSize(existingDocuments.businessLicense.fileSize) : uploadedFiles.businessLicense ? formatFileSize(uploadedFiles.businessLicense.fileSize || 0) : ''}
-                      </p>
-                      {existingDocuments.businessLicense?.rejectionReason && (
-                        <p className="mt-1 text-xs text-red-400">
-                          {existingDocuments.businessLicense.rejectionReason}
-                        </p>
-                      )}
-                      {fileStatuses.businessLicense === 'uploading' && uploadProgress.businessLicense !== undefined && (
-                        <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
-                          <div
-                            className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
-                            style={{ width: `${uploadProgress.businessLicense || 0}%` }}
-                          />
-                        </div>
-                      )}
-                      {fileStatuses.businessLicense === 'error' && (
-                        <button
-                          type="button"
-                          onClick={() => handleRetryUpload('businessLicense')}
-                          className="mt-2 text-xs text-red-600 hover:text-red-700 font-medium"
-                        >
-                          Try again
-                        </button>
-                      )}
-                    </div>
-                    {formData.businessLicense && fileStatuses.businessLicense !== 'success' && (
-                      <button
-                        type="button"
-                        onClick={() => removeFile('businessLicense')}
-                        className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+            <FileUploadCard
+              field="businessLicense"
+              label="Upload Business License"
+              required
+              file={formData.businessLicense}
+              existingDocument={existingDocuments.businessLicense}
+              uploadedFile={uploadedFiles.businessLicense}
+              fileStatus={fileStatuses.businessLicense}
+              uploadProgress={uploadProgress.businessLicense}
+              error={fieldErrors.businessLicense}
+              disabled={isInputDisabled('businessLicense')}
+              onFileChange={(files) => handleFileChange('businessLicense', files)}
+              onRemove={() => removeFile('businessLicense')}
+              onRetry={() => handleRetryUpload('businessLicense')}
+              getStatusBadge={getDocumentStatusBadge}
+              formatFileSize={formatFileSize}
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-white mb-1.5">
-                Upload Tax Document <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <label className={`flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center transition-colors group ${
-                  isInputDisabled('taxDocument') 
-                    ? 'opacity-50 cursor-not-allowed' 
-                    : 'cursor-pointer hover:border-[#475569]'
-                }`}>
-                  <svg
-                    className={`h-8 w-8 text-[#475569] mb-3 transition-colors ${
-                      isInputDisabled('taxDocument') 
-                        ? '' 
-                        : 'group-hover:text-[#6D28D9]'
-                    }`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    />
-                  </svg>
-                  <div>
-                  <span className="text-sm text-white">
-                  Click to upload</span><span className="text-sm text-[#475569]"> or drag and drop</span>
-                  </div>
-                
-                  <span className="mt-1 text-xs font-light text-[#475569]">
-                    PDF, JPEG, or PNG (max 10MB)
-                  
-                  </span>
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    data-field="taxDocument"
-                    onChange={(e) => handleFileChange('taxDocument', e.target.files)}
-                    disabled={isInputDisabled('taxDocument')}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
-                  />
-                </label>
-              </div>
-              {fieldErrors.taxDocument && (
-                <p className="mt-1.5 text-sm text-red-500">{fieldErrors.taxDocument}</p>
-              )}
-              {(formData.taxDocument || existingDocuments.taxDocument || uploadedFiles.taxDocument) && (
-                <div className="mt-4 mb-4">
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-[#282f39] border border-[#403c34]">
-                    <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                      <svg
-                        className="h-5 w-5 text-gray-600"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        />
-                      </svg>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="text-sm font-medium text-white truncate">
-                          {formData.taxDocument?.name || existingDocuments.taxDocument?.originalFileName || existingDocuments.taxDocument?.fileName || uploadedFiles.taxDocument?.fileName}
-                        </p>
-                        {existingDocuments.taxDocument && getDocumentStatusBadge(existingDocuments.taxDocument.verificationStatus)}
-                        {!existingDocuments.taxDocument && fileStatuses.taxDocument === 'success' && uploadedFiles.taxDocument && (
-                          <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold text-amber-400 bg-[#343536] border border-amber-400">
-                            Uploaded
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-400">
-                        {formData.taxDocument ? formatFileSize(formData.taxDocument.size) : existingDocuments.taxDocument ? formatFileSize(existingDocuments.taxDocument.fileSize) : uploadedFiles.taxDocument ? formatFileSize(uploadedFiles.taxDocument.fileSize || 0) : ''}
-                      </p>
-                      {existingDocuments.taxDocument?.rejectionReason && (
-                        <p className="mt-1 text-xs text-red-400">
-                          {existingDocuments.taxDocument.rejectionReason}
-                        </p>
-                      )}
-                      {fileStatuses.taxDocument === 'uploading' && uploadProgress.taxDocument !== undefined && (
-                        <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
-                          <div
-                            className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
-                            style={{ width: `${uploadProgress.taxDocument || 0}%` }}
-                          />
-                        </div>
-                      )}
-                      {fileStatuses.taxDocument === 'error' && (
-                        <button
-                          type="button"
-                          onClick={() => handleRetryUpload('taxDocument')}
-                          className="mt-2 text-xs text-red-600 hover:text-red-700 font-medium"
-                        >
-                          Try again
-                        </button>
-                      )}
-                    </div>
-                    {formData.taxDocument && fileStatuses.taxDocument !== 'success' && (
-                      <button
-                        type="button"
-                        onClick={() => removeFile('taxDocument')}
-                        className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+            <FileUploadCard
+              field="taxDocument"
+              label="Upload Tax Document"
+              required
+              file={formData.taxDocument}
+              existingDocument={existingDocuments.taxDocument}
+              uploadedFile={uploadedFiles.taxDocument}
+              fileStatus={fileStatuses.taxDocument}
+              uploadProgress={uploadProgress.taxDocument}
+              error={fieldErrors.taxDocument}
+              disabled={isInputDisabled('taxDocument')}
+              onFileChange={(files) => handleFileChange('taxDocument', files)}
+              onRemove={() => removeFile('taxDocument')}
+              onRetry={() => handleRetryUpload('taxDocument')}
+              getStatusBadge={getDocumentStatusBadge}
+              formatFileSize={formatFileSize}
+            />
 
             {/* Additional Document Section */}
             <div className="pt-6 mt-10 border-t border-[#1b2335]">
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-bold text-white">ADDITIONAL DOCUMENT</h2>
-                <span className="text-[10px] font-semibold text-[#94a3b8] bg-[#1e293b] px-3 py-1 rounded-[5px]">OPTIONAL</span>
-               
+                <span className="text-[10px] font-semibold text-[#94a3b8] bg-[#1e293b] px-3 py-1 rounded-[5px]">
+                  OPTIONAL
+                </span>
               </div>
               <div className="pt-1">
-                <label className="block text-sm font-medium text-[#c7d4e1] mb-1.5">
-                Upload Additional Supporting Document
-              </label>
+                <FileUploadCard
+                  field="additionalDocument"
+                  label="Upload Additional Supporting Document"
+                  file={formData.additionalDocument}
+                  existingDocument={existingDocuments.additionalDocument}
+                  uploadedFile={uploadedFiles.additionalDocument}
+                  fileStatus={fileStatuses.additionalDocument}
+                  uploadProgress={uploadProgress.additionalDocument}
+                  error={fieldErrors.additionalDocument}
+                  disabled={isInputDisabled('additionalDocument')}
+                  onFileChange={handleAdditionalFileChange}
+                  onRemove={removeAdditionalFile}
+                  onRetry={handleRetryAdditionalFile}
+                  getStatusBadge={getDocumentStatusBadge}
+                  formatFileSize={formatFileSize}
+                />
               </div>
-            </div>
-            
-            <div>
-             
-              <div className="relative">
-                <label className={`flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed border-[#334155] bg-transparent px-6 py-6 text-center transition-colors group ${
-                  isInputDisabled('additionalDocument') 
-                    ? 'opacity-50 cursor-not-allowed' 
-                    : 'cursor-pointer hover:border-[#475569]'
-                }`}>
-                  <svg
-                    className={`h-8 w-8 text-[#475569] mb-3 transition-colors ${
-                      isInputDisabled('additionalDocument') 
-                        ? '' 
-                        : 'group-hover:text-[#6D28D9]'
-                    }`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    />
-                  </svg>
-                  <div>
-                    <span className="text-sm text-white">
-                      Click to upload</span>
-                    <span className="text-sm text-[#475569]"> or drag and drop</span>
-                  </div>
-                  <span className="mt-1 text-xs font-light text-[#475569]">
-                    PDF, JPEG, or PNG (max 10MB)
-                  </span>
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    onChange={(e) => handleAdditionalFileChange(e.target.files)}
-                    disabled={isInputDisabled('additionalDocument')}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
-                  />
-                </label>
-              </div>
-              {fieldErrors.additionalDocument && (
-                <p className="mt-1.5 text-sm text-red-500">{fieldErrors.additionalDocument}</p>
-              )}
-              {(formData.additionalDocument || existingDocuments.additionalDocument || uploadedFiles.additionalDocument) && (
-                <div className="mt-4">
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-[#282f39] border border-[#403c34]">
-                    <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                      <svg
-                        className="h-5 w-5 text-gray-600"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        />
-                      </svg>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="text-sm font-medium text-white truncate">
-                          {formData.additionalDocument?.name || existingDocuments.additionalDocument?.originalFileName || existingDocuments.additionalDocument?.fileName || uploadedFiles.additionalDocument?.fileName}
-                        </p>
-                        {existingDocuments.additionalDocument && getDocumentStatusBadge(existingDocuments.additionalDocument.verificationStatus)}
-                        {!existingDocuments.additionalDocument && fileStatuses.additionalDocument === 'success' && uploadedFiles.additionalDocument && (
-                          <span className="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold text-amber-400 bg-[#343536] border border-amber-400">
-                            Uploaded
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-400">
-                        {formData.additionalDocument ? formatFileSize(formData.additionalDocument.size) : existingDocuments.additionalDocument ? formatFileSize(existingDocuments.additionalDocument.fileSize) : uploadedFiles.additionalDocument ? formatFileSize(uploadedFiles.additionalDocument.fileSize || 0) : ''}
-                      </p>
-                      {existingDocuments.additionalDocument?.rejectionReason && (
-                        <p className="mt-1 text-xs text-red-400">
-                          {existingDocuments.additionalDocument.rejectionReason}
-                        </p>
-                      )}
-                      {fileStatuses.additionalDocument === 'uploading' && uploadProgress.additionalDocument !== undefined && (
-                        <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
-                          <div
-                            className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
-                            style={{ width: `${uploadProgress.additionalDocument || 0}%` }}
-                          />
-                        </div>
-                      )}
-                      {fileStatuses.additionalDocument === 'error' && (
-                        <button
-                          type="button"
-                          onClick={handleRetryAdditionalFile}
-                          className="mt-2 text-xs text-red-600 hover:text-red-700 font-medium"
-                        >
-                          Try again
-                        </button>
-                      )}
-                    </div>
-                    {formData.additionalDocument && fileStatuses.additionalDocument !== 'success' && (
-                      <button
-                        type="button"
-                        onClick={removeAdditionalFile}
-                        className="shrink-0 text-red-500 hover:text-red-700 text-sm font-medium"
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
