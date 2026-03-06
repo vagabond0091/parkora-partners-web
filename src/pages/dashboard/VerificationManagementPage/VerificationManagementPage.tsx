@@ -2,13 +2,14 @@ import { useState, useMemo } from 'react';
 import { clsx } from 'clsx';
 import SimpleBar from 'simplebar-react';
 import type { Partner } from '@/types/pages/verificationManagement.types';
-import type { TableColumn } from '@/types/components/table.types';
 import { Table } from '@/components/common/Table/Table';
 import { VerificationDocumentCard } from '@/components/common/VerificationDocumentCard/VerificationDocumentCard';
 import { Modal } from '@/components/common/Modal/Modal';
 import { TextArea } from '@/components/common/TextArea/TextArea';
 import { Button } from '@/components/common/Button/Button';
 import { usePendingCompanies } from '@/hooks/verification';
+import { createVerificationTableColumns } from '@/components/common/Verification/verificationTableColumns';
+import { getInitials } from '@/components/common/Verification/verificationUtils';
 
 /**
  * Verification Management page component.
@@ -103,124 +104,15 @@ export const VerificationManagementPage = () => {
    */
   const error = queryError instanceof Error ? queryError.message : queryError ? 'Failed to fetch companies' : null;
 
-  /**
-   * Get initials from partner name.
-   */
-  const getInitials = (name: string): string => {
-    return name
-      .split(' ')
-      .map((word) => word[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
-  /**
-   * Get status dot color.
-   */
-  const getStatusDotColor = (status: string): string => {
-    switch (status) {
-      case 'UNDER REVIEW':
-        return 'bg-orange-400';
-      case 'PENDING':
-        return 'bg-blue-400';
-      default:
-        return 'bg-gray-400';
-    }
-  };
-
-  /**
-   * Get status text color.
-   */
-  const getStatusTextColor = (status: string): string => {
-    switch (status) {
-      case 'UNDER REVIEW':
-        return 'text-orange-400';
-      case 'PENDING':
-        return 'text-blue-400';
-      default:
-        return 'text-gray-400';
-    }
-  };
-
   const selectedPartnerData = partners.find((partnerItem) => partnerItem.id === selectedPartner);
 
   /**
    * Table column definitions.
    */
-  const columns: TableColumn<Partner>[] = [
-    {
-      header: 'PARTNER NAME',
-      accessor: 'name',
-      render: (_, partner) => (
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-[#1e293b] flex items-center justify-center text-xs font-semibold text-white">
-            {getInitials(partner.name)}
-          </div>
-          <div>
-            <p className="text-xs font-medium text-white">{partner.name}</p>
-            <p className="text-[10px] text-gray-400">ID: {partner.partnerId}</p>
-          </div>
-        </div>
-      ),
-    },
-    {
-      header: 'SUBMISSION DATE',
-      accessor: 'submissionDate',
-      render: (value) => <p className="text-xs text-gray-400">{value as string}</p>,
-    },
-    {
-      header: 'TYPE',
-      accessor: 'type',
-      render: (value) => (
-        <span className="inline-flex px-2 py-1 rounded-full bg-[#272f40] text-[10px] font-medium text-gray-200">
-          {value as string}
-        </span>
-      ),
-    },
-    {
-      header: 'STATUS',
-      accessor: 'status',
-      render: (value) => {
-        const status = value as string;
-        return (
-          <div className="flex items-center gap-2">
-            <div className={clsx('w-2 h-2 rounded-full', getStatusDotColor(status))}></div>
-            <span className={clsx('text-[10px] font-bold', getStatusTextColor(status))}>
-              {status}
-            </span>
-          </div>
-        );
-      },
-    },
-    {
-      header: '',
-      accessor: () => null,
-      width: '48px',
-      render: (_, partner) => (
-        <div
-          className={clsx(
-            'transition-opacity',
-            selectedPartner === partner.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-          )}
-        >
-          <svg
-            className="w-5 h-5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </div>
-      ),
-    },
-  ];
+  const columns = useMemo(
+    () => createVerificationTableColumns(selectedPartner),
+    [selectedPartner]
+  );
 
   return (
     <div className="relative w-full h-full">

@@ -132,6 +132,20 @@ ApiUtils.ts
 
 ## Pages Rules
 
+- **Pages folder contains only page components**
+  - Each page folder should contain only the page component file (e.g., `VerificationManagementPage.tsx`)
+  - No utilities, configurations, or component-related code in page folders
+  - Component configurations, utilities, and related code belong in `components/` or `utils/`
+  - Example structure:
+    ```
+    src/pages/dashboard/VerificationManagementPage/
+    └── VerificationManagementPage.tsx  # Page component only
+    
+    src/components/common/Verification/
+    ├── verificationUtils.ts              # Utilities
+    └── verificationTableColumns.tsx     # Component configurations
+    ```
+
 - **All page types must be in `types/` folder**
   - Page-specific interfaces, types, and data models must be defined in `src/types/pages/`
   - Organize by page name: `src/types/pages/verificationManagement.types.ts`, `src/types/pages/dashboard.types.ts`, etc.
