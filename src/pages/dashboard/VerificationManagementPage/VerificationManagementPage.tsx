@@ -8,7 +8,7 @@ import { Modal } from '@/components/common/Modal/Modal';
 import { TextArea } from '@/components/common/TextArea/TextArea';
 import { Button } from '@/components/common/Button/Button';
 import { usePendingCompanies } from '@/hooks/verification';
-import { createVerificationTableColumns } from './verificationTableColumns';
+import { createVerificationTableColumns } from '@/components/common/Verification/verificationTableColumns';
 import { getInitials } from '@/components/common/Verification/verificationUtils';
 
 /**

@@ -6,23 +6,6 @@ import type { TableProps, TableColumn } from '@/types/components/table.types';
  * Generic table component for displaying data in a structured format.
  * Supports customizable columns, row selection, click handlers, and pagination.
  * @template T - The type of data items in the table
- * @example
- * ```tsx
- * <Table
- *   data={partners}
- *   columns={columns}
- *   getRowKey={(row) => row.id}
- *   onRowClick={(row) => handleSelect(row)}
- *   isRowSelected={(row) => selectedId === row.id}
- *   pagination={{
- *     currentPage: 1,
- *     pageSize: 10,
- *     totalItems: 100,
- *     onPageChange: (page) => setPage(page),
- *     enabled: true
- *   }}
- * />
- * ```
  */
 export const Table = <T,>({
   data,
