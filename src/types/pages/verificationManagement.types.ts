@@ -1,7 +1,7 @@
 /**
  * Partner data type for verification management.
  */
-export interface Partner {
+export interface Partner extends Record<string, unknown> {
   id: string;
   name: string;
   partnerId: string;
