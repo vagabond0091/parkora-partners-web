@@ -21,6 +21,7 @@ export const Button = ({
   return (
     <button
       className={clsx(
+        'flex items-center justify-center',
         (disabled || isLoading) && 'opacity-70 cursor-not-allowed',
         className
       )}
