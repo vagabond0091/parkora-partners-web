@@ -24,14 +24,17 @@ globs: src/**/*.tsx, src/**/*.ts
 src/
 ├── assets/          # Static assets (images, fonts, icons)
 ├── components/      # Reusable UI components
+├── config/          # Configuration files (env, queryClient, etc.)
+├── hooks/           # Custom React hooks
 ├── pages/           # Page-level components
 ├── routes/          # Route configuration and guards
 ├── services/        # API calls and external service integrations
 ├── stores/          # Zustand state stores
+├── theme/           # Theme configuration and utilities
 ├── types/           # All TypeScript type definitions
 ├── utils/           # Utility/helper functions
+├── validation/      # Validation schemas and utilities
 ├── App.tsx          # Root application component
-├── App.css          # App-level scoped styles
 ├── main.tsx         # Application entry point
 └── index.css        # Base reset styles only
 ```
@@ -40,30 +43,36 @@ src/
 |--------|---------|
 | `assets/` | Static files: images, SVGs, fonts |
 | `components/` | Reusable UI components organized by feature or atomic design |
+| `config/` | Configuration files: environment variables, query client setup, etc. |
+| `hooks/` | Custom React hooks for reusable logic |
 | `pages/` | Page-level components (one folder per page with its styles) |
 | `routes/` | Router config, route guards, path constants |
 | `services/` | API calls, HTTP client config, external service integrations |
 | `stores/` | Zustand stores for global state management (state only, no API calls) |
+| `theme/` | Theme configuration, theme utilities, and theme-related hooks |
 | `types/` | All TypeScript interfaces, types, and enums |
 | `utils/` | Reusable utility/helper functions |
+| `validation/` | Validation schemas (Zod, etc.) and validation utilities |
 
 ### Recommended Additions
 
 ```
 src/
-├── assets/
-├── components/
-├── constants/       # App-wide constants
+├── assets/          # Static assets (images, fonts, icons)
+├── components/      # Reusable UI components
+├── config/          # Configuration files (env, queryClient, etc.)
 ├── hooks/           # Custom React hooks
 ├── pages/           # Page/route components
+├── routes/          # Route configuration and guards
 ├── services/        # API calls and external services
 ├── stores/          # Zustand stores
-├── types/
+├── theme/           # Theme configuration and utilities
+├── types/           # All TypeScript type definitions
 ├── utils/           # Utility functions
-├── App.tsx
-├── App.css
-├── main.tsx
-└── index.css
+├── validation/      # Validation schemas and utilities
+├── App.tsx          # Root application component
+├── main.tsx         # Application entry point
+└── index.css        # Base reset styles only
 ```
 
 ## Naming Conventions

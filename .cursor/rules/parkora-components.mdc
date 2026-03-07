@@ -78,7 +78,7 @@ src/
 #### Correct - Extract Immediately
 
 ```tsx
-// ❌ Bad - Duplicate markup (appears 2+ times)
+// Bad - Duplicate markup (appears 2+ times)
 <div className="bg-[#1b2335] rounded-xl border border-gray-800 px-5 py-4">
   <div className="flex items-center justify-between gap-4">
     <p className="text-sm font-bold text-white">Business License</p>
@@ -95,7 +95,7 @@ src/
   <p className="text-[11px] text-gray-400">Description...</p>
 </div>
 
-// ✅ Good - Extracted to component
+// Good - Extracted to component
 <VerificationDocumentCard
   title="Business License"
   description="Description..."
@@ -109,7 +109,7 @@ src/
 #### Correct - Extract Even with Minor Variations
 
 ```tsx
-// ❌ Bad - Similar markup with minor differences
+// Bad - Similar markup with minor differences
 <div className="card">
   <h3 className="text-lg font-bold">{title1}</h3>
   <p>{description1}</p>
@@ -120,7 +120,7 @@ src/
   <p>{description2}</p>
 </div>
 
-// ✅ Good - Extract and parameterize differences
+// Good - Extract and parameterize differences
 <Card title={title1} description={description1} />
 <Card title={title2} description={description2} />
 ```
